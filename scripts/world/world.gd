@@ -667,12 +667,13 @@ func on_combat_ended() -> void:
 const REST_CLEAR_RADIUS := 18.0
 
 
-func rest_block_reason() -> String:
+func rest_block_reason(from_menu: bool = false) -> String:
 	if combat.active:
 		return "You can't rest during combat."
 	if game_over:
 		return "The party has fallen."
-	if not modal.is_empty():
+	var busy := modal.keys().filter(func(k: Variant) -> bool: return not (from_menu and String(k) == "menu"))
+	if not busy.is_empty():
 		return "Finish what you're doing first."
 	for o in actors.values():
 		var e: Actor = o
@@ -701,8 +702,8 @@ func rest_block_reason() -> String:
 	return ""
 
 
-func rest() -> Dictionary:
-	var why := rest_block_reason()
+func rest(from_menu: bool = false) -> Dictionary:
+	var why := rest_block_reason(from_menu)
 	if why != "":
 		Events.toast(why, "warn")
 		return {"ok": false, "reason": why}
@@ -1675,12 +1676,15 @@ func on_downed(t: Actor, killer: String) -> void:
 	t.current = {}
 	t.visual.set_downed(true)
 	t.visual.set_selection("")
+	var lead_target := controlled() != null and controlled().target_uid == t.uid
 	for o in actors.values():
 		(o as Actor).queue.purge_target(t.uid)
 		if (o as Actor).target_uid == t.uid:
 			(o as Actor).target_uid = ""
 		if String((o as Actor).current.get("target", "")) == t.uid:
 			(o as Actor).current = {}
+	if lead_target and combat.active and bool(Settings.get_v("autopause_target_dead")) and alert_hostile_count() > 0:
+		set_paused(true, "%s defeated" % s.display_name)
 	Game.state.stats["kills"] = int(Game.state.stats.get("kills", 0)) + 1
 	var xp := int(DB.enemy(s.template).get("xp", 0))
 	var got := Game.state.grant_xp(xp, "enemy:" + t.uid, "Defeated " + s.display_name)
@@ -2272,8 +2276,16 @@ func _world_effect(e: Dictionary) -> void:
 				(objects[String(e["id"])] as WorldObject).refresh()
 		"npc":
 			_npc_effect(String(e["id"]), e.get("set", {}))
-		"open", "minigame", "cinematic":
+		"open", "minigame":
 			ui_request.emit(String(e["type"]), e)
+		"cinematic":
+			# Headless runs (tests, bots) have no presentation layer: skip
+			# straight to whatever the cinematic leads into.
+			if ui_request.get_connections().is_empty():
+				if String(e.get("then", "")) != "":
+					call_deferred("_queued_dialogue", String(e["then"]))
+			else:
+				ui_request.emit("cinematic", e)
 		"teleport":
 			var to: Array = e["to"]
 			var i := 0

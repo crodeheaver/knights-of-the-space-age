@@ -45,11 +45,21 @@ func _ready() -> void:
 			var cp := String(args["cam"]).split(",")
 			Game.state.positions["_cam"] = [float(cp[0]), float(cp[1]), float(cp[2])]
 		load_world()
+		if args.has("open"):
+			call_deferred("_debug_open", String(args["open"]))
 		return
 	if args.has("preset"):
 		DevTools.load_preset(String(args["preset"]))
 		return
 	show_main_menu()
+	# Screenshot/inspection helper: --ui=creator [--ui_step=N] [--ui_class=adept]
+	if String(args.get("ui", "")) == "creator":
+		show_creator()
+		var cc: CharacterCreator = screen.get_child(screen.get_child_count() - 1)
+		if args.has("ui_class"):
+			cc._set_class(String(args["ui_class"]))
+			cc._use_recommended()
+		cc._go(int(args.get("ui_step", "0")))
 
 
 # ================================================================ screens
@@ -82,6 +92,28 @@ func start_new_game(build: Dictionary, difficulty: String) -> void:
 	Settings.set_v("difficulty", difficulty)
 	load_world()
 	call_deferred("_intro")
+
+
+## Screenshot/inspection helper for --quickstart runs: --open=<panel>.
+func _debug_open(what: String) -> void:
+	await get_tree().process_frame
+	match what:
+		"vendor":
+			_open_station("vendor:requisition", "player")
+		"workbench", "medstation", "muster":
+			_open_station(what, "player")
+		"levelup":
+			Game.state.player().xp = Game.state.player().xp_for_level(2)
+			open_levelup("player")
+		"save", "load":
+			open_saveload(what)
+		"settings":
+			open_settings()
+		"dev":
+			Game.state.dev_mode = true
+			open_dev_menu()
+		_:
+			open_game_menu(what)
 
 
 func _intro() -> void:
@@ -266,7 +298,7 @@ func _on_ui_request(kind: String, data: Dictionary) -> void:
 			if dialogue_ui:
 				dialogue_ui.close()
 		"cinematic":
-			Cinematics.play(self, String(data.get("id", "")))
+			Cinematics.play(self, String(data.get("id", "")), String(data.get("then", "")))
 		"game_over":
 			var g := GameOverUI.new()
 			g.main = self

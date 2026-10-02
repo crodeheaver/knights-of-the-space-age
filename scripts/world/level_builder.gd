@@ -248,6 +248,7 @@ static func _prop(root: Node3D, p: Dictionary, grid: ShipGrid) -> void:
 			planet.scale = Vector3(1, 1, 0.1)
 			n.add_child(planet)
 		"craft":
+			n.name = "Petrel"
 			_craft(n, w, d, col)
 		"pod":
 			var pd := MeshKit.capsule(w * 0.45, h, MeshKit.mat(Color("#cfd4da"), 0.3, 0.3))

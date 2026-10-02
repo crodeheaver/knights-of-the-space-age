@@ -650,16 +650,18 @@ func _on_toast(text: String, kind: String) -> void:
 			col = UIKit.GOOD
 		"discovery", "story":
 			col = UIKit.ACCENT2
-	var l := UIKit.label(text, 17, col, true)
+	var caption := kind == "story" and bool(Settings.get_v("subtitles"))
+	var l := UIKit.label(text, 21 if caption else 17, col, true)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var p := UIKit.panel(l, Color(0.04, 0.05, 0.06, 0.8))
+	var p := UIKit.panel(l, Color(0.04, 0.05, 0.06, 0.88 if caption else 0.8))
 	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	toast_box.add_child(p)
 	while toast_box.get_child_count() > 5:
 		toast_box.get_child(0).queue_free()
 		toast_box.remove_child(toast_box.get_child(0))
 	var tw := p.create_tween()
-	tw.tween_interval(3.2)
+	# Captions for ambient speech stay up long enough to read.
+	tw.tween_interval(clampf(text.length() * 0.06, 3.2, 8.0) if caption else 3.2)
 	tw.tween_property(p, "modulate:a", 0.0, 0.6)
 	tw.tween_callback(p.queue_free)
 	if kind == "warn":

@@ -9,7 +9,7 @@ const KNOWN := ["set_flag", "value", "inc_flag", "by", "alignment", "key", "reas
 	"give_item", "count", "take_item", "credits", "quest", "stage", "state", "objective", "join_party", "leave_party",
 	"start_encounter", "resolve_encounter", "resolution", "end_dialogue", "heal_party", "damage_party", "dtype", "world", "set", "event", "data",
 	"codex", "tutorial", "notify", "grant_feat", "grant_power", "who", "spend_energy", "survivors", "open", "minigame",
-	"cinematic", "status", "duration", "teleport", "npc", "npc_state", "remove_npc", "autosave", "combat_hostile", "faction", "_note", "sound",
+	"cinematic", "then", "status", "duration", "teleport", "npc", "npc_state", "remove_npc", "autosave", "combat_hostile", "faction", "_note", "sound",
 	"start_dialogue", "enemy", "area_damage", "radius", "dice", "reveal_area", "evac"]
 
 
@@ -130,7 +130,7 @@ static func apply_one(e: Dictionary, st: GameState, ctx: Dictionary) -> Array[St
 	if e.has("minigame"):
 		Events.post("world_effect", {"type": "minigame", "id": String(e["minigame"])})
 	if e.has("cinematic"):
-		Events.post("world_effect", {"type": "cinematic", "id": String(e["cinematic"])})
+		Events.post("world_effect", {"type": "cinematic", "id": String(e["cinematic"]), "then": String(e.get("then", ""))})
 	if e.has("teleport"):
 		Events.post("world_effect", {"type": "teleport", "to": e["teleport"]})
 	if e.has("combat_hostile"):

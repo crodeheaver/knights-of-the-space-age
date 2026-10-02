@@ -213,7 +213,8 @@
      "value": true
     },
     {
-     "start_dialogue": "ending_exchange"
+     "cinematic": "petrel_escape",
+     "then": "ending_exchange"
     }
    ],
    "end": true

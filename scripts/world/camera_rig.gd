@@ -90,6 +90,13 @@ func _process(delta: float) -> void:
 		rot += 1.0
 	if Input.is_action_pressed("camera_right"):
 		rot -= 1.0
+	if bool(Settings.get_v("edge_pan")) and DisplayServer.window_is_focused():
+		var mp := get_viewport().get_mouse_position()
+		var vs := get_viewport().get_visible_rect().size
+		if mp.x <= 6.0 and mp.y > 0.0:
+			rot += 1.0
+		elif mp.x >= vs.x - 6.0 and mp.y < vs.y:
+			rot -= 1.0
 	if rot != 0.0 and not Game.ui_blocked():
 		yaw += rot * 90.0 * delta
 		_apply()

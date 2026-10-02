@@ -312,7 +312,7 @@ LAUNCH = {
         "tav_burn": N("tav7", "Through the debris field, around the Lantern pickets, and the interceptors have lost us. I enjoyed that more than I should have.", nxt="out", effects=[flag("turret_result", "evaded"), xp(40, "turret", "Escaped the interceptors")]),
         "tav_burn_hit": N("tav7", "Mostly through the debris field. The hull will tell you about the parts that were not.", nxt="out", effects=[flag("turret_result", "evaded_damaged"), flag("petrel_damaged"), xp(40, "turret", "Escaped the interceptors")]),
         "burn": N("narrator", "Brann burns hard. One interceptor rakes the Petrel's flank before the range opens; the hull shudders and holds.", nxt="out", effects=[flag("turret_result", "burned"), flag("petrel_damaged"), xp(30, "turret", "Outran the interceptors")]),
-        "out": N("narrator", "The Cinder Wake shrinks behind you, a dark seed against Haldis's amber disc.", effects=[flag("escaped"), {"start_dialogue": "ending_exchange"}], end=True),
+        "out": N("narrator", "The Cinder Wake shrinks behind you, a dark seed against Haldis's amber disc.", effects=[flag("escaped"), {"cinematic": "petrel_escape", "then": "ending_exchange"}], end=True),
     },
 }
 
@@ -323,7 +323,7 @@ LAUNCH_AFTER = {
         "start": R(([{"flag": "turret_result", "eq": "player_win"}], "win"), ([], "loss")),
         "win": N("narrator", "The second interceptor comes apart in your sights. Brann whoops. Someone in the back starts laughing and can't stop.", nxt="out", effects=[xp(60, "turret", "Shot down the interceptors")]),
         "loss": N("narrator", "An interceptor gets close enough to burn a line along the Petrel's spine before your fire drives it off. The hull holds.", nxt="out", effects=[flag("petrel_damaged"), xp(30, "turret", "Drove off the interceptors")]),
-        "out": N("narrator", "The Cinder Wake shrinks behind you, a dark seed against Haldis's amber disc.", effects=[flag("escaped"), {"start_dialogue": "ending_exchange"}], end=True),
+        "out": N("narrator", "The Cinder Wake shrinks behind you, a dark seed against Haldis's amber disc.", effects=[flag("escaped"), {"cinematic": "petrel_escape", "then": "ending_exchange"}], end=True),
     },
 }
 

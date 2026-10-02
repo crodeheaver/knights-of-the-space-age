@@ -6,3 +6,4 @@ export_credentials.cfg
 builds/tmp/
 # Python
 __pycache__/
+.claude/
