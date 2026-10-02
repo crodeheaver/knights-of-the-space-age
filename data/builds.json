@@ -23,9 +23,9 @@
     "attrs": {"str": 8, "dex": 12, "con": 13, "int": 13, "wis": 16, "cha": 14},
     "skills": {"persuasion": 4, "medicine": 3, "awareness": 1},
     "feats": ["resonance_focus_1"],
-    "powers": ["mend", "hold"],
+    "powers": ["mend", "shove"],
     "appearance": {"body": "average", "head": "long", "hair": "long", "skin": "s6", "hair_color": "h5", "accent": "a3"},
-    "priorities": {"attr": "wis", "skills": ["persuasion", "medicine", "awareness", "computer_use"], "feats": ["resonance_focus_2", "empathy", "conditioning", "toughness"], "powers": ["arc_lance", "aegis", "restore", "shove", "echo_sense", "stasis_field", "calm", "surge"]}
+    "priorities": {"attr": "wis", "skills": ["persuasion", "medicine", "awareness", "computer_use"], "feats": ["resonance_focus_2", "empathy", "conditioning", "toughness"], "powers": ["arc_lance", "hold", "aegis", "restore", "echo_sense", "stasis_field", "calm", "surge"]}
   },
   "companion_iona": {
     "priorities": {"attr": "dex", "skills": ["awareness", "security", "medicine", "persuasion", "stealth"], "feats": ["weapon_focus_ranged", "rapid_shot_1", "toughness", "power_shot_2", "conditioning"], "powers": ["mend", "echo_sense", "aegis"]}

@@ -11,7 +11,7 @@ const DEFAULT_BINDINGS := {
 	"toggle_stealth": [KEY_X], "swap_weapons": [KEY_Z], "clear_queue": [KEY_BACKSPACE], "party_hold": [KEY_G], "solo_mode": [KEY_H],
 	"menu_character": [KEY_C], "menu_inventory": [KEY_I], "menu_journal": [KEY_J], "menu_map": [KEY_M], "menu_abilities": [KEY_K],
 	"menu_party": [KEY_P], "toggle_log": [KEY_L], "quicksave": [KEY_F5], "quickload": [KEY_F9], "help": [KEY_F1], "dev_menu": [KEY_F12],
-	"camera_left": [KEY_Q], "camera_right": [KEY_T], "menu": [KEY_ESCAPE],
+	"camera_left": [KEY_Q], "camera_right": [KEY_T], "menu": [KEY_ESCAPE], "rest": [KEY_V],
 	"slot_1": [KEY_1], "slot_2": [KEY_2], "slot_3": [KEY_3], "slot_4": [KEY_4], "slot_5": [KEY_5],
 	"slot_6": [KEY_6], "slot_7": [KEY_7], "slot_8": [KEY_8], "slot_9": [KEY_9], "slot_10": [KEY_0],
 }
@@ -22,7 +22,7 @@ const ACTION_LABELS := {
 	"party_hold": "Party: follow / hold", "solo_mode": "Solo mode", "menu_character": "Character sheet", "menu_inventory": "Inventory",
 	"menu_journal": "Journal", "menu_map": "Map", "menu_abilities": "Abilities", "menu_party": "Party", "toggle_log": "Combat log",
 	"quicksave": "Quicksave", "quickload": "Quickload", "help": "Controls help", "dev_menu": "Developer menu",
-	"camera_left": "Rotate camera left", "camera_right": "Rotate camera right", "menu": "Menu / back",
+	"camera_left": "Rotate camera left", "camera_right": "Rotate camera right", "menu": "Menu / back", "rest": "Rest (out of combat)",
 	"slot_1": "Action slot 1", "slot_2": "Action slot 2", "slot_3": "Action slot 3", "slot_4": "Action slot 4", "slot_5": "Action slot 5",
 	"slot_6": "Action slot 6", "slot_7": "Action slot 7", "slot_8": "Action slot 8", "slot_9": "Action slot 9", "slot_10": "Action slot 10",
 }

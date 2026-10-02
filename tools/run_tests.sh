@@ -3,6 +3,8 @@
 # any SCRIPT ERROR was printed (GDScript runtime errors abort a test silently).
 cd "$(dirname "$0")/.."
 GODOT=${GODOT:-godot}
+# Re-import so new class_name scripts are registered.
+timeout 300 $GODOT --headless --path . --import > /dev/null 2>&1
 OUT=$(mktemp)
 timeout 600 $GODOT --headless --path . res://tests/test_runner.tscn -- "$@" > "$OUT" 2>&1
 CODE=$?

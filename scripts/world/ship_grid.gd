@@ -114,6 +114,19 @@ func set_blocked(cells: Array, blocked: bool, blocks_los: bool = true) -> void:
 		astar.set_point_solid(c, blocked or walk[i] == 0)
 
 
+## Doors: open = free; closed but unlocked = blocks movement and sight but
+## stays plannable (doors open automatically on approach); locked = solid.
+func set_door(cells: Array, open: bool, locked: bool) -> void:
+	for cell in cells:
+		var c := Vector2i(int(cell[0]) - min_x, int(cell[1]) - min_z)
+		if not in_bounds(c):
+			continue
+		var i := idx(c)
+		solid[i] = 0 if open else 1
+		los_block[i] = 0 if open else 1
+		astar.set_point_solid(c, locked and not open)
+
+
 func area_at(p: Vector3) -> String:
 	var c := cell_of(p)
 	if not in_bounds(c):
@@ -182,6 +195,27 @@ func los(a: Vector3, b: Vector3) -> bool:
 	return true
 
 
+## Known hazards: AI paths treat these cells as expensive and path smoothing
+## never cuts through them, so companions route around a visible live plate.
+var avoid := PackedByteArray()
+
+
+func set_avoid(cells: Array, on: bool) -> void:
+	if avoid.size() != w * h:
+		avoid.resize(w * h)
+		avoid.fill(0)
+	for cell in cells:
+		var c: Vector2i = cell
+		if not in_bounds(c):
+			continue
+		avoid[idx(c)] = 1 if on else 0
+		astar.set_point_weight_scale(c, 12.0 if on else 1.0)
+
+
+func is_avoided(c: Vector2i) -> bool:
+	return avoid.size() == w * h and in_bounds(c) and avoid[idx(c)] == 1
+
+
 ## Clear walking line (used for path smoothing), with width margin.
 func walk_clear(a: Vector3, b: Vector3, radius: float = 0.3) -> bool:
 	var d := Vector3(b.x - a.x, 0, b.z - a.z)
@@ -190,15 +224,20 @@ func walk_clear(a: Vector3, b: Vector3, radius: float = 0.3) -> bool:
 		return true
 	var perp := Vector3(-d.z, 0, d.x).normalized() * radius
 	var steps := int(ceil(dist / 0.25))
+	var start_avoid := is_avoided(cell_of(a))
 	for i in range(0, steps + 1):
 		var t := float(i) / steps
 		var p := a + d * t
 		if not passable(cell_of(p)) or not passable(cell_of(p + perp)) or not passable(cell_of(p - perp)):
 			return false
+		if not start_avoid and is_avoided(cell_of(p)):
+			return false
 	return true
 
 
-func path(from: Vector3, to: Vector3, allow_partial: bool = true) -> PackedVector3Array:
+## doors_block: closed doors count as walls (enemies don't open doors, so a
+## closed door breaks pursuit).
+func path(from: Vector3, to: Vector3, allow_partial: bool = true, doors_block: bool = false) -> PackedVector3Array:
 	var out := PackedVector3Array()
 	var cf := cell_of(from)
 	var ct := cell_of(to)
@@ -214,6 +253,10 @@ func path(from: Vector3, to: Vector3, allow_partial: bool = true) -> PackedVecto
 	var ids: Array[Vector2i] = astar.get_id_path(cf, ct, allow_partial)
 	if ids.is_empty():
 		return out
+	if doors_block:
+		for c in ids:
+			if c != cf and solid[idx(c)] == 1:
+				return out
 	var pts: Array[Vector3] = []
 	for c in ids:
 		pts.append(center_of(c))

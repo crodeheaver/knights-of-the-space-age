@@ -102,15 +102,15 @@
     "str": 13
    }
   },
-  "desc": "A reclaimer boarding polearm. Two-handed: 2d6, critical x3, adds 1.5x STR to damage.",
+  "desc": "A reclaimer boarding polearm. Two-handed: 1d10, critical x2 on 19-20, adds 1.5x STR to damage.",
   "weapon": {
    "category": "melee",
    "prof": "melee",
    "hands": 2,
-   "dice": "2d6",
+   "dice": "1d10",
    "dtype": "kinetic",
-   "threat": 20,
-   "crit_mult": 3,
+   "threat": 19,
+   "crit_mult": 2,
    "range": 2.4,
    "sound": "heavy"
   },
@@ -364,12 +364,12 @@
    "category": "rifle",
    "prof": "natural",
    "hands": 2,
-   "dice": "1d8",
+   "dice": "1d6",
    "dtype": "energy",
    "threat": 20,
    "crit_mult": 2,
    "range": 16.0,
-   "damage": 1,
+   "damage": 0,
    "sound": "rifle"
   }
  },
@@ -1355,11 +1355,11 @@
   "type": "mine",
   "stack": true,
   "value": 50,
-  "desc": "WARDEN perimeter mine. Place at your feet; it arms after 2 s and discharges when a hostile comes within 1.5 m: 2d6 energy in 2 m (Reflex DC 13 for half).",
+  "desc": "WARDEN perimeter mine. Place at your feet; it arms after 2 s and discharges when a hostile comes within 1.5 m: 1d6 energy in 2 m (Reflex DC 13 for half).",
   "mine": {
    "radius": 2.0,
    "trigger": 1.5,
-   "dice": "2d6",
+   "dice": "1d6",
    "dtype": "energy",
    "save": "ref",
    "dc": 13,

@@ -13,7 +13,7 @@ var lines: PackedStringArray = []
 func _ready() -> void:
 	# Watchdog: a script error inside a test aborts that frame; never hang CI.
 	var t := Timer.new()
-	t.wait_time = 240.0
+	t.wait_time = 540.0
 	t.one_shot = true
 	t.timeout.connect(func() -> void:
 		print("WATCHDOG: test run did not finish (script error?)")
@@ -22,9 +22,12 @@ func _ready() -> void:
 	t.start()
 	await get_tree().process_frame
 	var only := ""
+	var only_test := ""
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--only="):
 			only = a.substr(7)
+		elif a.begins_with("--test="):
+			only_test = a.substr(7)
 	var files: Array[String] = []
 	for f in DirAccess.get_files_at(TEST_DIR):
 		var fs := String(f)
@@ -44,7 +47,7 @@ func _ready() -> void:
 		var methods: Array = []
 		for m in inst.get_method_list():
 			var mn := String(m["name"])
-			if mn.begins_with("test_"):
+			if mn.begins_with("test_") and (only_test == "" or mn.contains(only_test)):
 				methods.append(mn)
 		methods.sort()
 		for mn in methods:
@@ -54,7 +57,7 @@ func _ready() -> void:
 			Events.clear_history()
 			Events.muted = false
 			inst.before_each()
-			inst.call(mn)
+			await inst.call(mn)
 			if inst.failures.is_empty():
 				_out("  PASS %s::%s" % [f, mn])
 			else:

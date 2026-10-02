@@ -364,6 +364,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		world.set_party_order("hold" if Game.state.party_order == "follow" else "follow")
 	elif event.is_action_pressed("solo_mode"):
 		world.set_solo(not Game.state.solo)
+	elif event.is_action_pressed("rest"):
+		world.rest()
 	elif event.is_action_pressed("quicksave"):
 		var r := Saves.quicksave()
 		Events.toast("Quicksaved." if r["ok"] else "Cannot save: " + String(r["reason"]), "save" if r["ok"] else "warn")

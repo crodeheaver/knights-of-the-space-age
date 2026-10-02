@@ -85,6 +85,12 @@ func _tick(a: Actor, dt: float) -> void:
 		return
 	if a.interaction.size() > 0:
 		return
+	# AI-driven party members step out of known hazards before acting.
+	if a.role == "party" and a.uid != Game.state.controlled and s.can_move() and not a.is_moving() \
+			and w.grid.is_avoided(w.grid.cell_of(a.position)):
+		var safe: Vector3 = w.safe_spot_near(a.position)
+		if safe != a.position and a.move_to(safe):
+			return
 	if a.current.is_empty():
 		if a.recovery > 0.0:
 			return

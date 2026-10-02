@@ -2704,7 +2704,8 @@
     "shield_cell": 2,
     "insulated_lining": 1,
     "credits": 50,
-    "carbine": 1
+    "carbine": 1,
+    "security_weave": 1
    }
   },
   {
@@ -2946,7 +2947,8 @@
    "cloth": "#6b4f3a",
    "loot": {
     "tech_components": 3,
-    "respirator_mask": 1
+    "respirator_mask": 1,
+    "operator_coat": 1
    }
   },
   {

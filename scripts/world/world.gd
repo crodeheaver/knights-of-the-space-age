@@ -39,6 +39,7 @@ var _pending_interact: Dictionary = {}
 var dialogue: DialogueEngine = null
 var dialogue_npc: Actor = null
 var bash_jobs: Array = []
+var _pending_corpses: Array = []
 
 
 func _ready() -> void:
@@ -50,6 +51,7 @@ func _ready() -> void:
 	add_child(fx)
 	_restore_explored()
 	_spawn_objects()
+	refresh_hazard_avoidance()
 	_spawn_party()
 	_spawn_npcs()
 	_spawn_enemies()
@@ -560,6 +562,7 @@ func sim_step(dt: float) -> void:
 		_trigger_clock = 0.0
 		_check_triggers()
 		_check_mines()
+		_auto_doors()
 	_hazard_clock += dt
 	if _hazard_clock >= 1.5:
 		_hazard_clock = 0.0
@@ -569,6 +572,16 @@ func sim_step(dt: float) -> void:
 		_aware_clock = 0.0
 		_awareness_step()
 	_enemy_idle_step(dt)
+	for i in range(_pending_corpses.size() - 1, -1, -1):
+		var pc: Dictionary = _pending_corpses[i]
+		if float(pc["at"]) <= st.sim_time:
+			_pending_corpses.remove_at(i)
+			var uid := String(pc["uid"])
+			_make_corpse(uid, pc["rec"])
+			if actors.has(uid):
+				var da: Actor = actors[uid]
+				actors.erase(uid)
+				da.queue_free()
 
 
 # ================================================================ party
@@ -597,6 +610,11 @@ func _party_follow(dt: float) -> void:
 		var back := Vector3(lead.facing.x, 0, lead.facing.y) * -1.6
 		var right := Vector3(lead.facing.y, 0, -lead.facing.x) * side * 1.1
 		var goal := lead.position + back + right
+		# Formation spots on the far side of a wall or door would send
+		# followers the long way round (or open doors): stay by the lead.
+		var gp := grid.nearest_passable(goal, 3)
+		if grid.area_at(gp) != grid.area_at(lead.position) or not grid.los(lead.position, gp):
+			goal = lead.position
 		var d := a.position.distance_to(lead.position)
 		if d > 3.2:
 			if not a.is_moving() or a.destination().distance_to(goal) > 2.5:
@@ -641,6 +659,71 @@ func on_combat_ended() -> void:
 	for o in actors.values():
 		(o as Actor).current = {}
 	hud_changed.emit()
+
+
+## Resting (out of combat, nobody hostile awake nearby) restores the party:
+## downed allies stand, health and energy refill, harmful statuses and
+## cooldowns clear. Buffs from consumables are kept.
+const REST_CLEAR_RADIUS := 18.0
+
+
+func rest_block_reason() -> String:
+	if combat.active:
+		return "You can't rest during combat."
+	if game_over:
+		return "The party has fallen."
+	if not modal.is_empty():
+		return "Finish what you're doing first."
+	for o in actors.values():
+		var e: Actor = o
+		if e.role == "party" or e.sheet.dead or e.sheet.is_downed():
+			continue
+		var hostile_to_party := false
+		for p in party_actors():
+			var pa: Actor = p
+			if not hostile(e, pa):
+				continue
+			var dist := e.position.distance_to(pa.position)
+			# Alert hostiles nearby block rest; unaware ones only when they are
+			# in the same space (same area or a clear line of sight).
+			if e.alert and dist < REST_CLEAR_RADIUS * 1.5:
+				hostile_to_party = true
+			elif dist < REST_CLEAR_RADIUS and (grid.area_at(e.position) == grid.area_at(pa.position) or grid.los(e.position, pa.position)):
+				hostile_to_party = true
+			if hostile_to_party:
+				break
+		if hostile_to_party:
+			return "Hostiles are too close to rest."
+	for p in party_actors():
+		var pa2: Actor = p
+		if hazard_at(pa2.position) != "":
+			return "You can't rest in a hazard."
+	return ""
+
+
+func rest() -> Dictionary:
+	var why := rest_block_reason()
+	if why != "":
+		Events.toast(why, "warn")
+		return {"ok": false, "reason": why}
+	for p in party_actors():
+		var a: Actor = p
+		var s := a.sheet
+		if s.is_downed() and not s.dead:
+			StatusRules.remove(s, "downed")
+			a.visual.set_downed(false)
+		StatusRules.cleanse(s, ["control", "dot", "debuff"])
+		s.cooldowns.clear()
+		s.hp = s.max_hp()
+		s.energy = s.max_energy()
+		a.queue.clear()
+		a.current = {}
+	Game.state.stats["rests"] = int(Game.state.stats.get("rests", 0)) + 1
+	Events.post("rested", {"area": Game.state.area})
+	Events.toast("The party catches its breath. Health and energy restored.", "info")
+	GameAudio.play("heal", -6.0)
+	hud_changed.emit()
+	return {"ok": true}
 
 
 func switch_control(uid: String) -> void:
@@ -799,9 +882,19 @@ func max_suspicion_on(uid: String) -> float:
 	return m
 
 
+## Verbose world tracing for debugging bot runs (AOTC_DEBUG=1).
+static var _debug := OS.has_environment("AOTC_DEBUG")
+
+
+func dbg(msg: String) -> void:
+	if _debug:
+		print("[world %.1f] %s" % [Game.state.sim_time if Game.state else 0.0, msg])
+
+
 func _alert_enemy(e: Actor, cause: Actor, msg: String, allow_parley: bool = false) -> void:
 	if e.alert:
 		return
+	dbg("alert %s by %s (%s) at %s" % [e.uid, cause.uid if cause != null else "-", msg, str(e.position)])
 	var eid0 := e.encounter_id
 	if allow_parley and eid0 != "":
 		var ed0: Dictionary = DB.encounters.get(eid0, {})
@@ -856,6 +949,10 @@ func make_noise(pos: Vector3, radius: float, what: String) -> void:
 	for o in actors.values():
 		var e: Actor = o
 		if e.role == "enemy" and not e.alert and not e.sheet.dead and e.position.distance_to(pos) <= radius and e.hostile_override not in ["offline", "neutral", "fled"]:
+			# Bulkheads and closed doors carry little sound: only listeners in
+			# the same area or with a clear line to the noise react.
+			if grid.area_at(e.position) != grid.area_at(pos) and not grid.los(pos, e.position):
+				continue
 			_alert_enemy(e, controlled(), "%s heard %s" % [e.sheet.display_name, what])
 
 
@@ -987,6 +1084,47 @@ func _check_triggers() -> void:
 
 
 
+## Unlocked doors slide open when a character walks up to them.
+func _auto_doors() -> void:
+	for o in objects.values():
+		var wo: WorldObject = o
+		if wo.kind != "door" or wo.is_open() or wo.is_locked():
+			continue
+		for a in actors.values():
+			var aa: Actor = a
+			# Only the party opens doors; closing a door between you and a
+			# pursuer breaks the chase.
+			if aa.role != "party" or aa.sheet.dead or aa.sheet.is_downed():
+				continue
+			# In a fight only the character you control opens doors, so an AI
+			# companion can't let a second group in by accident.
+			if combat.active and aa.uid != Game.state.controlled:
+				continue
+			# Opens only for someone walking into it, not for a companion
+			# brushing past in a fight.
+			if wo.distance_to_actor(aa) > 1.5:
+				continue
+			var heading := Vector3.ZERO
+			if aa.is_moving():
+				var nxt: Vector3 = aa.path[mini(aa.path_i, aa.path.size() - 1)]
+				heading = Vector3(nxt.x - aa.position.x, 0, nxt.z - aa.position.z)
+			elif Time.get_ticks_msec() / 1000.0 - aa.push_time < 0.25:
+				heading = aa.push_dir
+			var to_door := Vector3(wo.center.x - aa.position.x, 0, wo.center.z - aa.position.z)
+			if heading.length() < 0.05:
+				continue
+			if to_door.length() > 0.2 and to_door.normalized().dot(heading.normalized()) < 0.3:
+				continue
+			if true:
+				wo.st()["open"] = true
+				dbg("door %s opened by %s at %s" % [wo.id, aa.uid, str(aa.position)])
+				wo.refresh()
+				GameAudio.play_at("door", wo.center, self)
+				Events.post("door_opened", {"id": wo.id})
+				Effects.apply_all(wo.def.get("on_open", []), Game.state, {"actor": aa.uid})
+				break
+
+
 func _hazard_step() -> void:
 	for o in objects.values():
 		var wo: WorldObject = o
@@ -1001,6 +1139,49 @@ func _hazard_step() -> void:
 				continue
 			if absf(pa.position.x - wo.center.x) <= float(sz[0]) * 0.5 and absf(pa.position.z - wo.center.z) <= float(sz[1]) * 0.5:
 				_hazard_hit(wo, pa)
+
+
+## Re-marks the cells of detected, active hazards as "avoid" for pathing.
+func refresh_hazard_avoidance() -> void:
+	for o in objects.values():
+		var wo: WorldObject = o
+		if wo.kind != "hazard":
+			continue
+		var on := wo.is_detected() and wo.is_active() and (not wo.def.has("if") or Conditions.eval_all(wo.def["if"], Game.state))
+		var sz: Array = wo.def.get("size", [2, 2])
+		var cells: Array = []
+		for x in range(floori(wo.center.x - float(sz[0]) * 0.5), ceili(wo.center.x + float(sz[0]) * 0.5)):
+			for z in range(floori(wo.center.z - float(sz[1]) * 0.5), ceili(wo.center.z + float(sz[1]) * 0.5)):
+				cells.append(grid.world_cell(x, z))
+		grid.set_avoid(cells, on)
+
+
+## Nearest standable point within a few metres that is not inside a hazard.
+func safe_spot_near(p: Vector3) -> Vector3:
+	var c := grid.cell_of(p)
+	for r in range(1, 6):
+		for dx in range(-r, r + 1):
+			for dz in range(-r, r + 1):
+				if absi(dx) != r and absi(dz) != r:
+					continue
+				var cc := c + Vector2i(dx, dz)
+				if grid.passable(cc) and not grid.is_avoided(cc) and hazard_at(grid.center_of(cc)) == "":
+					return grid.center_of(cc)
+	return p
+
+
+## Id of an active hazard covering p, or "".
+func hazard_at(p: Vector3) -> String:
+	for o in objects.values():
+		var wo: WorldObject = o
+		if wo.kind != "hazard" or not wo.is_active():
+			continue
+		if wo.def.has("if") and not Conditions.eval_all(wo.def["if"], Game.state):
+			continue
+		var sz: Array = wo.def.get("size", [2, 2])
+		if absf(p.x - wo.center.x) <= float(sz[0]) * 0.5 + 0.5 and absf(p.z - wo.center.z) <= float(sz[1]) * 0.5 + 0.5:
+			return wo.id
+	return ""
 
 
 func _hazard_hit(wo: WorldObject, pa: Actor) -> void:
@@ -1334,8 +1515,15 @@ func _hostile_sheets_near(a: Actor, c: Vector3, r: float) -> Array:
 ## Presents resolved results: animation, FX, sounds, logs, deaths. Never
 ## re-rolls or re-applies anything.
 func _apply_events(a: Actor, res: Dictionary) -> void:
+	# Attack lines are logged with their breakdown from the event below; the
+	# plain copy in res.log is skipped so the log shows each roll once.
+	var event_texts := {}
+	for ev0 in res.get("events", []):
+		if String((ev0 as Dictionary).get("type", "")) == "attack":
+			event_texts[String((ev0 as Dictionary).get("text", ""))] = true
 	for line in res.get("log", []):
-		Events.log_combat(String(line), "", "info")
+		if not event_texts.has(String(line)):
+			Events.log_combat(String(line), "", "info")
 	for ev in res.get("events", []):
 		var e: Dictionary = ev
 		var tgt: Actor = actors.get(String(e.get("target", "")), null)
@@ -1490,13 +1678,7 @@ func on_downed(t: Actor, killer: String) -> void:
 		Game.state.npcs[t.npc_id]["removed"] = true
 		Game.state.npcs[t.npc_id]["dead"] = true
 		Game.state.set_flag(t.npc_id + "_dead", true)
-	var tw := create_tween()
-	tw.tween_interval(1.4)
-	tw.tween_callback(func() -> void:
-		_make_corpse(t.uid, rec)
-		actors.erase(t.uid)
-		t.queue_free()
-	)
+	_pending_corpses.append({"uid": t.uid, "at": Game.state.sim_time + 1.4, "rec": rec})
 	_check_encounter(t.encounter_id)
 	refresh_markers()
 
@@ -1929,6 +2111,7 @@ func start_dialogue(did: String, npc: Actor = null, npc_id: String = "", ctx: Di
 		c["actor"] = Game.state.controlled
 	dialogue = DialogueEngine.new(Game.state)
 	dialogue_npc = npc
+	dialogue.ended.connect(func(_id: String) -> void: call_deferred("_after_dialogue_engine_end"))
 	set_modal("dialogue", true)
 	if not dialogue.start(did, c):
 		set_modal("dialogue", false)
@@ -1957,6 +2140,12 @@ func dialogue_frame(speaker: String) -> void:
 	if listener == sp:
 		return
 	cam.frame(sp.position, listener.position)
+
+
+func _after_dialogue_engine_end() -> void:
+	# Safety net when no DialogueUI is attached (tests, bots): close the modal.
+	if dialogue != null and not dialogue.active:
+		end_dialogue()
 
 
 func end_dialogue() -> void:
@@ -1989,6 +2178,9 @@ func _on_event(name: String, data: Dictionary) -> void:
 		for o in objects.values():
 			(o as WorldObject).refresh()
 		_eval_rules()
+		refresh_hazard_avoidance()
+	elif name == "object_detected":
+		refresh_hazard_avoidance()
 	elif name == "dialogue_ended":
 		if not _dialogue_queue.is_empty():
 			var nxt: String = _dialogue_queue.pop_front()

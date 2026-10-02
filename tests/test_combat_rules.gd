@@ -127,9 +127,9 @@ func test_two_handed_and_offhand_strength() -> void:
 	var s := _fighter()
 	s.set_slot("main", ItemInst.make("shear_glaive"))
 	var dice := Dice.new(1)
-	dice.force([15, 3, 3])
+	dice.force([15, 6])
 	var r := CombatRules.resolve_attack(s, _drone(), CombatRules.weapon_profile(s, "main"), {}, dice)
-	assert_eq(int(r["components"][0]["amount"]), 10, "2d6 (6) + floor(3 x 1.5)=4")
+	assert_eq(int(r["components"][0]["amount"]), 10, "1d10 (6) + floor(3 x 1.5)=4")
 	s.set_slot("main", ItemInst.make("vibro_sword"))
 	s.set_slot("off", ItemInst.make("vibro_knife"))
 	var off := CombatRules.weapon_profile(s, "off")
@@ -213,6 +213,8 @@ func test_story_difficulty() -> void:
 
 func test_power_resolution_and_costs() -> void:
 	var a := BuildValidator.make_sheet(BuildValidator.recommended("adept"))
+	if not a.powers.has("hold"):
+		a.powers.append("hold")
 	var d := CharacterSheet.from_template("reclaimer_breacher", "b1")
 	var dice := Dice.new(3)
 	a.energy = 20

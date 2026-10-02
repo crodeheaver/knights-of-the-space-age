@@ -322,15 +322,8 @@
     "rot": 200,
     "if": [
      {
-      "any": [
-       {
-        "flag": "senna_fate",
-        "eq": "killed"
-       },
-       {
-        "flag": "archive_bypassed"
-       }
-      ]
+      "flag": "senna_fate",
+      "eq": "killed"
      }
     ]
    },
@@ -346,6 +339,11 @@
      {
       "flag": "evac_choice",
       "eq": "archive"
+     },
+     {
+      "not": {
+       "flag": "lantern_reduced"
+      }
      }
     ]
    },

@@ -115,7 +115,7 @@ func refresh() -> void:
 
 func _apply_door() -> void:
 	var open := is_open()
-	world.grid.set_blocked(cells, not open, true)
+	world.grid.set_door(cells, open, is_locked())
 	var span := float(cells.size())
 	for i in panels.size():
 		var pn: Node3D = panels[i]

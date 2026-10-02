@@ -53,7 +53,7 @@ def populate(L, obj, npc, trigger):
         notice_range=6.0, owner="warden", xp=40, on_detect=[{"tutorial": "skills_world"}])
     obj("chk_body", "corpse", "checkpoint", (56.0, 8.4), rot=120, name="Body of Officer Tamsin Kell", cloth="#253a5e", loot={"shield_cell": 1, "credits": 30, "sensor_visor": 1})
     obj("armory_locker", "container", "armory", (54.5, -5.3), model="locker", name="Armory Weapons Locker",
-        loot={"ion_grenade": 2, "shield_cell": 2, "insulated_lining": 1, "credits": 50, "carbine": 1})
+        loot={"ion_grenade": 2, "shield_cell": 2, "insulated_lining": 1, "credits": 50, "carbine": 1, "security_weave": 1})
     obj("armory_manifest", "readable", "armory", (57.0, -2.0), rot=-90, model="terminal", name="Armory Manifest", codex="cx_armory_manifest")
     obj("crawl_cache", "container", "crawlway", (66.0, 25.4), model="crate", name="Technician's Cache", loot={"tech_components": 2, "power_cell": 1, "antitox": 1})
     obj("crawl_note", "readable", "crawlway", (59.5, 18.5), model="datapad", name="Note Soldered to a Panel", codex="cx_crawl_log")
@@ -99,7 +99,7 @@ def populate(L, obj, npc, trigger):
     # ================================================================ ENGINEERING
     obj("eng_terminal", "terminal", "engineering", (84.6, 2.2), rot=90, model="terminal", name="Engineering Grid Terminal", dialogue="engineering_terminal")
     obj("eng_body", "corpse", "engineering", (86.4, 11.5), rot=200, name="Body of Chief Engineer Osei Marsh", cloth="#6b4f3a",
-        loot={"tech_components": 3, "respirator_mask": 1})
+        loot={"tech_components": 3, "respirator_mask": 1, "operator_coat": 1})
     obj("eng_log", "readable", "engineering", (87.4, 12.6), model="datapad", name="Chief Engineer's Datapad", codex="cx_marsh_log",
         on_read=[{"set_flag": "pump_seal_known"}, {"tutorial": "hazards"}])
     pump_opts = lambda flag, key: [

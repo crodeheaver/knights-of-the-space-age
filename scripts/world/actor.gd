@@ -97,7 +97,8 @@ func move_to(p: Vector3, manual: bool = false) -> bool:
 	if not sheet.can_move():
 		return false
 	var grid: ShipGrid = world.grid
-	var pth := grid.path(position, p)
+	var doors_block := role == "enemy" or (role == "party" and world.combat.active and uid != Game.state.controlled)
+	var pth := grid.path(position, p, true, doors_block)
 	if pth.is_empty():
 		return false
 	path = pth
@@ -120,10 +121,18 @@ func destination() -> Vector3:
 	return path[path.size() - 1] if not path.is_empty() else position
 
 
+## Last direct (WASD) push direction and when it happened, so doors can open
+## for a player walking into them.
+var push_dir := Vector3.ZERO
+var push_time := -10.0
+
+
 func direct_move(dir: Vector3, dt: float) -> void:
 	if not sheet.can_move() or dir.length_squared() < 0.0001:
 		return
 	stop()
+	push_dir = dir.normalized()
+	push_time = Time.get_ticks_msec() / 1000.0
 	var sp := move_speed()
 	var np: Vector3 = world.grid.try_move(position, dir.normalized() * sp * dt, RADIUS)
 	speed_now = position.distance_to(np) / maxf(dt, 0.0001)
