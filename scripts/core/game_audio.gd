@@ -2,7 +2,7 @@ extends Node
 ## Audio playback: one-shot sounds, positional sounds, ambient bed and music,
 ## routed through separate buses (Music, SFX, Ambience, UI) with independent
 ## volume settings. Sounds are original procedurally generated WAVs in
-## res://assets/audio (see tools/gen_audio.py and docs/ASSETS.md).
+## res://assets/audio (see tools/gen_audio.py and docs/ASSETS_AUDIO.md).
 
 const AUDIO_DIR := "res://assets/audio/"
 const BUSES := ["Music", "SFX", "Ambience", "UI"]
@@ -108,6 +108,7 @@ func music(id: String) -> void:
 	if s == null:
 		_music.stop()
 		return
+	make_looping(s)
 	var tw := create_tween()
 	if _music.playing:
 		tw.tween_property(_music, "volume_db", -40.0, 1.2)
@@ -124,6 +125,14 @@ func stop_music() -> void:
 	_music.stop()
 
 
+## Silences everything (music, ambience, pooled one-shots), e.g. before quit.
+func stop_all() -> void:
+	stop_music()
+	ambient("")
+	for p in _pool:
+		p.stop()
+
+
 func ambient(id: String) -> void:
 	if id == _ambient_id:
 		return
@@ -132,9 +141,31 @@ func ambient(id: String) -> void:
 	if s == null:
 		_ambient.stop()
 		return
+	make_looping(s)
 	_ambient.stream = s
 	_ambient.volume_db = -8.0
 	_ambient.play()
+
+
+## WAVs import without loop points; music and ambience beds loop forward
+## over the whole file. The generated loops end with one guard sample equal to
+## sample 0 (the resampler interpolates one frame past the loop end), so the
+## loop covers frames [0, frames - 1).
+func make_looping(s: AudioStream) -> void:
+	var w := s as AudioStreamWAV
+	if w == null or w.loop_mode == AudioStreamWAV.LOOP_FORWARD:
+		return
+	var frames := 0
+	if w.format == AudioStreamWAV.FORMAT_16_BITS:
+		@warning_ignore("integer_division")
+		frames = w.data.size() / (4 if w.stereo else 2)
+	else:  # compressed (QOA / IMA-ADPCM) or 8-bit imports
+		frames = roundi(w.get_length() * w.mix_rate)
+	if frames < 2:
+		return
+	w.loop_mode = AudioStreamWAV.LOOP_FORWARD
+	w.loop_begin = 0
+	w.loop_end = frames - 1
 
 
 func _on_event(name: String, data: Dictionary) -> void:

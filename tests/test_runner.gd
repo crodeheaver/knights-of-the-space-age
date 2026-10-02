@@ -67,6 +67,9 @@ func _ready() -> void:
 					_out("       " + x)
 	_out("")
 	_out("RESULT: %d tests, %d passed, %d failed" % [total, total - failed, failed])
+	# Stop audio and let the mixer release its playbacks so exit is leak-free.
+	GameAudio.stop_all()
+	await get_tree().create_timer(0.25).timeout
 	var fa := FileAccess.open("user://test_results.txt", FileAccess.WRITE)
 	if fa:
 		fa.store_string("\n".join(lines))
