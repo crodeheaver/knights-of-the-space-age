@@ -1,0 +1,51 @@
+; Engine configuration file.
+; Pinned engine: Godot 4.4.1-stable (see README.md)
+
+config_version=5
+
+[application]
+
+config/name="Ashes of the Concord"
+config/description="An original tactical sci-fi RPG vertical slice: escape the Cinder Wake."
+config/version="0.9.0"
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.4", "GL Compatibility")
+config/icon="res://icon.svg"
+boot_splash/bg_color=Color(0.04, 0.05, 0.07, 1)
+
+[autoload]
+
+Events="*res://scripts/core/events.gd"
+DB="*res://scripts/core/db.gd"
+Settings="*res://scripts/core/settings.gd"
+GameAudio="*res://scripts/core/game_audio.gd"
+Game="*res://scripts/core/game.gd"
+Saves="*res://scripts/core/saves.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/window_width_override=1600
+window/size/window_height_override=900
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[gui]
+
+common/drop_mouse_on_gui_input_disabled=true
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=false
+
+[physics]
+
+common/physics_ticks_per_second=60
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+anti_aliasing/quality/msaa_3d=1
+environment/defaults/default_clear_color=Color(0.03, 0.035, 0.05, 1)

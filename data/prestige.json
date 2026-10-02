@@ -1,0 +1,17 @@
+{
+  "_comment": "Prestige specializations: three role families, each with a Mercy and a Dominion variant. Eligibility = family requirements + variant alignment threshold. Features are read by the rules layer (see Prestige class). Extensible: add a family or variant here; the feature keys are generic.",
+  "min_level": 6,
+  "families": {
+    "warden": {"name": "Warden", "desc": "Martial specialists who make themselves the fixed point of a fight.", "requires": {"bab": 5, "any_feats": ["power_strike_1", "flurry_1", "dueling", "two_weapon_1", "critical_strike_1"]}},
+    "weaver": {"name": "Weaver", "desc": "Resonance specialists who reshape the field itself.", "requires": {"min_powers": 5, "attrs": {"wis": 14}}},
+    "shade": {"name": "Shade", "desc": "Infiltrators who decide when, and whether, a fight begins.", "requires": {"skills": {"stealth": 6}, "any_skills": {"security": 6, "computer_use": 6}}}
+  },
+  "variants": {
+    "bulwark_sentinel": {"family": "warden", "name": "Bulwark Sentinel", "alignment_min": 30, "desc": "Mercy Warden. Guardian Aura: every ally within 5 m gains +2 Defense, refreshed each round. +1 Will.", "aura": {"status": "guardian_aura", "radius": 5.0, "duration": 3.5}, "passive": {"saves": {"will": 1}}},
+    "iron_marshal": {"family": "warden", "name": "Iron Marshal", "alignment_max": -30, "desc": "Dominion Warden. Terror Strike: confirmed melee criticals leave organic targets Feared for 2 rounds. +1 melee attack.", "crit_status": {"id": "feared", "duration": 6.0}, "passive": {"attack_melee": 1}},
+    "lumen_weaver": {"family": "weaver", "name": "Lumen Weaver", "alignment_min": 30, "desc": "Mercy Weaver. Mercy powers cost 2 less, and healing powers restore 50% more.", "power_cost": {"mercy": -2}, "heal_mult": 1.5},
+    "void_cantor": {"family": "weaver", "name": "Void Cantor", "alignment_max": -30, "desc": "Dominion Weaver. +2 save DC on Dominion powers; Arc Lance and Arc Storm chain to one extra target.", "dc_bonus": {"dominion": 2}, "chain_bonus": 1},
+    "ghost_envoy": {"family": "shade", "name": "Ghost Envoy", "alignment_min": 30, "desc": "Mercy Shade. Enemies notice you half as fast; +4 Persuasion.", "detection_mult": 0.5, "passive": {"skills": {"persuasion": 4}}},
+    "night_broker": {"family": "shade", "name": "Night Broker", "alignment_max": -30, "desc": "Dominion Shade. Sneak attacks deal +2d6 more; +2 Stealth.", "sneak_bonus": 2, "passive": {"skills": {"stealth": 2}}}
+  }
+}

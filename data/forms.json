@@ -1,0 +1,6 @@
+{
+  "_comment": "Combat forms (Resonance stances). Switching is free but locks out another switch for 1 round (3 s).",
+  "ember": {"name": "Ember Form", "symbol": "EMB", "desc": "Offense: +1 attack and +2 damage, but -2 Defense and energy regenerates 50% slower in combat.", "mods": {"attack": 1, "damage": 2, "defense": -2}, "combat_regen_mult": 0.5, "power_cost_mod": 0},
+  "bastion": {"name": "Bastion Form", "symbol": "BST", "desc": "Defense: +2 Defense and +1 to all saves, but -1 attack and -10% speed.", "mods": {"defense": 2, "attack": -1, "saves": {"fort": 1, "ref": 1, "will": 1}, "speed_mult": -0.1}, "combat_regen_mult": 1.0, "power_cost_mod": 0},
+  "tide": {"name": "Tide Form", "symbol": "TID", "desc": "Energy: double energy regeneration in combat and powers cost 1 less, but -1 attack and -1 damage.", "mods": {"attack": -1, "damage": -1}, "combat_regen_mult": 2.0, "power_cost_mod": -1}
+}

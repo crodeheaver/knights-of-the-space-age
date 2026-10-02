@@ -1,0 +1,11 @@
+{
+  "_comment": "Eight skills. attr = governing attribute. Class skills cost 1 point per rank, cross-class 2. Rank limits: class = level+3, cross-class = floor((level+3)/2). See progression.json.",
+  "computer_use": {"order": 1, "name": "Computer Use", "attr": "int", "desc": "Slice terminals, override doors, manipulate ship security and launch systems.", "uses": "Checkpoint override, turret shutdown, archive index, plate grid, crane console, launch override"},
+  "demolitions": {"order": 2, "name": "Demolitions", "attr": "int", "desc": "Disarm, recover and place mines; craft explosives.", "uses": "Disarm and recover the checkpoint mine, archive mines, craft grenades and mines"},
+  "stealth": {"order": 3, "name": "Stealth", "attr": "dex", "desc": "Move unseen. Opposed by enemy Awareness, distance and line of sight. Attacking from stealth deals sneak attack damage.", "uses": "Crawlway sentry, archive catwalk bypass, sneak attacks"},
+  "awareness": {"order": 4, "name": "Awareness", "attr": "wis", "desc": "Notice hidden hazards, mines, clues and people. Also used by enemies to detect you.", "uses": "Mines, live plates, hidden scout, wreckage clues"},
+  "persuasion": {"order": 5, "name": "Persuasion", "attr": "cha", "desc": "Convince, deceive or intimidate in conversation.", "uses": "Steward, Iona, wounded passengers, Senna, reclaimers, Commander Varr, Marshal Quill"},
+  "repair": {"order": 6, "name": "Repair", "attr": "int", "desc": "Restore machines, fix damaged systems and improve repair kits used on synthetics.", "uses": "Vent grate, purge valve, coolant pumps, steam valves, bay turrets, Tav-7 field repairs"},
+  "security": {"order": 7, "name": "Security", "attr": "dex", "desc": "Bypass mechanical and magnetic locks.", "uses": "Blast door, armory locker, footlockers, maintenance hatch"},
+  "medicine": {"order": 8, "name": "Medicine", "attr": "wis", "desc": "Treat injuries, stabilize the wounded and improve medpacs used on organics.", "uses": "Triage ward, sealed ward survivors, Senna's wound, medical fabrication, medpac potency"}
+}

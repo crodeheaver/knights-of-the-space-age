@@ -1,0 +1,50 @@
+{
+  "_comment": "Cosmetic presets only. None of these change combat statistics or collision size.",
+  "body": [
+    {"id": "slight", "name": "Slight", "scale": [0.92, 0.97, 0.92]},
+    {"id": "average", "name": "Average", "scale": [1.0, 1.0, 1.0]},
+    {"id": "broad", "name": "Broad", "scale": [1.12, 1.02, 1.1]}
+  ],
+  "head": [
+    {"id": "round", "name": "Round"},
+    {"id": "angular", "name": "Angular"},
+    {"id": "long", "name": "Long"},
+    {"id": "square", "name": "Square"}
+  ],
+  "hair": [
+    {"id": "shaved", "name": "Shaved"},
+    {"id": "crop", "name": "Close Crop"},
+    {"id": "swept", "name": "Swept"},
+    {"id": "tail", "name": "Tied Tail"},
+    {"id": "crest", "name": "Crest"},
+    {"id": "long", "name": "Long"}
+  ],
+  "skin": [
+    {"id": "s1", "name": "Umber", "color": "#5a3a28"},
+    {"id": "s2", "name": "Bronze", "color": "#8a5a3c"},
+    {"id": "s3", "name": "Sand", "color": "#c79a72"},
+    {"id": "s4", "name": "Rose", "color": "#e0b39a"},
+    {"id": "s5", "name": "Ash", "color": "#9c8f86"},
+    {"id": "s6", "name": "Haldis Blue", "color": "#7f97a8"}
+  ],
+  "hair_color": [
+    {"id": "h1", "name": "Black", "color": "#15120f"},
+    {"id": "h2", "name": "Brown", "color": "#4a2f1c"},
+    {"id": "h3", "name": "Copper", "color": "#9b4a22"},
+    {"id": "h4", "name": "Ash Blond", "color": "#c9b78c"},
+    {"id": "h5", "name": "Silver", "color": "#cfd3d6"},
+    {"id": "h6", "name": "Ember Dye", "color": "#d8572a"}
+  ],
+  "accent": [
+    {"id": "a1", "name": "Concord Ochre", "color": "#e8823a"},
+    {"id": "a2", "name": "Lattice Teal", "color": "#3fb6b0"},
+    {"id": "a3", "name": "Signal Violet", "color": "#8a6ad8"},
+    {"id": "a4", "name": "Breaker Green", "color": "#7fb04a"}
+  ],
+  "pronouns": [
+    {"id": "they", "label": "they/them", "subj": "they", "obj": "them", "poss": "their", "refl": "themself"},
+    {"id": "she", "label": "she/her", "subj": "she", "obj": "her", "poss": "her", "refl": "herself"},
+    {"id": "he", "label": "he/him", "subj": "he", "obj": "him", "poss": "his", "refl": "himself"},
+    {"id": "xe", "label": "xe/xem", "subj": "xe", "obj": "xem", "poss": "xyr", "refl": "xemself"}
+  ]
+}

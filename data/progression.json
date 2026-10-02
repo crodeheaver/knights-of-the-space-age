@@ -1,0 +1,21 @@
+{
+  "_comment": "Central progression tables. Every level threshold, rank limit and point-buy rule lives here.",
+  "xp_table": [0, 1000, 2500, 4500, 7000, 10000, 13500, 17500, 22000, 27000],
+  "max_level": 10,
+  "attribute_increase_levels": [4, 8],
+  "first_level_skill_multiplier": 2,
+  "skill_cost": {"class": 1, "cross": 2},
+  "rank_limit": {"class_offset": 3},
+  "point_buy": {
+    "budget": 30, "base": 8, "min": 8, "max": 18,
+    "tiers": [{"up_to": 14, "cost": 1}, {"up_to": 16, "cost": 2}, {"up_to": 18, "cost": 3}]
+  },
+  "regen": {
+    "energy_per_sec_out_of_combat": 1.0,
+    "energy_per_round_in_combat": 1,
+    "hp_per_sec_out_of_combat": 0.5,
+    "downed_recover_hp_fraction": 0.25
+  },
+  "round_seconds": 3.0,
+  "queue_max": 4
+}

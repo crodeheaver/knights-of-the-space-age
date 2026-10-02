@@ -1,0 +1,17 @@
+{
+  "_comment": "Crafting recipes. station: workbench | medstation. skill gate uses the crafter's total skill bonus (ranks + attribute + gear + feats). Craft and dismantle are atomic transactions. Dismantle yields are always worth less than recipe inputs, so no loop generates resources.",
+  "r_frag_grenade": {"name": "Frag Grenade", "station": "workbench", "skill": "demolitions", "min": 2, "inputs": {"tech_components": 2}, "output": {"frag_grenade": 1}},
+  "r_ion_grenade": {"name": "Ion Grenade", "station": "workbench", "skill": "demolitions", "min": 4, "inputs": {"tech_components": 2, "power_cell": 1}, "output": {"ion_grenade": 2}},
+  "r_frag_mine": {"name": "Frag Mine", "station": "workbench", "skill": "demolitions", "min": 5, "inputs": {"tech_components": 3}, "output": {"frag_mine": 1}},
+  "r_repair_kit": {"name": "Repair Kit", "station": "workbench", "skill": "repair", "min": 1, "inputs": {"tech_components": 2}, "output": {"repair_kit": 1}},
+  "r_shield_cell": {"name": "Deflector Cell", "station": "workbench", "skill": "repair", "min": 4, "inputs": {"tech_components": 2, "power_cell": 1}, "output": {"shield_cell": 1}},
+  "r_focusing_lens": {"name": "Focusing Lens", "station": "workbench", "skill": "repair", "min": 3, "inputs": {"tech_components": 3}, "output": {"focusing_lens": 1}},
+  "r_edge_emitter": {"name": "Edge Emitter", "station": "workbench", "skill": "repair", "min": 6, "inputs": {"tech_components": 3, "power_cell": 1}, "output": {"edge_emitter": 1}},
+  "r_weave_lining": {"name": "Weave Lining", "station": "workbench", "skill": "repair", "min": 3, "inputs": {"tech_components": 3}, "output": {"weave_lining": 1}},
+  "r_pump_seal": {"name": "Pump Seal Kit", "station": "workbench", "skill": "repair", "min": 0, "inputs": {"tech_components": 2}, "output": {"pump_seal": 1}, "requires_flag": "pump_seal_known", "desc": "Fabricate a replacement seal for a damaged coolant pump. Lets anyone restart a pump without a Repair check."},
+  "r_medpac": {"name": "Medpac", "station": "medstation", "skill": "medicine", "min": 0, "inputs": {"med_reagents": 2}, "output": {"medpac": 1}},
+  "r_trauma_pack": {"name": "Trauma Pack", "station": "medstation", "skill": "medicine", "min": 5, "inputs": {"med_reagents": 3, "medpac": 1}, "output": {"trauma_pack": 1}},
+  "r_adrenal_stim": {"name": "Adrenal Stimulant", "station": "medstation", "skill": "medicine", "min": 3, "inputs": {"med_reagents": 2}, "output": {"adrenal_stim": 1}},
+  "r_reflex_stim": {"name": "Reflex Stimulant", "station": "medstation", "skill": "medicine", "min": 4, "inputs": {"med_reagents": 2, "tech_components": 1}, "output": {"reflex_stim": 1}},
+  "r_antitox": {"name": "Antitoxin Shot", "station": "medstation", "skill": "medicine", "min": 1, "inputs": {"med_reagents": 1}, "output": {"antitox": 1}}
+}

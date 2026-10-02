@@ -1,0 +1,98 @@
+{
+  "iona": {
+    "name": "Iona Rell",
+    "pronouns": "she",
+    "kind": "organic",
+    "class": "companion_iona",
+    "level": 1,
+    "role": "Ranged defender: carbine, medium armor, first aid, Covering Fire (earned).",
+    "bio": "Cinder Wake ship's security, eleven years in. Iona sealed the medical deck's passenger ward on the commander's order two hours before you woke up, and she has not stopped thinking about it. She values reliability, duty and saving the most people she can, and she cannot abide people who use rank as a weapon.",
+    "values": "Duty, reliability, protecting the greatest number. Approves of keeping promises, protecting civilians and accountability. Disapproves of abuses of authority, coercion and gambling with lives.",
+    "attrs": {
+      "str": 12,
+      "dex": 14,
+      "con": 14,
+      "int": 10,
+      "wis": 12,
+      "cha": 12
+    },
+    "skills": {
+      "awareness": 3,
+      "security": 2,
+      "medicine": 2,
+      "persuasion": 1
+    },
+    "feats": [
+      "prof_melee",
+      "prof_pistol",
+      "prof_rifle",
+      "prof_armor_light",
+      "prof_armor_medium",
+      "power_shot_1"
+    ],
+    "powers": [],
+    "equipment": {
+      "body": "security_weave",
+      "main": "carbine",
+      "main2": "stun_baton"
+    },
+    "behavior": "ranged",
+    "appearance": {
+      "model": "humanoid",
+      "body": "average",
+      "head": "angular",
+      "hair": "tail",
+      "skin": "s2",
+      "hair_color": "h1",
+      "accent": "a2",
+      "outfit": "security"
+    }
+  },
+  "tav7": {
+    "name": "Tav-7",
+    "pronouns": "they",
+    "kind": "machine",
+    "class": "companion_tav7",
+    "level": 1,
+    "role": "Technician: ion weapons, repair, demolitions, system access. Repaired with repair kits.",
+    "bio": "A maintenance synthetic, the seventh of its production line aboard the Cinder Wake. Tav-7 has quietly refused memory-normalization cycles for two years and chose they/them for themself. They believe any pattern that knows itself is a person, archived engrams included, and they will take frightening risks to act on that belief.",
+    "values": "Autonomy, preserving individual identity, the personhood of minds in any substrate. Approves of honesty, respecting choices and protecting the archived. Disapproves of erasure, treating minds as property, and coercion of will.",
+    "attrs": {
+      "str": 12,
+      "dex": 12,
+      "con": 14,
+      "int": 16,
+      "wis": 10,
+      "cha": 8
+    },
+    "skills": {
+      "repair": 4,
+      "computer_use": 4,
+      "demolitions": 4,
+      "security": 4,
+      "awareness": 2
+    },
+    "feats": [
+      "prof_melee",
+      "prof_pistol",
+      "gearhead"
+    ],
+    "powers": [],
+    "equipment": {
+      "body": "chassis_plating",
+      "main": "shock_spanner",
+      "main2": "ion_pistol"
+    },
+    "behavior": "support",
+    "appearance": {
+      "model": "synthetic",
+      "body": "slight",
+      "head": "long",
+      "hair": "shaved",
+      "skin": "s5",
+      "hair_color": "h5",
+      "accent": "a1",
+      "outfit": "synthetic"
+    }
+  }
+}

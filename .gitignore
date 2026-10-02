@@ -1,0 +1,8 @@
+# Godot 4
+.godot/
+*.translation
+export_credentials.cfg
+# Builds (release archives are published separately; see README)
+builds/tmp/
+# Python
+__pycache__/

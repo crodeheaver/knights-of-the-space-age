@@ -1,0 +1,10 @@
+{
+  "requisition": {
+    "name": "Crew Requisition Terminal", "desc": "A purser's kiosk that still accepts colony scrip and Concord credits.", "buy_mult": 1.0, "sell_mult": 0.4,
+    "stock": {"medpac": 4, "repair_kit": 3, "frag_grenade": 2, "ion_grenade": 2, "adhesive_grenade": 1, "shield_cell": 2, "antitox": 2, "focus_ampoule": 2, "tech_components": 6, "med_reagents": 6, "power_cell": 1, "vibro_knife": 1, "holdout_pistol": 1, "respirator_mask": 1, "insulated_gloves": 1, "sensor_visor": 1, "recoil_dampener": 1, "balanced_grip": 1}
+  },
+  "med_dispensary": {
+    "name": "Medical Dispensary", "desc": "An automated dispensary on the medical deck, still taking payment while the ship burns.", "buy_mult": 1.1, "sell_mult": 0.35,
+    "stock": {"medpac": 3, "trauma_pack": 1, "antitox": 3, "med_reagents": 5, "adrenal_stim": 1, "reflex_stim": 1, "med_injector": 1}
+  }
+}

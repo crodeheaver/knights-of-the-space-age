@@ -1,0 +1,423 @@
+{
+  "_comment": "Resonance powers. school: mercy | dominion | universal (alignment changes cost). target: self | ally | party | enemy | area_enemy (radius around target) | self_area (radius around caster). Cost modifiers (applied in order): medium armor +2, heavy armor blocks, alignment tier +-1/2, Tide form -1, prestige; minimum 1.",
+  "mend": {
+    "name": "Mend",
+    "chain": "mend",
+    "rank": 1,
+    "school": "mercy",
+    "cost": 4,
+    "target": "ally",
+    "range": 12.0,
+    "heal": {
+      "dice": "2d6",
+      "per_level": 1,
+      "attr": "wis"
+    },
+    "prereq": {},
+    "desc": "Knit flesh or metal with Resonance: heals 2d6 + level + WIS mod. Works on organics and machines."
+  },
+  "restore": {
+    "name": "Restore",
+    "chain": "mend",
+    "rank": 2,
+    "school": "mercy",
+    "cost": 7,
+    "target": "ally",
+    "range": 12.0,
+    "heal": {
+      "dice": "3d6",
+      "per_level": 1,
+      "attr": "wis"
+    },
+    "cleanse": [
+      "dot"
+    ],
+    "prereq": {
+      "level": 3,
+      "powers": [
+        "mend"
+      ]
+    },
+    "desc": "Heals 3d6 + level + WIS mod and purges damage-over-time effects."
+  },
+  "aegis": {
+    "name": "Aegis",
+    "chain": "aegis",
+    "rank": 1,
+    "school": "universal",
+    "cost": 4,
+    "target": "self",
+    "status": {
+      "id": "aegis",
+      "duration": 15.0
+    },
+    "prereq": {},
+    "desc": "A Resonance barrier: +2 Defense and absorbs 10 kinetic/energy/thermal damage for 5 rounds."
+  },
+  "aegis_greater": {
+    "name": "Greater Aegis",
+    "chain": "aegis",
+    "rank": 2,
+    "school": "universal",
+    "cost": 9,
+    "target": "party",
+    "status": {
+      "id": "aegis_greater",
+      "duration": 15.0
+    },
+    "prereq": {
+      "level": 3,
+      "powers": [
+        "aegis"
+      ]
+    },
+    "desc": "Shields the whole party: +3 Defense and absorbs 15 damage each for 5 rounds."
+  },
+  "shove": {
+    "name": "Shove",
+    "chain": "shove",
+    "rank": 1,
+    "school": "universal",
+    "cost": 3,
+    "target": "enemy",
+    "range": 10.0,
+    "save": "ref",
+    "damage": {
+      "dice": "1d6",
+      "per_level": 0,
+      "type": "kinetic"
+    },
+    "push": 3.0,
+    "status_on_fail": {
+      "id": "knocked_down",
+      "duration": 3.0
+    },
+    "prereq": {},
+    "desc": "Telekinetic shove: 1d6 kinetic, pushes the target 3 m back and knocks it down for 1 round unless it passes a Reflex save."
+  },
+  "shockwave": {
+    "name": "Shockwave",
+    "chain": "shove",
+    "rank": 2,
+    "school": "universal",
+    "cost": 8,
+    "target": "self_area",
+    "radius": 4.0,
+    "save": "ref",
+    "damage": {
+      "dice": "2d6",
+      "per_level": 0,
+      "type": "kinetic"
+    },
+    "push": 3.0,
+    "status_on_fail": {
+      "id": "knocked_down",
+      "duration": 3.0
+    },
+    "prereq": {
+      "level": 3,
+      "powers": [
+        "shove"
+      ]
+    },
+    "desc": "Every enemy within 4 m takes 2d6 kinetic, is pushed back and knocked down on a failed Reflex save."
+  },
+  "surge": {
+    "name": "Surge",
+    "chain": "surge",
+    "rank": 1,
+    "school": "universal",
+    "cost": 3,
+    "target": "self",
+    "status": {
+      "id": "surge",
+      "duration": 15.0
+    },
+    "prereq": {},
+    "desc": "Resonance-driven movement: +50% speed and +1 Defense for 5 rounds."
+  },
+  "overdrive": {
+    "name": "Overdrive",
+    "chain": "surge",
+    "rank": 2,
+    "school": "universal",
+    "cost": 6,
+    "target": "self",
+    "status": {
+      "id": "overdrive",
+      "duration": 15.0
+    },
+    "prereq": {
+      "level": 3,
+      "powers": [
+        "surge"
+      ]
+    },
+    "desc": "+100% speed, +2 Defense and +1 attack for 5 rounds."
+  },
+  "arc_lance": {
+    "name": "Arc Lance",
+    "chain": "arc_lance",
+    "rank": 1,
+    "school": "dominion",
+    "cost": 4,
+    "target": "enemy",
+    "range": 12.0,
+    "save": "ref",
+    "save_half": true,
+    "damage": {
+      "dice": "2d6",
+      "per_level": 1,
+      "type": "resonance"
+    },
+    "prereq": {},
+    "desc": "A lance of raw Resonance: 2d6 + level resonance damage (Reflex for half)."
+  },
+  "arc_storm": {
+    "name": "Arc Storm",
+    "chain": "arc_lance",
+    "rank": 2,
+    "school": "dominion",
+    "cost": 9,
+    "target": "enemy",
+    "range": 12.0,
+    "chain_targets": 3,
+    "chain_radius": 5.0,
+    "save": "ref",
+    "save_half": true,
+    "damage": {
+      "dice": "3d6",
+      "per_level": 1,
+      "type": "resonance"
+    },
+    "prereq": {
+      "level": 3,
+      "powers": [
+        "arc_lance"
+      ]
+    },
+    "desc": "Arcs jump between up to 3 enemies within 5 m: 3d6 + level each (Reflex for half)."
+  },
+  "hold": {
+    "name": "Hold",
+    "chain": "hold",
+    "rank": 1,
+    "school": "universal",
+    "cost": 5,
+    "target": "enemy",
+    "range": 12.0,
+    "save": "will",
+    "status_on_fail": {
+      "id": "held",
+      "duration": 6.0
+    },
+    "prereq": {},
+    "desc": "Lock a mind in place: Will save or the target is Held (cannot act or move) for 2 rounds. Machines are immune."
+  },
+  "stasis_field": {
+    "name": "Stasis Field",
+    "chain": "hold",
+    "rank": 2,
+    "school": "universal",
+    "cost": 10,
+    "target": "area_enemy",
+    "range": 12.0,
+    "radius": 3.0,
+    "save": "will",
+    "status_on_fail": {
+      "id": "held",
+      "duration": 6.0
+    },
+    "prereq": {
+      "level": 4,
+      "powers": [
+        "hold"
+      ]
+    },
+    "desc": "Hold every enemy within 3 m of the target (Will negates)."
+  },
+  "dread": {
+    "name": "Dread",
+    "chain": "dread",
+    "rank": 1,
+    "school": "dominion",
+    "cost": 4,
+    "target": "enemy",
+    "range": 12.0,
+    "save": "will",
+    "status_on_fail": {
+      "id": "feared",
+      "duration": 9.0
+    },
+    "prereq": {},
+    "desc": "Flood a mind with dread: Will save or the target flees for 3 rounds. Taking damage ends the fear. Machines are immune."
+  },
+  "calm": {
+    "name": "Calm",
+    "chain": "calm",
+    "rank": 1,
+    "school": "mercy",
+    "cost": 4,
+    "target": "enemy",
+    "range": 12.0,
+    "save": "will",
+    "status_on_fail": {
+      "id": "pacified",
+      "duration": 9.0
+    },
+    "cleanse_target": [
+      "feared"
+    ],
+    "prereq": {},
+    "desc": "Quiet the urge to fight: Will save or the target will not attack for 3 rounds. Taking damage ends it."
+  },
+  "disrupt": {
+    "name": "Disrupt",
+    "chain": "disrupt",
+    "rank": 1,
+    "school": "universal",
+    "cost": 4,
+    "target": "enemy",
+    "range": 12.0,
+    "save": "fort",
+    "damage": {
+      "dice": "2d6",
+      "per_level": 0,
+      "type": "ion"
+    },
+    "machine_status_on_fail": {
+      "id": "stunned",
+      "duration": 3.0
+    },
+    "prereq": {},
+    "desc": "Overload circuitry: 2d6 ion damage (doubled against machines); a machine that fails a Fortitude save is stunned for 1 round."
+  },
+  "siphon": {
+    "name": "Siphon",
+    "chain": "siphon",
+    "rank": 1,
+    "school": "dominion",
+    "cost": 5,
+    "target": "enemy",
+    "range": 8.0,
+    "save": "fort",
+    "save_half": true,
+    "damage": {
+      "dice": "1d8",
+      "per_level": 1,
+      "type": "resonance"
+    },
+    "drain": true,
+    "organic_only": true,
+    "prereq": {
+      "level": 2
+    },
+    "desc": "Drain life: 1d8 + level resonance damage (Fortitude for half); you heal the amount dealt. Organic targets only."
+  },
+  "echo_sense": {
+    "name": "Echo Sense",
+    "chain": "echo_sense",
+    "rank": 1,
+    "school": "universal",
+    "cost": 2,
+    "target": "self",
+    "status": {
+      "id": "echo_sense",
+      "duration": 30.0
+    },
+    "reveal_radius": 15.0,
+    "prereq": {},
+    "desc": "Listen to the ship's residual memory: +4 Awareness for 10 rounds and immediately reveals hidden mines, hazards and people within 15 m."
+  },
+  "sway": {
+    "name": "Sway",
+    "chain": "sway",
+    "rank": 1,
+    "school": "universal",
+    "cost": 3,
+    "target": "enemy",
+    "range": 10.0,
+    "save": "will",
+    "status_on_fail": {
+      "id": "wavering",
+      "duration": 6.0
+    },
+    "dialogue": true,
+    "prereq": {},
+    "desc": "Lean on a mind with Resonance. In conversation it unlocks Resonance-assisted persuasion. In combat: Will save or the target is Wavering (-2 attack, -2 Will) for 2 rounds."
+  },
+  "compel": {
+    "name": "Compel",
+    "chain": "sway",
+    "rank": 2,
+    "school": "dominion",
+    "cost": 6,
+    "target": "enemy",
+    "range": 10.0,
+    "save": "will",
+    "status_on_fail": {
+      "id": "compelled",
+      "duration": 6.0
+    },
+    "dialogue": true,
+    "prereq": {
+      "level": 3,
+      "powers": [
+        "sway"
+      ]
+    },
+    "desc": "Override a will outright. In conversation it unlocks coercion. In combat: Will save or the target stops attacking for 2 rounds, even if hurt. Machines are immune."
+  },
+  "repair_beam": {
+    "name": "Repair Beam",
+    "innate": true,
+    "school": "universal",
+    "cost": 0,
+    "target": "ally",
+    "range": 10.0,
+    "heal": {
+      "dice": "2d6",
+      "per_level": 1,
+      "attr": "int"
+    },
+    "machine_only_heal": true,
+    "cooldown": 6.0,
+    "prereq": {},
+    "desc": "Machine ability: patches an allied machine for 2d6 + level."
+  },
+  "suppression_field": {
+    "name": "Suppression Field",
+    "innate": true,
+    "school": "universal",
+    "cost": 0,
+    "target": "area_enemy",
+    "range": 12.0,
+    "radius": 2.5,
+    "save": "ref",
+    "dc": 13,
+    "status_on_fail": {
+      "id": "immobilized",
+      "duration": 6.0
+    },
+    "cooldown": 9.0,
+    "prereq": {},
+    "desc": "Machine ability: a gravitic snare. Targets within 2.5 m that fail a Reflex save (DC 13) are immobilized for 2 rounds."
+  },
+  "suppression_pulse": {
+    "name": "Suppression Pulse",
+    "innate": true,
+    "school": "universal",
+    "cost": 0,
+    "target": "self_area",
+    "radius": 4.0,
+    "save": "fort",
+    "dc": 14,
+    "status_on_fail": {
+      "id": "stunned",
+      "duration": 3.0
+    },
+    "cooldown": 12.0,
+    "prereq": {},
+    "desc": "Machine ability: a concussive discharge. Enemies within 4 m that fail a Fortitude save (DC 14) are stunned for 1 round."
+  }
+}
