@@ -31,6 +31,9 @@ sounds and floating numbers only display results that have already been resolved
   `sim_step`: statuses, cooldowns, round clocks, recovery, projectiles, bash jobs, hazards, stealth, regeneration and
   pending corpses. Pausing therefore freezes all of them. (`tests/test_world.gd::test_pause_freezes_everything`
   snapshots every actor, status, cooldown and projectile across 45 paused frames.)
+- Keyboard movement is sampled each physics frame into the controlled actor's `input_dir` and applied inside
+  `Actor.sim_step`, exactly like click-to-move paths, so it shares the pause gate and drives the walk animation
+  from the distance actually covered.
 - Tests and bots set `manual_step = true` and call `sim_step` themselves.
 - `Game.state.sim_time` is the deterministic clock. `play_time` is wall-clock while unpaused.
 - Saving is refused while a conversation, cinematic or minigame is open, during unpaused combat, with a grenade in

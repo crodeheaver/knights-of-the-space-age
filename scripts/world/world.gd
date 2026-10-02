@@ -494,7 +494,9 @@ func _physics_process(delta: float) -> void:
 	if manual_step:
 		return
 	if not Game.ui_blocked() and not game_over:
-		_direct_input(delta)
+		_direct_input()
+	elif controlled() != null:
+		controlled().input_dir = Vector3.ZERO
 	if _pending_autosave != "" and sim_running() and not combat.active:
 		_checkpoint(_pending_autosave)
 	if sim_running():
@@ -508,9 +510,14 @@ func _physics_process(delta: float) -> void:
 	_update_hover()
 
 
-func _direct_input(delta: float) -> void:
+## Samples the movement keys into the controlled actor's input_dir; the
+## movement itself happens in Actor.sim_step at the fixed simulation rate.
+func _direct_input() -> void:
 	var a := controlled()
-	if a == null or not sim_running():
+	if a == null:
+		return
+	if not sim_running():
+		a.input_dir = Vector3.ZERO
 		return
 	var v := Vector3.ZERO
 	var b := cam.basis_flat()
@@ -525,7 +532,9 @@ func _direct_input(delta: float) -> void:
 	if v.length_squared() > 0.0:
 		a.current = {} if String(a.current.get("type", "")) == "interact" else a.current
 		_pending_interact = {}
-		a.direct_move(v, delta * time_scale)
+		a.input_dir = v.normalized()
+	else:
+		a.input_dir = Vector3.ZERO
 
 
 ## One deterministic simulation step. Tests call this directly.
@@ -735,6 +744,9 @@ func switch_control(uid: String) -> void:
 	if a.sheet.is_downed():
 		Events.toast("%s is down." % a.sheet.display_name, "warn")
 		return
+	var prev := controlled()
+	if prev != null:
+		prev.input_dir = Vector3.ZERO
 	Game.state.controlled = uid
 	cam.target = a
 	refresh_markers()
@@ -1139,7 +1151,7 @@ func _heading_through(aa: Actor, cells: Array) -> bool:
 			cur = q
 			if left <= 0.0:
 				break
-	elif Time.get_ticks_msec() / 1000.0 - aa.push_time < 0.25:
+	elif Game.state.sim_time - aa.push_time < 0.25:
 		for k in range(1, 5):
 			pts.append(aa.position + aa.push_dir * (k * 0.3))
 	for p in pts:

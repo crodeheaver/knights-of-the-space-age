@@ -267,3 +267,33 @@ func test_checkpoint_combat_approach() -> void:
 	assert_true(bool(r.get("ok", r.get("success", false))), str(r))
 	assert_eq(String(Game.state.flags.get("checkpoint_by", "")), "combat")
 	await _free(w)
+
+
+func test_keyboard_movement_drives_walk_animation() -> void:
+	Game.new_game(BuildValidator.recommended("vanguard"), "standard")
+	Game.state.positions = {"player": [6.0, 6.0, 0.0]}
+	var w := World.new()
+	_tree().root.add_child(w)
+	await _tree().process_frame
+	var p := w.controlled()
+	var start := p.position
+	Input.action_press("move_forward")
+	for i in 30:
+		await _tree().physics_frame
+	assert_true(p.position.distance_to(start) > 0.5, "keyboard moves the character (%.2f m)" % p.position.distance_to(start))
+	assert_true(p.visual.move_speed > 2.0, "walk animation driven by keyboard movement (speed %.2f)" % p.visual.move_speed)
+	assert_true(absf(p.visual.leg_l.rotation_degrees.x) > 1.0 or absf(p.visual.leg_r.rotation_degrees.x) > 1.0, "legs swing")
+	# Pausing freezes keyboard movement too, even with the key held.
+	w.set_paused(true)
+	var held := p.position
+	for i in 20:
+		await _tree().physics_frame
+	assert_eq(p.position, held, "no keyboard movement while paused")
+	w.set_paused(false)
+	Input.action_release("move_forward")
+	for i in 40:
+		await _tree().physics_frame
+	assert_true(p.visual.move_speed < 0.3, "back to idle after releasing (speed %.2f)" % p.visual.move_speed)
+	assert_eq(p.input_dir, Vector3.ZERO)
+	w.queue_free()
+	await _tree().process_frame

@@ -63,7 +63,7 @@ Unless noted otherwise, every test listed is in `tests/` and runs in `./tools/ru
 
 | Mechanic | Status | Implementation | Verification |
 |---|---|---|---|
-| WASD and click-move, orbit and zoom camera with collision | 🟡 | `world.gd`, `world/camera_rig.gd` | screenshots |
+| WASD and click-move (both animate the walk cycle and stop on pause); orbit and zoom camera with collision | ✅ | `World._direct_input` → `Actor.input_dir` → `Actor.sim_step`; `world/camera_rig.gd` | `test_world::test_keyboard_movement_drives_walk_animation`; camera 🟡 screenshots |
 | Doors, containers, corpses, readables, explored map | ✅ | `world/world_object.gd`, `ui/minimap.gd` | bots loot and read along every route |
 | All 8 skills have world uses | ✅ | `data/ship_layout.json` options | `test_data::test_every_skill_used_in_level` |
 | Stealth: LOS, cone, distance, suspicion, shadows, detection | ✅ | `rules/stealth_rules.gd`, `World._stealth_step` | `test_world::test_stealth_detection_line_of_sight`; technical bot sneaks to the north pump |
@@ -136,7 +136,7 @@ Unless noted otherwise, every test listed is in `tests/` and runs in `./tools/ru
 
 | Item | Status | Notes |
 |---|---|---|
-| Automated tests | ✅ | 105 tests; see `docs/TEST_RESULTS.md` |
+| Automated tests | ✅ | 106 tests; see `docs/TEST_RESULTS.md` |
 | Playtest-style verification | ⚠️ | Three automated bot playthroughs and a seed sweep. **No human playtest** has been run. |
 | Runnable build | ✅ | Linux and Windows exports; the Linux export was launched headless and under Xvfb (see TEST_RESULTS) |
 | Screenshots | ✅ | `docs/screenshots/` (29 images) |
