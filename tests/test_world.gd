@@ -297,3 +297,106 @@ func test_keyboard_movement_drives_walk_animation() -> void:
 	assert_eq(p.input_dir, Vector3.ZERO)
 	w.queue_free()
 	await _tree().process_frame
+
+
+func _start_checkpoint_fight(w: World) -> void:
+	w.alert_encounter("enc_checkpoint")
+	w.sim_step(0.1)
+
+
+func test_combat_start_auto_queues_basic_attack() -> void:
+	var w: World = await _world("jump_checkpoint")
+	var p := w.controlled()
+	p.set_pos(Vector3(50.0, 0, 8.0))
+	assert_true(p.queue.is_empty())
+	_start_checkpoint_fight(w)
+	assert_true(w.combat.active, "combat started")
+	assert_eq(p.queue.size(), 1, "one basic attack queued automatically")
+	var q: Dictionary = p.queue.front()
+	assert_eq(String(q["type"]), "attack")
+	assert_true(bool(q.get("auto_queued", false)), "marked as automatic")
+	assert_eq(String(q["target"]), p.target_uid, "targets the selected enemy")
+	assert_eq(w.auto_target(p).uid, p.target_uid, "the nearest visible enemy")
+	# Unpaused, the attack actually happens.
+	w.set_paused(false)
+	# (Lambdas capture locals by value, so collect into an array.)
+	var hits: Array = []
+	var on_log := func(e: Dictionary) -> void:
+		if String(e.get("text", "")).begins_with(p.sheet.display_name + " →"):
+			hits.append(e["text"])
+	Events.combat_log.connect(on_log)
+	for i in 120:
+		w.sim_step(0.1)
+		if not hits.is_empty():
+			break
+	Events.combat_log.disconnect(on_log)
+	var logged := not hits.is_empty()
+	assert_true(logged, "the auto-queued attack is resolved")
+	await _free(w)
+
+
+func test_player_choice_replaces_auto_attack() -> void:
+	var w: World = await _world("jump_checkpoint")
+	var p := w.controlled()
+	p.set_pos(Vector3(50.0, 0, 8.0))
+	_start_checkpoint_fight(w)
+	assert_eq(p.queue.size(), 1)
+	var feats := p.sheet.action_feats()
+	assert_false(feats.is_empty(), "vanguard has an active feat")
+	assert_eq(w.queue_action(p, {"type": "feat", "id": feats[0], "target": p.target_uid}), "")
+	assert_eq(p.queue.size(), 1, "the automatic attack was replaced, not pushed back")
+	assert_eq(String(p.queue.front()["type"]), "feat")
+	# Re-selecting a target moves a pending automatic attack with it.
+	p.queue.clear()
+	assert_true(w.auto_queue_attack(p))
+	var other := ""
+	for uid in ["chk_d1", "chk_d2", "chk_turret"]:
+		if uid != p.target_uid:
+			other = uid
+			break
+	w.cmd_target(p, other)
+	assert_eq(String(p.queue.front()["target"]), other, "auto attack follows the new selection")
+	# Moving is the player's choice too.
+	w.cmd_move(p, p.position + Vector3(-4, 0, 0))
+	assert_true(p.queue.is_empty(), "moving drops the automatic attack")
+	await _free(w)
+
+
+func test_no_auto_attack_when_disabled_or_sneaking() -> void:
+	var w: World = await _world("jump_checkpoint")
+	var p := w.controlled()
+	p.set_pos(Vector3(50.0, 0, 8.0))
+	Settings.set_v("auto_attack", false, false)
+	_start_checkpoint_fight(w)
+	assert_true(p.queue.is_empty(), "setting off: nothing queued")
+	Settings.set_v("auto_attack", true, false)
+	await _free(w)
+	var w2: World = await _world("jump_checkpoint")
+	var p2 := w2.controlled()
+	p2.set_pos(Vector3(44.0, 0, 7.0))
+	Game.state.solo = true
+	w2.toggle_stealth(p2)
+	assert_true(p2.stealth)
+	_start_checkpoint_fight(w2)
+	assert_true(p2.queue.is_empty(), "a sneaking character is not given an attack that would break stealth")
+	await _free(w2)
+
+
+func test_auto_attack_moves_on_when_target_falls() -> void:
+	var w: World = await _world("jump_checkpoint")
+	var p := w.controlled()
+	p.set_pos(Vector3(50.0, 0, 8.0))
+	_start_checkpoint_fight(w)
+	w.set_paused(false)
+	var first := p.target_uid
+	var e: Actor = w.actors[first]
+	e.sheet.hp = 0
+	w.on_downed(e, "iona")
+	assert_true(p.queue.is_empty(), "attack on the fallen target was purged")
+	p.current = {}
+	p.recovery = 0.0
+	for i in 5:
+		w.sim_step(0.1)
+	assert_true(p.target_uid != "" and p.target_uid != first, "picked the next enemy (%s)" % p.target_uid)
+	assert_true(String(p.current.get("type", "attack")) == "attack", "and keeps attacking")
+	await _free(w)

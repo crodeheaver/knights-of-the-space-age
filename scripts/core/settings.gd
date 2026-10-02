@@ -32,7 +32,7 @@ var values := {
 	"mouse_sensitivity": 1.0, "invert_y": false, "ui_scale": 1.0, "subtitles": true, "reduce_shake": false,
 	"reduce_flash": false, "difficulty": "standard", "autopause_combat_start": true, "autopause_member_down": true,
 	"autopause_queue_empty": false, "autopause_target_dead": false, "tutorials": true, "hold_on_stealth": true,
-	"fullscreen": false, "damage_numbers": true, "dev_mode": false, "edge_pan": false,
+	"fullscreen": false, "damage_numbers": true, "dev_mode": false, "edge_pan": false, "auto_attack": true,
 }
 var bindings: Dictionary = {}
 

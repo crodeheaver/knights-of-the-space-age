@@ -46,6 +46,11 @@ func start() -> void:
 		a.round_clock = fmod(float(a.uid.hash() % 1000) / 1000.0 * round_len, round_len)
 	Events.post("combat_started", {})
 	Events.log_combat("— Combat begins —", "", "system")
+	# Auto-attack: the controlled character starts with a basic attack queued
+	# (visible and cancelable while the combat-start pause is up).
+	if w.controlled() != null and w.auto_queue_attack(w.controlled()):
+		var aq: Dictionary = w.controlled().queue.front()
+		Events.log_combat("%s readies a basic attack on %s (auto-attack; queue anything to replace it)." % [w.controlled().sheet.display_name, (w.actors[String(aq["target"])] as Actor).sheet.display_name], "", "system")
 	if bool(Settings.get_v("autopause_combat_start")):
 		w.set_paused(true, "Combat started")
 	GameAudio.music("music_combat")
@@ -105,8 +110,19 @@ func _next_action(a: Actor) -> Dictionary:
 		return a.queue.pop_front()
 	if a.role == "party":
 		if a.uid == Game.state.controlled or a.sheet.behavior == "passive":
+			# Never override the player steering this character.
+			if a.uid == Game.state.controlled and w.player_moving(a):
+				return {}
 			if a.in_combat and w.valid_hostile_target(a, a.target_uid):
 				return {"type": "attack", "target": a.target_uid, "auto": true}
+			# Target fell and nothing is queued: keep fighting the nearest enemy
+			# (unless the player asked to be paused when the queue runs dry).
+			if active and a.uid == Game.state.controlled and a.in_combat and bool(Settings.get_v("auto_attack")) \
+					and not bool(Settings.get_v("autopause_queue_empty")) and not a.stealth:
+				var nt: Actor = w.auto_target(a)
+				if nt != null:
+					w.cmd_target(a, nt.uid)
+					return {"type": "attack", "target": nt.uid, "auto": true}
 			if active and a.uid == Game.state.controlled and bool(Settings.get_v("autopause_queue_empty")) and not announced_empty.has(a.uid):
 				announced_empty[a.uid] = true
 				w.set_paused(true, "%s has no queued actions" % a.sheet.display_name)

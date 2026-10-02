@@ -10,7 +10,7 @@ All results below were produced by commands in this repository, on the build con
 ## 1. Full suite — `./tools/run_tests.sh`
 
 ```
-RESULT: 106 tests, 106 passed, 0 failed
+RESULT: 110 tests, 110 passed, 0 failed
 exit code 0, no SCRIPT ERROR lines
 ```
 
@@ -25,7 +25,7 @@ exit code 0, no SCRIPT ERROR lines
 | `test_data.gd` | 3 | every data reference and dialogue destination valid, content minimums, every skill used in the level |
 | `test_scripts.gd` | 2 | every script compiles; main scene instantiates |
 | `test_ui.gd` | 7 | creator flow and invalid-build blocking, all game-menu tabs and equip/use, level-up (recommended and manual), vendor/crafting/muster, save/load/delete with confirmation, settings and rebinding conflicts, ending outcome |
-| `test_world.gd` | 12 | keyboard movement drives the walk animation and freezes with pause, pause freezes everything (incl. behind menus), simultaneous events (dead target, purged queue, kill and down in one blast, grenade after the thrower falls, scene transition mid-throw), stealth LOS, the four checkpoint approaches |
+| `test_world.gd` | 16 | auto-attack at combat start (queued, replaced by player choices and moves, off/sneaking, moves on after a kill), keyboard movement drives the walk animation and freezes with pause, pause freezes everything (incl. behind menus), simultaneous events (dead target, purged queue, kill and down in one blast, grenade after the thrower falls, scene transition mid-throw), stealth LOS, the four checkpoint approaches |
 | `test_presets.gd` | 4 | every preset loads into the world; prestige presets eligible for exactly their variant; Iona's training; bay jump plays to the escape |
 | `test_minigames.gd` | 16 | Shards rules, AI legality, wager escrow and settlement, Slipstream finish/best/par-once, turret win/loss/autopilot, practice changes nothing |
 | `test_audio_assets.gd` | 5 | every sound id loads; length budgets; loops seamless through the mixer |

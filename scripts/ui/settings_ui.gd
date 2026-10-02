@@ -102,6 +102,8 @@ func _gameplay() -> void:
 	_check("autopause_member_down", "Pause when a party member goes down")
 	_check("autopause_queue_empty", "Pause when your character's action queue empties")
 	_check("autopause_target_dead", "Pause when your target is defeated")
+	_body.add_child(UIKit.header("Combat"))
+	_check("auto_attack", "Auto-attack", "When combat starts and you have queued nothing, your character queues a basic attack on the selected (or nearest) enemy, and keeps attacking the nearest enemy when the target falls. Queuing anything, or moving, replaces it.")
 	_body.add_child(UIKit.header("Assistance"))
 	_check("tutorials", "Show tutorial tips", "Tips you have already seen stay readable in Journal → Tutorials.")
 	_check("hold_on_stealth", "Companions hold position when you enter stealth")
