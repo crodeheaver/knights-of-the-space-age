@@ -246,6 +246,8 @@ func _eff_check(e: Variant, where: String) -> void:
 			err("%s: unknown encounter '%s'" % [where, x["start_encounter"]])
 		if x.has("resolve_encounter") and not db.encounters.has(String(x["resolve_encounter"])):
 			err("%s: unknown encounter '%s'" % [where, x["resolve_encounter"]])
+		if x.has("start_dialogue") and not db.dialogues.has(String(x["start_dialogue"])):
+			err("%s: unknown dialogue '%s'" % [where, x["start_dialogue"]])
 		if x.has("codex") and not db.codex.has(String(x["codex"])):
 			err("%s: unknown codex entry '%s'" % [where, x["codex"]])
 		if x.has("tutorial") and not db.tutorials.has(String(x["tutorial"])):
@@ -327,6 +329,7 @@ func _dialogues() -> void:
 				if not c.has("next") and not c.has("check") and not bool(c.get("end", false)):
 					err(cw + ": choice leads nowhere (needs next, check or end)")
 				_cond_check(c.get("if", []), cw)
+				_cond_check(c.get("hide_if", []), cw)
 				_eff_check(c.get("effects", []), cw)
 				_eff_check(c.get("success_effects", []), cw)
 				_eff_check(c.get("failure_effects", []), cw)
@@ -375,14 +378,22 @@ func _layout() -> void:
 				err("%s: unknown dialogue %s" % [ow, opt["dialogue"]])
 			if opt.has("item"):
 				_item_ok(String(opt["item"]), ow)
-		_eff_check(ob.get("on_enter", []), where)
+		for hook in ["on_enter", "on_detect", "on_looted", "on_read", "on_open"]:
+			_eff_check(ob.get(hook, []), where + " " + hook)
 	for nid in DB.dict(lay, "npcs").keys():
 		var n: Dictionary = lay["npcs"][nid]
 		if n.has("dialogue") and not db.dialogues.has(String(n["dialogue"])):
 			err("npc %s: unknown dialogue %s" % [nid, n["dialogue"]])
 		if n.has("area") and not areas.has(String(n["area"])):
 			err("npc %s: unknown area" % nid)
+	for r in lay.get("rules", []):
+		_cond_check(r.get("if", []), "rule " + String(r.get("id", "?")))
+		_eff_check(r.get("effects", []), "rule " + String(r.get("id", "?")))
 	for tr in lay.get("triggers", []):
+		if tr.has("encounter") and not db.encounters.has(String(tr["encounter"])):
+			err("trigger %s: unknown encounter" % tr.get("id", "?"))
+		if tr.has("dialogue") and not db.dialogues.has(String(tr["dialogue"])):
+			err("trigger %s: unknown dialogue" % tr.get("id", "?"))
 		_eff_check(tr.get("effects", []), "trigger " + String(tr.get("id", "?")))
 		_cond_check(tr.get("if", []), "trigger " + String(tr.get("id", "?")))
 

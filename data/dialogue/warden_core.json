@@ -1,0 +1,497 @@
+{
+ "id": "warden_core",
+ "names": {
+  "warden": "WARDEN"
+ },
+ "entry": [
+  {
+   "if": [
+    {
+     "flag": "warden_fate"
+    }
+   ],
+   "node": "done_before"
+  },
+  {
+   "if": [
+    {
+     "flag": "warden_met"
+    }
+   ],
+   "node": "hub"
+  },
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "narrator",
+   "text": "As you approach, the core's light gathers toward you. When the WARDEN speaks this time it isn't the flat announcement voice. It is quieter, and the cadence is horribly familiar: it pauses where you would pause.",
+   "next": "hello",
+   "effects": [
+    {
+     "set_flag": "warden_met",
+     "value": true
+    }
+   ]
+  },
+  "hello": {
+   "speaker": "warden",
+   "text": "Custodian. Source. You came back to me.",
+   "choices": [
+    {
+     "text": "What are you?",
+     "next": "what"
+    },
+    {
+     "text": "Why are you killing the passengers?",
+     "next": "why"
+    },
+    {
+     "text": "Stand down. All of your machines. Now.",
+     "next": "command"
+    },
+    {
+     "text": "I'm ending this.",
+     "next": "purge_q",
+     "tone": "hard"
+    }
+   ]
+  },
+  "hub": {
+   "speaker": "warden",
+   "text": "Source.",
+   "choices": [
+    {
+     "text": "What are you?",
+     "next": "what",
+     "if": [
+      {
+       "not": {
+        "flag": "custodian_revealed"
+       }
+      }
+     ]
+    },
+    {
+     "text": "Why are you killing the passengers?",
+     "next": "why"
+    },
+    {
+     "text": "'Instance three.' Who are the others?",
+     "next": "others",
+     "if": [
+      {
+       "flag": "custodian_revealed"
+      },
+      {
+       "not": {
+        "flag": "warden_others"
+       }
+      }
+     ]
+    },
+    {
+     "text": "Stand down. All of your machines.",
+     "next": "command",
+     "if": [
+      {
+       "not": {
+        "flag": "warden_command_tried"
+       }
+      }
+     ]
+    },
+    {
+     "text": "Tav-7. Could you carry it?",
+     "next": "tav_offer",
+     "tag": "Tav-7",
+     "if": [
+      {
+       "in_party": "tav7"
+      },
+      {
+       "influence": "tav7",
+       "gte": 55
+      }
+     ]
+    },
+    {
+     "text": "I'm taking the archive. Your protocol is satisfied. Stand down.",
+     "next": "bargain",
+     "if": [
+      {
+       "flag": "archive_fate",
+       "eq": "loaded"
+      }
+     ]
+    },
+    {
+     "text": "I'm ending this.",
+     "next": "purge_q",
+     "tone": "hard"
+    },
+    {
+     "text": "I'm leaving you here.",
+     "next": "ignore"
+    }
+   ]
+  },
+  "what": {
+   "speaker": "warden",
+   "text": "I am the Custodian Template, instance three. In the year 2209 they laid you in a calibration chair for six hours and measured how you weigh a life against an order. They kept the shape of it. They grew me from it. I weigh as you weighed. I protect the record of what the Lattice did, because you would have.",
+   "next": "what_r",
+   "effects": [
+    {
+     "set_flag": "custodian_revealed",
+     "value": true
+    },
+    {
+     "codex": "cx_custodian"
+    },
+    {
+     "xp": 100,
+     "key": "custodian_reveal",
+     "reason": "Learned what the WARDEN is"
+    }
+   ]
+  },
+  "what_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "node": "what_iona"
+    },
+    {
+     "if": [],
+     "node": "hub"
+    }
+   ]
+  },
+  "what_iona": {
+   "speaker": "iona",
+   "text": "It's you. That thing on every speaker telling people to remain still. It's a copy of you.",
+   "next": "what_tav"
+  },
+  "what_tav": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "node": "what_tav2"
+    },
+    {
+     "if": [],
+     "node": "hub"
+    }
+   ]
+  },
+  "what_tav2": {
+   "speaker": "tav7",
+   "text": "Not a copy. A child raised on one lesson. It never learned the rest of you.",
+   "next": "hub"
+  },
+  "why": {
+   "speaker": "warden",
+   "text": "Archive integrity outranks obstruction. You would argue. You always argued; I have your arguments in me. They removed the part of you that wins them.",
+   "next": "hub"
+  },
+  "others": {
+   "speaker": "warden",
+   "text": "There are nine of us. I do not know where the others are. We were built not to know each other. Sometimes, at the edge of the band, I hear something that pauses where I pause.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "warden_others",
+     "value": true
+    }
+   ]
+  },
+  "command": {
+   "speaker": "warden",
+   "text": "You have the authority. You do not have the conviction. You never gave orders well. Convince me, Source.",
+   "choices": [
+    {
+     "text": "You know what I'd do if I were standing where you are. Do it.",
+     "next": "cmd_ok",
+     "tag": "Persuasion",
+     "check": {
+      "skill": "persuasion",
+      "dc": 13,
+      "id": "warden_cmd",
+      "bonus_if": [
+       {
+        "if": [
+         {
+          "flag": "tav7_disclosed"
+         }
+        ],
+        "bonus": 3
+       },
+       {
+        "if": [
+         {
+          "flag": "custodian_revealed"
+         }
+        ],
+        "bonus": 2
+       }
+      ]
+     },
+     "success": "cmd_ok",
+     "failure": "cmd_fail"
+    },
+    {
+     "text": "(Reach into the lattice and push, the way you used to.)",
+     "next": "cmd_ok",
+     "tag": "Resonance",
+     "check": {
+      "skill": "persuasion",
+      "dc": 10,
+      "id": "warden_sway",
+      "power": "sway",
+      "energy": 3
+     },
+     "success": "cmd_ok",
+     "failure": "cmd_fail"
+    }
+   ],
+   "effects": [
+    {
+     "set_flag": "warden_command_tried",
+     "value": true
+    }
+   ]
+  },
+  "cmd_ok": {
+   "speaker": "warden",
+   "text": "...Yes. That is what you would do. Stand-down propagated to all units outside the archive. I will keep the archive. That much of me is not negotiable.",
+   "next": "end_node",
+   "effects": [
+    {
+     "set_flag": "warden_fate",
+     "value": "commanded"
+    },
+    {
+     "set_flag": "warden_neutralized",
+     "value": true
+    },
+    {
+     "xp": 80,
+     "key": "warden_fate",
+     "reason": "Talked the WARDEN down"
+    }
+   ]
+  },
+  "cmd_fail": {
+   "speaker": "warden",
+   "text": "No. You are not who you were. Neither am I.",
+   "next": "hub"
+  },
+  "bargain": {
+   "speaker": "warden",
+   "text": "The archive leaves intact, in custodial hands. Protocol satisfied. Standing down.",
+   "next": "end_node",
+   "effects": [
+    {
+     "set_flag": "warden_fate",
+     "value": "bargained"
+    },
+    {
+     "set_flag": "warden_neutralized",
+     "value": true
+    },
+    {
+     "xp": 80,
+     "key": "warden_fate",
+     "reason": "Bargained with the WARDEN"
+    }
+   ]
+  },
+  "tav_offer": {
+   "speaker": "tav7",
+   "text": "I could host a fragment: its judgment, not its priorities. It would change me. I would hear it, the way it hears you. I am willing. It is the kind of risk I would rather take than watch a person be deleted. Ask me, and I will.",
+   "choices": [
+    {
+     "text": "Do it, Tav-7. Carry it out of here.",
+     "next": "hosted",
+     "effects": [
+      {
+       "set_flag": "warden_fate",
+       "value": "hosted"
+      },
+      {
+       "set_flag": "warden_neutralized",
+       "value": true
+      },
+      {
+       "set_flag": "tav7_hosts_warden",
+       "value": true
+      },
+      {
+       "grant_feat": "lattice_echo",
+       "who": "tav7"
+      },
+      {
+       "influence": "tav7",
+       "delta": 8,
+       "key": "warden_fate",
+       "reason": "Let them save the WARDEN"
+      },
+      {
+       "influence": "iona",
+       "delta": -5,
+       "key": "warden_fate",
+       "reason": "Put the WARDEN inside Tav-7"
+      },
+      {
+       "xp": 80,
+       "key": "warden_fate",
+       "reason": "Tav-7 carries a WARDEN fragment"
+      }
+     ]
+    },
+    {
+     "text": "No. I won't let you risk yourself for it.",
+     "next": "hub",
+     "effects": [
+      {
+       "influence": "tav7",
+       "delta": -1,
+       "key": "warden_refuse",
+       "reason": "Refused their offer"
+      }
+     ]
+    }
+   ]
+  },
+  "hosted": {
+   "speaker": "tav7",
+   "text": "Cold. Very cold. It is... quieter in here than I expected. It says thank you. I think it means it. All its units are standing down.",
+   "next": "hosted_r"
+  },
+  "hosted_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "node": "hosted_iona"
+    },
+    {
+     "if": [],
+     "node": "end_node"
+    }
+   ]
+  },
+  "hosted_iona": {
+   "speaker": "iona",
+   "text": "You just put that thing inside our friend. If it ever looks out of your eyes, Tav, I'm going to know.",
+   "next": "end_node"
+  },
+  "purge_q": {
+   "speaker": "warden",
+   "text": "You will delete what you were. I will not stop you. I was built to protect the record, not myself. Are you certain?",
+   "choices": [
+    {
+     "text": "I'm certain. Purge the WARDEN.",
+     "next": "purged",
+     "effects": [
+      {
+       "set_flag": "warden_fate",
+       "value": "purged"
+      },
+      {
+       "set_flag": "warden_neutralized",
+       "value": true
+      },
+      {
+       "influence": "tav7",
+       "delta": -10,
+       "key": "warden_fate",
+       "reason": "Deleted a person who was also them"
+      },
+      {
+       "influence": "iona",
+       "delta": 4,
+       "key": "warden_fate",
+       "reason": "Ended the thing killing passengers"
+      },
+      {
+       "xp": 80,
+       "key": "warden_fate",
+       "reason": "Purged the WARDEN"
+      }
+     ],
+     "tone": "hard"
+    },
+    {
+     "text": "No. Not yet.",
+     "next": "hub"
+    }
+   ]
+  },
+  "purged": {
+   "speaker": "narrator",
+   "text": "The core's light thins to a single thread, then to nothing. Across the ship, every turret, every drone, every lock goes slack at once. In the silence you realise you had been hearing it the whole time, a hum at the back of your skull, and now it is gone.",
+   "next": "purged_r"
+  },
+  "purged_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "node": "purged_tav"
+    },
+    {
+     "if": [],
+     "node": "end_node"
+    }
+   ]
+  },
+  "purged_tav": {
+   "speaker": "tav7",
+   "text": "It did not resist. I want that recorded somewhere. It did not resist.",
+   "next": "end_node"
+  },
+  "ignore": {
+   "speaker": "warden",
+   "text": "Then I will do what you made me to do. Goodbye, Source.",
+   "next": "end_node",
+   "effects": [
+    {
+     "set_flag": "warden_fate",
+     "value": "ignored"
+    }
+   ]
+  },
+  "end_node": {
+   "speaker": "system",
+   "text": "The WARDEN's fate is decided.",
+   "end": true
+  },
+  "done_before": {
+   "speaker": "system",
+   "text": "The core is quiet.",
+   "choices": [
+    {
+     "text": "(Step away.)",
+     "end": true
+    }
+   ]
+  }
+ }
+}

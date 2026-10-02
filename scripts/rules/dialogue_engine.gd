@@ -125,8 +125,14 @@ func _check_id(c: Dictionary, index: int) -> String:
 
 
 func check_actor(ck: Dictionary) -> CharacterSheet:
+	return st.get_char(_who(ck))
+
+
+func _who(ck: Dictionary) -> String:
 	var who := String(ck.get("who", "player"))
-	return st.get_char(who)
+	if who == "actor":
+		who = String(ctx.get("actor", "player"))
+	return who
 
 
 ## Visible choices with availability and check annotations.
@@ -135,6 +141,8 @@ func choices() -> Array:
 	var raw: Array = DB.arr(node, "choices")
 	for i in raw.size():
 		var c: Dictionary = raw[i]
+		if c.has("hide_if") and Conditions.eval_all(c["hide_if"], st, ctx):
+			continue
 		var cond_ok := Conditions.eval_all(c.get("if", []), st, ctx)
 		if not cond_ok and not c.has("show_locked"):
 			continue
@@ -149,7 +157,7 @@ func choices() -> Array:
 			if st.checks.has(cid) and not bool(ck.get("retry", false)):
 				continue
 			var actor := check_actor(ck)
-			var who := String(ck.get("who", "player"))
+			var who := _who(ck)
 			if actor == null or (who != "player" and not st.party.has(who)):
 				if who != "player":
 					continue
@@ -163,7 +171,7 @@ func choices() -> Array:
 				var chance := clampi((21 - (dc - total)) * 5, 0, 100)
 				check_info = {"skill": sk, "dc": dc, "who": who, "who_name": actor.display_name, "bonus": total, "chance": chance}
 				var skill_name := String(DB.skill(sk).get("name", sk))
-				if who == "player":
+				if who == "player" and String(ck.get("who", "player")) == "player":
 					tag = "%s%s %d" % ["" if tag == "" else tag + " · ", skill_name, dc]
 				else:
 					tag = "%s%s – %s %d" % ["" if tag == "" else tag + " · ", actor.display_name, skill_name, dc]

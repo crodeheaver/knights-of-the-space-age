@@ -731,35 +731,6 @@
      "label": "Press your palm to the scanner (Resonance credential)",
      "player_only": true,
      "energy": 2,
-     "success": [
-      {
-       "world": "d_blast",
-       "set": {
-        "locked": false,
-        "open": true
-       }
-      },
-      {
-       "set_flag": "checkpoint_solved"
-      },
-      {
-       "set_flag": "checkpoint_by",
-       "value": "credential"
-      },
-      {
-       "set_flag": "used_credential"
-      },
-      {
-       "inc_flag": "credential_uses",
-       "key": "cred_blast"
-      },
-      {
-       "codex": "cx_credential"
-      }
-     ],
-     "success_text": "The scanner glows amber. 'CUSTODIAN AUTHORITY ACCEPTED.' The ship knows your neural signature.",
-     "xp": 60,
-     "key": "checkpoint_door",
      "dialogue": "checkpoint_credential"
     },
     {
@@ -2508,6 +2479,9 @@
     },
     {
      "set_flag": "case_opened"
+    },
+    {
+     "tutorial": "inventory"
     }
    ]
   },
@@ -2547,7 +2521,7 @@
    "model": "card_table",
    "name": "Shards Table",
    "minigame": "shards",
-   "verb": "Play Shards"
+   "verb": "Play Shards with Brann"
   },
   {
    "id": "commons_sim",
@@ -2561,7 +2535,7 @@
    "model": "booth",
    "name": "Slipstream Racing Sim",
    "minigame": "slipstream",
-   "verb": "Race the sim"
+   "verb": "Race the Slipstream sim"
   },
   {
    "id": "commons_muster",
@@ -2574,6 +2548,1043 @@
    "rot": 0,
    "model": "muster",
    "name": "Muster Point B"
+  },
+  {
+   "id": "lounge_history",
+   "type": "readable",
+   "area": "lounge",
+   "pos": [
+    15.2,
+    -7.3
+   ],
+   "model": "datapad",
+   "name": "Memorial Placard",
+   "codex": "cx_haldis_war",
+   "verb": "Read"
+  },
+  {
+   "id": "lounge_manifest",
+   "type": "readable",
+   "area": "lounge",
+   "pos": [
+    22.8,
+    -2.0
+   ],
+   "rot": 180,
+   "model": "terminal",
+   "name": "Passenger Manifest Terminal",
+   "codex": "cx_manifest",
+   "verb": "Read manifest"
+  },
+  {
+   "id": "lounge_bag",
+   "type": "container",
+   "area": "lounge",
+   "pos": [
+    19.5,
+    -4.0
+   ],
+   "model": "crate",
+   "name": "Abandoned Travel Bag",
+   "loot": {
+    "credits": 60,
+    "reflex_stim": 1,
+    "antitox": 1
+   }
+  },
+  {
+   "id": "corr_body",
+   "type": "corpse",
+   "area": "corridor",
+   "pos": [
+    34.5,
+    8.2
+   ],
+   "rot": 30,
+   "name": "Body of Crewman Jessa Orrin",
+   "cloth": "#253a5e",
+   "loot": {
+    "medpac": 1,
+    "credits": 25
+   }
+  },
+  {
+   "id": "corr_ticket",
+   "type": "readable",
+   "area": "corridor",
+   "pos": [
+    35.4,
+    8.9
+   ],
+   "model": "datapad",
+   "name": "Dropped Datapad",
+   "codex": "cx_maintenance_ticket"
+  },
+  {
+   "id": "corr_locker",
+   "type": "container",
+   "area": "corridor",
+   "pos": [
+    38.0,
+    13.4
+   ],
+   "rot": 180,
+   "model": "locker",
+   "name": "Emergency Locker",
+   "loot": {
+    "frag_grenade": 1,
+    "repair_kit": 1,
+    "tech_components": 2,
+    "medpac": 1
+   }
+  },
+  {
+   "id": "chk_terminal",
+   "type": "terminal",
+   "area": "checkpoint",
+   "pos": [
+    52.0,
+    9.55
+   ],
+   "rot": 180,
+   "model": "terminal",
+   "name": "Checkpoint Security Terminal",
+   "dialogue": "checkpoint_terminal"
+  },
+  {
+   "id": "chk_mine",
+   "type": "mine",
+   "area": "checkpoint",
+   "pos": [
+    50.6,
+    7.0
+   ],
+   "model": "mine",
+   "name": "WARDEN Shock Mine",
+   "mine_item": "shock_mine",
+   "hidden_dc": 11,
+   "notice_range": 6.0,
+   "owner": "warden",
+   "xp": 40,
+   "on_detect": [
+    {
+     "tutorial": "skills_world"
+    }
+   ]
+  },
+  {
+   "id": "chk_body",
+   "type": "corpse",
+   "area": "checkpoint",
+   "pos": [
+    56.0,
+    8.4
+   ],
+   "rot": 120,
+   "name": "Body of Officer Tamsin Kell",
+   "cloth": "#253a5e",
+   "loot": {
+    "shield_cell": 1,
+    "credits": 30,
+    "sensor_visor": 1
+   }
+  },
+  {
+   "id": "armory_locker",
+   "type": "container",
+   "area": "armory",
+   "pos": [
+    54.5,
+    -5.3
+   ],
+   "model": "locker",
+   "name": "Armory Weapons Locker",
+   "loot": {
+    "ion_grenade": 2,
+    "shield_cell": 2,
+    "insulated_lining": 1,
+    "credits": 50,
+    "carbine": 1
+   }
+  },
+  {
+   "id": "armory_manifest",
+   "type": "readable",
+   "area": "armory",
+   "pos": [
+    57.0,
+    -2.0
+   ],
+   "rot": -90,
+   "model": "terminal",
+   "name": "Armory Manifest",
+   "codex": "cx_armory_manifest"
+  },
+  {
+   "id": "crawl_cache",
+   "type": "container",
+   "area": "crawlway",
+   "pos": [
+    66.0,
+    25.4
+   ],
+   "model": "crate",
+   "name": "Technician's Cache",
+   "loot": {
+    "tech_components": 2,
+    "power_cell": 1,
+    "antitox": 1
+   }
+  },
+  {
+   "id": "crawl_note",
+   "type": "readable",
+   "area": "crawlway",
+   "pos": [
+    59.5,
+    18.5
+   ],
+   "model": "datapad",
+   "name": "Note Soldered to a Panel",
+   "codex": "cx_crawl_log"
+  },
+  {
+   "id": "med_release",
+   "type": "panel",
+   "area": "medical",
+   "pos": [
+    63.7,
+    10.0
+   ],
+   "rot": 90,
+   "model": "junction",
+   "name": "Blast Door Manual Release",
+   "options": [
+    {
+     "id": "release",
+     "label": "Pull the manual release",
+     "hide_if": [
+      {
+       "flag": "checkpoint_solved"
+      }
+     ],
+     "success": [
+      {
+       "world": "d_blast",
+       "set": {
+        "locked": false,
+        "open": true
+       }
+      },
+      {
+       "set_flag": "checkpoint_solved"
+      },
+      {
+       "set_flag": "checkpoint_by",
+       "value": "crawlway"
+      }
+     ],
+     "success_text": "The blast door grinds open from this side.",
+     "xp": 40,
+     "key": "checkpoint_door"
+    }
+   ]
+  },
+  {
+   "id": "med_station",
+   "type": "medstation",
+   "area": "medical",
+   "pos": [
+    80.6,
+    2.2
+   ],
+   "rot": -90,
+   "model": "medstation",
+   "name": "Medical Fabricator"
+  },
+  {
+   "id": "med_vendor",
+   "type": "vendor",
+   "area": "medical",
+   "pos": [
+    80.6,
+    5.4
+   ],
+   "rot": -90,
+   "model": "vendor",
+   "name": "Medical Dispensary",
+   "vendor": "med_dispensary"
+  },
+  {
+   "id": "med_muster",
+   "type": "muster",
+   "area": "medical",
+   "pos": [
+    65.6,
+    2.6
+   ],
+   "model": "muster",
+   "name": "Medical Muster Point"
+  },
+  {
+   "id": "ward_intercom",
+   "type": "terminal",
+   "area": "medical",
+   "pos": [
+    73.4,
+    0.6
+   ],
+   "rot": 0,
+   "model": "terminal",
+   "name": "Ward 2 Intercom",
+   "dialogue": "ward_intercom",
+   "color": "#e0b03a"
+  },
+  {
+   "id": "ward_purge",
+   "type": "panel",
+   "area": "medical",
+   "pos": [
+    67.0,
+    0.6
+   ],
+   "rot": 0,
+   "model": "valve",
+   "name": "Ward Coolant Purge Valve",
+   "color": "#7fd0ff",
+   "options": [
+    {
+     "id": "purge",
+     "label": "Purge the ward's vented coolant",
+     "skill": "repair",
+     "dc": 13,
+     "max_attempts": 2,
+     "hide_if": [
+      {
+       "any": [
+        {
+         "flag": "ward_purged"
+        },
+        {
+         "flag": "ward_decided"
+        }
+       ]
+      }
+     ],
+     "success": [
+      {
+       "set_flag": "ward_purged"
+      },
+      {
+       "codex": "cx_triage_notes"
+      }
+     ],
+     "success_text": "The ward's scrubbers cycle clean. Opening it is safe now.",
+     "failure": [
+      {
+       "damage_party": 2,
+       "dtype": "thermal",
+       "who": "actor"
+      }
+     ],
+     "failure_text": "A jet of freezing coolant bursts from the valve. It isn't purged yet.",
+     "xp": 50,
+     "key": "ward_purge"
+    }
+   ]
+  },
+  {
+   "id": "med_notes",
+   "type": "readable",
+   "area": "medical",
+   "pos": [
+    76.5,
+    12.6
+   ],
+   "model": "datapad",
+   "name": "Triage Notes",
+   "codex": "cx_triage_notes"
+  },
+  {
+   "id": "storage_crate",
+   "type": "container",
+   "area": "storage",
+   "pos": [
+    79.6,
+    21.5
+   ],
+   "model": "crate",
+   "name": "Medical Supply Crate",
+   "loot": {
+    "med_reagents": 3,
+    "medpac": 1
+   }
+  },
+  {
+   "id": "eng_terminal",
+   "type": "terminal",
+   "area": "engineering",
+   "pos": [
+    84.6,
+    2.2
+   ],
+   "rot": 90,
+   "model": "terminal",
+   "name": "Engineering Grid Terminal",
+   "dialogue": "engineering_terminal"
+  },
+  {
+   "id": "eng_body",
+   "type": "corpse",
+   "area": "engineering",
+   "pos": [
+    86.4,
+    11.5
+   ],
+   "rot": 200,
+   "name": "Body of Chief Engineer Osei Marsh",
+   "cloth": "#6b4f3a",
+   "loot": {
+    "tech_components": 3,
+    "respirator_mask": 1
+   }
+  },
+  {
+   "id": "eng_log",
+   "type": "readable",
+   "area": "engineering",
+   "pos": [
+    87.4,
+    12.6
+   ],
+   "model": "datapad",
+   "name": "Chief Engineer's Datapad",
+   "codex": "cx_marsh_log",
+   "on_read": [
+    {
+     "set_flag": "pump_seal_known"
+    },
+    {
+     "tutorial": "hazards"
+    }
+   ]
+  },
+  {
+   "id": "pump_n",
+   "type": "pump",
+   "area": "engineering",
+   "pos": [
+    100.0,
+    -4.7
+   ],
+   "model": "pump",
+   "name": "North Coolant Pump",
+   "options": [
+    {
+     "id": "restart",
+     "label": "Reseat the seal and restart the pump",
+     "skill": "repair",
+     "dc": 12,
+     "max_attempts": 2,
+     "hide_if": [
+      {
+       "flag": "pump_north_fixed"
+      }
+     ],
+     "success": [
+      {
+       "set_flag": "pump_north_fixed"
+      }
+     ],
+     "success_text": "The pump shudders and catches. Coolant pressure stabilises.",
+     "failure": [
+      {
+       "damage_party": 3,
+       "dtype": "thermal",
+       "who": "actor"
+      }
+     ],
+     "failure_text": "Scalding vapour lashes out; the seal is still loose.",
+     "xp": 40,
+     "key": "pump_n"
+    },
+    {
+     "id": "kit",
+     "label": "Install a Pump Seal Kit (no check)",
+     "requires_item": "pump_seal",
+     "consume_item": true,
+     "hide_if": [
+      {
+       "flag": "pump_north_fixed"
+      }
+     ],
+     "success": [
+      {
+       "set_flag": "pump_north_fixed"
+      }
+     ],
+     "success_text": "The fabricated seal clicks into place and the pump restarts.",
+     "xp": 40,
+     "key": "pump_n"
+    }
+   ]
+  },
+  {
+   "id": "pump_s",
+   "type": "pump",
+   "area": "engineering",
+   "pos": [
+    88.0,
+    19.8
+   ],
+   "model": "pump",
+   "name": "South Coolant Pump",
+   "options": [
+    {
+     "id": "restart",
+     "label": "Reseat the seal and restart the pump",
+     "skill": "repair",
+     "dc": 12,
+     "max_attempts": 2,
+     "hide_if": [
+      {
+       "flag": "pump_south_fixed"
+      }
+     ],
+     "success": [
+      {
+       "set_flag": "pump_south_fixed"
+      }
+     ],
+     "success_text": "The pump shudders and catches. Coolant pressure stabilises.",
+     "failure": [
+      {
+       "damage_party": 3,
+       "dtype": "thermal",
+       "who": "actor"
+      }
+     ],
+     "failure_text": "Scalding vapour lashes out; the seal is still loose.",
+     "xp": 40,
+     "key": "pump_s"
+    },
+    {
+     "id": "kit",
+     "label": "Install a Pump Seal Kit (no check)",
+     "requires_item": "pump_seal",
+     "consume_item": true,
+     "hide_if": [
+      {
+       "flag": "pump_south_fixed"
+      }
+     ],
+     "success": [
+      {
+       "set_flag": "pump_south_fixed"
+      }
+     ],
+     "success_text": "The fabricated seal clicks into place and the pump restarts.",
+     "xp": 40,
+     "key": "pump_s"
+    }
+   ]
+  },
+  {
+   "id": "vent_n",
+   "type": "hazard",
+   "area": "engineering",
+   "pos": [
+    96.5,
+    -3.0
+   ],
+   "model": "hazard",
+   "name": "Venting Coolant",
+   "hazard": "toxin",
+   "size": [
+    12,
+    6
+   ],
+   "color": "#7fd0ff",
+   "active_if": [
+    {
+     "not": {
+      "flag": "pump_north_fixed"
+     }
+    }
+   ]
+  },
+  {
+   "id": "plate_1",
+   "type": "hazard",
+   "area": "engineering",
+   "pos": [
+    93.0,
+    19.0
+   ],
+   "model": "hazard",
+   "name": "Live Deck Plate",
+   "hazard": "shock",
+   "size": [
+    2,
+    2
+   ],
+   "color": "#7fd0ff",
+   "hidden_dc": 13,
+   "notice_range": 5.0,
+   "active_if": [
+    {
+     "not": {
+      "flag": "plates_disabled"
+     }
+    }
+   ]
+  },
+  {
+   "id": "plate_2",
+   "type": "hazard",
+   "area": "engineering",
+   "pos": [
+    97.0,
+    17.5
+   ],
+   "model": "hazard",
+   "name": "Live Deck Plate",
+   "hazard": "shock",
+   "size": [
+    2,
+    2
+   ],
+   "color": "#7fd0ff",
+   "hidden_dc": 13,
+   "notice_range": 5.0,
+   "active_if": [
+    {
+     "not": {
+      "flag": "plates_disabled"
+     }
+    }
+   ]
+  },
+  {
+   "id": "plate_3",
+   "type": "hazard",
+   "area": "engineering",
+   "pos": [
+    100.5,
+    20.0
+   ],
+   "model": "hazard",
+   "name": "Live Deck Plate",
+   "hazard": "shock",
+   "size": [
+    2,
+    2
+   ],
+   "color": "#7fd0ff",
+   "hidden_dc": 13,
+   "notice_range": 5.0,
+   "active_if": [
+    {
+     "not": {
+      "flag": "plates_disabled"
+     }
+    }
+   ]
+  },
+  {
+   "id": "plate_4",
+   "type": "hazard",
+   "area": "engineering",
+   "pos": [
+    104.0,
+    18.0
+   ],
+   "model": "hazard",
+   "name": "Live Deck Plate",
+   "hazard": "shock",
+   "size": [
+    2,
+    2
+   ],
+   "color": "#7fd0ff",
+   "hidden_dc": 13,
+   "notice_range": 5.0,
+   "active_if": [
+    {
+     "not": {
+      "flag": "plates_disabled"
+     }
+    }
+   ]
+  },
+  {
+   "id": "eng_junction",
+   "type": "panel",
+   "area": "engineering",
+   "pos": [
+    90.2,
+    21.6
+   ],
+   "rot": 180,
+   "model": "junction",
+   "name": "Deck Grid Junction",
+   "options": [
+    {
+     "id": "isolate",
+     "label": "Isolate the live deck plates",
+     "skill": "repair",
+     "dc": 12,
+     "max_attempts": 2,
+     "hide_if": [
+      {
+       "flag": "plates_disabled"
+      }
+     ],
+     "success": [
+      {
+       "set_flag": "plates_disabled"
+      }
+     ],
+     "success_text": "The plates go dark.",
+     "failure": [
+      {
+       "damage_party": 3,
+       "dtype": "energy",
+       "who": "actor"
+      }
+     ],
+     "failure_text": "The junction bites back with a jolt.",
+     "xp": 40,
+     "key": "plates"
+    }
+   ]
+  },
+  {
+   "id": "eng_workbench",
+   "type": "workbench",
+   "area": "workshop",
+   "pos": [
+    96.0,
+    27.9
+   ],
+   "rot": 180,
+   "model": "workbench",
+   "name": "Workshop Bench"
+  },
+  {
+   "id": "eng_muster",
+   "type": "muster",
+   "area": "workshop",
+   "pos": [
+    98.6,
+    24.4
+   ],
+   "model": "muster",
+   "name": "Workshop Muster Point"
+  },
+  {
+   "id": "arc_index",
+   "type": "terminal",
+   "area": "archive",
+   "pos": [
+    131.0,
+    -2.4
+   ],
+   "rot": 0,
+   "model": "terminal",
+   "name": "Archive Index Terminal",
+   "dialogue": "archive_index",
+   "color": "#3fb6b0"
+  },
+  {
+   "id": "arc_slate",
+   "type": "readable",
+   "area": "archive",
+   "pos": [
+    114.6,
+    12.4
+   ],
+   "model": "datapad",
+   "name": "Reclaimer Field Slate",
+   "codex": "cx_lantern"
+  },
+  {
+   "id": "arc_crane",
+   "type": "panel",
+   "area": "archive",
+   "pos": [
+    131.5,
+    17.2
+   ],
+   "rot": 180,
+   "model": "console",
+   "name": "Cargo Crane Console",
+   "color": "#d8a43a",
+   "options": [
+    {
+     "id": "drop",
+     "label": "Drop the crane's load on the central aisle",
+     "skill": "computer_use",
+     "dc": 12,
+     "max_attempts": 2,
+     "hide_if": [
+      {
+       "any": [
+        {
+         "flag": "crane_dropped"
+        },
+        {
+         "encounter": "enc_archive",
+         "state": "resolved"
+        }
+       ]
+      }
+     ],
+     "success": [
+      {
+       "set_flag": "crane_dropped"
+      },
+      {
+       "area_damage": [
+        124.0,
+        8.0
+       ],
+       "radius": 3.2,
+       "dice": "3d6",
+       "dtype": "kinetic",
+       "status": "knocked_down",
+       "duration": 6.0,
+       "faction": "lantern"
+      },
+      {
+       "start_encounter": "enc_archive"
+      }
+     ],
+     "success_text": "Two tonnes of cargo crash into the aisle.",
+     "failure_text": "The console rejects the command.",
+     "noise": 4,
+     "xp": 30,
+     "key": "crane"
+    }
+   ]
+  },
+  {
+   "id": "arc_purge",
+   "type": "panel",
+   "area": "archive",
+   "pos": [
+    115.0,
+    17.6
+   ],
+   "rot": 180,
+   "model": "valve",
+   "name": "Archive Coolant Purge",
+   "color": "#7fd0ff",
+   "options": [
+    {
+     "id": "purge",
+     "label": "Flood the central aisle with freezing coolant",
+     "if": [
+      {
+       "flag": "pumps_restored"
+      }
+     ],
+     "locked_text": "No pressure: the engineering coolant pumps are down.",
+     "hide_if": [
+      {
+       "any": [
+        {
+         "flag": "arc_purged"
+        },
+        {
+         "encounter": "enc_archive",
+         "state": "resolved"
+        }
+       ]
+      }
+     ],
+     "success": [
+      {
+       "set_flag": "arc_purged"
+      },
+      {
+       "area_damage": [
+        124.0,
+        8.0
+       ],
+       "radius": 4.5,
+       "dice": "1d6",
+       "dtype": "thermal",
+       "status": "immobilized",
+       "duration": 9.0,
+       "faction": "lantern"
+      },
+      {
+       "start_encounter": "enc_archive"
+      }
+     ],
+     "success_text": "A white wall of coolant fog rolls down the aisle and freezes the reclaimers in place.",
+     "xp": 30,
+     "key": "arc_purge"
+    }
+   ]
+  },
+  {
+   "id": "arc_intercom",
+   "type": "terminal",
+   "area": "archive",
+   "pos": [
+    132.6,
+    10.4
+   ],
+   "rot": -90,
+   "model": "terminal",
+   "name": "Command Intercom",
+   "dialogue": "command_intercom",
+   "color": "#e8823a"
+  },
+  {
+   "id": "cold_crates",
+   "type": "container",
+   "area": "coldstore",
+   "pos": [
+    119.2,
+    24.4
+   ],
+   "model": "crate",
+   "name": "Cold Storage Crates",
+   "loot": {
+    "med_reagents": 2,
+    "frag_mine": 1,
+    "power_cell": 1
+   },
+   "on_looted": [
+    {
+     "set_flag": "senna_found"
+    },
+    {
+     "npc": "senna",
+     "set": {
+      "spawn": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "senna_spot",
+   "type": "readable",
+   "area": "coldstore",
+   "pos": [
+    124.0,
+    24.8
+   ],
+   "model": "datapad",
+   "name": "Smeared Blood Trail",
+   "hidden_dc": 12,
+   "notice_range": 8.0,
+   "codex": "cx_lantern",
+   "on_detect": [
+    {
+     "set_flag": "senna_found"
+    },
+    {
+     "npc": "senna",
+     "set": {
+      "spawn": true
+     }
+    },
+    {
+     "notify": "Someone is breathing behind the crates."
+    }
+   ]
+  },
+  {
+   "id": "cmd_core",
+   "type": "terminal",
+   "area": "command",
+   "pos": [
+    140.0,
+    3.0
+   ],
+   "model": "core",
+   "name": "Archive Master Core (WARDEN)",
+   "dialogue": "warden_core",
+   "verb": "Commune with the WARDEN"
+  },
+  {
+   "id": "cmd_console",
+   "type": "terminal",
+   "area": "command",
+   "pos": [
+    146.4,
+    3.6
+   ],
+   "rot": -90,
+   "model": "launch_console",
+   "name": "Launch Control",
+   "dialogue": "launch_console",
+   "verb": "Use launch control"
+  },
+  {
+   "id": "cmd_muster",
+   "type": "muster",
+   "area": "command",
+   "pos": [
+    137.6,
+    14.0
+   ],
+   "model": "muster",
+   "name": "Command Muster Point"
+  },
+  {
+   "id": "bay_spec",
+   "type": "readable",
+   "area": "bay",
+   "pos": [
+    151.0,
+    10.0
+   ],
+   "rot": 90,
+   "model": "terminal",
+   "name": "Petrel Launch Placard",
+   "codex": "cx_petrel"
+  },
+  {
+   "id": "bay_terminal",
+   "type": "terminal",
+   "area": "bay",
+   "pos": [
+    152.4,
+    21.0
+   ],
+   "rot": 90,
+   "model": "terminal",
+   "name": "Bay Defense Terminal",
+   "dialogue": "bay_terminal"
+  },
+  {
+   "id": "petrel_ramp",
+   "type": "panel",
+   "area": "bay",
+   "pos": [
+    166.0,
+    12.8
+   ],
+   "model": "launch_console",
+   "name": "Petrel Boarding Ramp",
+   "options": [
+    {
+     "id": "board",
+     "label": "Board the Petrel and launch",
+     "if": [
+      {
+       "flag": "bay_resolved"
+      }
+     ],
+     "locked_text": "The bay is not secure yet.",
+     "dialogue": "launch"
+    }
+   ]
   }
  ],
  "npcs": {
@@ -2652,7 +3663,540 @@
    },
    "armor_look": "travel_jacket",
    "dialogue": "ketterick"
+  },
+  "iona_npc": {
+   "name": "Iona Rell",
+   "area": "corridor",
+   "pos": [
+    44.6,
+    7.0
+   ],
+   "rot": -90,
+   "appearance": {
+    "body": "average",
+    "head": "angular",
+    "hair": "tail",
+    "skin": "s2",
+    "hair_color": "h1",
+    "accent": "a2"
+   },
+   "armor_look": "security_weave"
+  },
+  "tav7_npc": {
+   "name": "Tav-7",
+   "area": "medical",
+   "pos": [
+    75.5,
+    9.5
+   ],
+   "rot": -90,
+   "appearance": {
+    "model": "synthetic",
+    "body": "slight",
+    "head": "long",
+    "hair": "shaved",
+    "skin": "s5",
+    "hair_color": "h5",
+    "accent": "a1"
+   },
+   "armor_look": "chassis_plating",
+   "kind": "machine"
+  },
+  "varga": {
+   "name": "Dr. Ilse Varga",
+   "area": "medical",
+   "pos": [
+    69.0,
+    10.4
+   ],
+   "rot": 180,
+   "appearance": {
+    "body": "slight",
+    "head": "angular",
+    "hair": "tail",
+    "skin": "s4",
+    "hair_color": "h5",
+    "accent": "a4"
+   },
+   "armor_look": "operator_coat",
+   "dialogue": "varga_triage"
+  },
+  "corin": {
+   "name": "Corin Ashe",
+   "area": "medical",
+   "pos": [
+    65.5,
+    13.6
+   ],
+   "rot": 0,
+   "appearance": {
+    "body": "average",
+    "head": "round",
+    "hair": "crop",
+    "skin": "s3",
+    "hair_color": "h2",
+    "accent": "a1"
+   },
+   "armor_look": "travel_jacket",
+   "downed": true,
+   "dialogue": "wounded"
+  },
+  "mae": {
+   "name": "Mae Toller",
+   "area": "medical",
+   "pos": [
+    68.5,
+    13.6
+   ],
+   "rot": 0,
+   "appearance": {
+    "body": "average",
+    "head": "round",
+    "hair": "crop",
+    "skin": "s3",
+    "hair_color": "h2",
+    "accent": "a1"
+   },
+   "armor_look": "travel_jacket",
+   "downed": true,
+   "dialogue": "wounded"
+  },
+  "benedikt": {
+   "name": "Benedikt Sorrow",
+   "area": "medical",
+   "pos": [
+    71.5,
+    13.6
+   ],
+   "rot": 0,
+   "appearance": {
+    "body": "average",
+    "head": "round",
+    "hair": "crop",
+    "skin": "s3",
+    "hair_color": "h2",
+    "accent": "a1"
+   },
+   "armor_look": "travel_jacket",
+   "downed": true,
+   "dialogue": "wounded"
+  },
+  "pell": {
+   "name": "Pell Okafor",
+   "area": "ward",
+   "pos": [
+    69.0,
+    -4.0
+   ],
+   "rot": 180,
+   "appearance": {
+    "body": "average",
+    "head": "round",
+    "hair": "crop",
+    "skin": "s1",
+    "hair_color": "h2",
+    "accent": "a3"
+   },
+   "armor_look": "travel_jacket",
+   "dialogue": "ward_patient",
+   "if": [
+    {
+     "flag": "ward_open"
+    }
+   ]
+  },
+  "ward_a": {
+   "name": "Ward Patient Ruth Calder",
+   "area": "ward",
+   "pos": [
+    71.5,
+    -5.5
+   ],
+   "rot": 180,
+   "appearance": {
+    "body": "average",
+    "head": "long",
+    "hair": "long",
+    "skin": "s3",
+    "hair_color": "h2",
+    "accent": "a3"
+   },
+   "armor_look": "travel_jacket",
+   "dialogue": "ward_patient",
+   "if": [
+    {
+     "flag": "ward_open"
+    }
+   ]
+  },
+  "ward_b": {
+   "name": "Ward Patient Joss Maren",
+   "area": "ward",
+   "pos": [
+    73.5,
+    -3.5
+   ],
+   "rot": 180,
+   "appearance": {
+    "body": "average",
+    "head": "square",
+    "hair": "swept",
+    "skin": "s5",
+    "hair_color": "h2",
+    "accent": "a3"
+   },
+   "armor_look": "travel_jacket",
+   "dialogue": "ward_patient",
+   "if": [
+    {
+     "flag": "ward_open"
+    }
+   ]
+  },
+  "ward_c": {
+   "name": "Ward Patient Aya Senn",
+   "area": "ward",
+   "pos": [
+    68.0,
+    -6.0
+   ],
+   "rot": 180,
+   "appearance": {
+    "body": "average",
+    "head": "angular",
+    "hair": "tail",
+    "skin": "s2",
+    "hair_color": "h2",
+    "accent": "a3"
+   },
+   "armor_look": "travel_jacket",
+   "dialogue": "ward_patient",
+   "if": [
+    {
+     "flag": "ward_open"
+    }
+   ]
+  },
+  "ward_d": {
+   "name": "Ward Patient Tomas Lir",
+   "area": "ward",
+   "pos": [
+    74.0,
+    -6.5
+   ],
+   "rot": 180,
+   "appearance": {
+    "body": "average",
+    "head": "round",
+    "hair": "shaved",
+    "skin": "s6",
+    "hair_color": "h2",
+    "accent": "a3"
+   },
+   "armor_look": "travel_jacket",
+   "dialogue": "ward_patient",
+   "if": [
+    {
+     "flag": "ward_open"
+    }
+   ]
+  },
+  "senna": {
+   "name": "Senna Thorne",
+   "area": "coldstore",
+   "pos": [
+    124.5,
+    23.6
+   ],
+   "rot": 200,
+   "template": "senna_thorne",
+   "faction": "lantern",
+   "appearance": {
+    "body": "slight",
+    "head": "angular",
+    "hair": "swept",
+    "skin": "s6",
+    "hair_color": "h3",
+    "accent": "a1"
+   },
+   "armor_look": "travel_jacket",
+   "dialogue": "senna",
+   "downed_pose": true,
+   "if": [
+    {
+     "flag": "senna_found"
+    }
+   ]
+  },
+  "varr": {
+   "name": "Commander Ysolde Varr",
+   "area": "command",
+   "pos": [
+    145.0,
+    9.5
+   ],
+   "rot": -90,
+   "template": "commander_varr",
+   "faction": "crew",
+   "appearance": {
+    "body": "average",
+    "head": "long",
+    "hair": "tail",
+    "skin": "s1",
+    "hair_color": "h5",
+    "accent": "a2"
+   },
+   "armor_look": "security_weave",
+   "dialogue": "varr"
   }
  },
- "triggers": []
+ "triggers": [
+  {
+   "id": "t_commons_tut",
+   "rect": [
+    11,
+    0,
+    28,
+    14
+   ],
+   "effects": [
+    {
+     "tutorial": "interaction"
+    }
+   ]
+  },
+  {
+   "id": "t_corridor",
+   "rect": [
+    29,
+    3,
+    37,
+    11
+   ],
+   "effects": [
+    {
+     "join_party": "iona"
+    },
+    {
+     "set_flag": "iona_recruited"
+    },
+    {
+     "start_encounter": "enc_corridor"
+    },
+    {
+     "notify": "Iona Rell: \"You're armed? Good. Get behind cover and help me drop these pickets!\""
+    }
+   ],
+   "if": [
+    {
+     "flag": "emergency_started"
+    }
+   ]
+  },
+  {
+   "id": "t_storage_bypass",
+   "rect": [
+    74,
+    18,
+    81,
+    26
+   ],
+   "effects": [
+    {
+     "resolve_encounter": "enc_checkpoint",
+     "resolution": "bypassed"
+    },
+    {
+     "set_flag": "checkpoint_bypassed"
+    },
+    {
+     "notify": "You slipped past the checkpoint's guns unseen."
+    }
+   ],
+   "if": [
+    {
+     "encounter": "enc_checkpoint",
+     "state": "pending"
+    }
+   ]
+  },
+  {
+   "id": "t_checkpoint_tut",
+   "rect": [
+    48,
+    0,
+    56,
+    15
+   ],
+   "effects": [
+    {
+     "tutorial": "stealth"
+    }
+   ]
+  },
+  {
+   "id": "t_medical",
+   "rect": [
+    63,
+    0,
+    70,
+    17
+   ],
+   "effects": [
+    {
+     "join_party": "tav7"
+    },
+    {
+     "set_flag": "tav7_recruited"
+    },
+    {
+     "start_encounter": "enc_medical"
+    },
+    {
+     "notify": "Tav-7: \"Assistance would be statistically welcome. Their cutters are aimed at my patients.\""
+    }
+   ],
+   "if": [
+    {
+     "not": {
+      "recruited": "tav7"
+     }
+    }
+   ]
+  },
+  {
+   "id": "t_eng_tut",
+   "rect": [
+    83,
+    0,
+    89,
+    16
+   ],
+   "effects": [
+    {
+     "tutorial": "crafting"
+    }
+   ]
+  },
+  {
+   "id": "t_duct_bypass",
+   "rect": [
+    112,
+    21,
+    114,
+    26
+   ],
+   "effects": [
+    {
+     "resolve_encounter": "enc_engineering",
+     "resolution": "bypassed"
+    },
+    {
+     "set_flag": "engineering_bypassed"
+    },
+    {
+     "notify": "The maintenance duct carried you past the Sentinel post."
+    }
+   ],
+   "if": [
+    {
+     "encounter": "enc_engineering",
+     "state": "pending"
+    }
+   ]
+  },
+  {
+   "id": "t_archive_bypass_eng",
+   "rect": [
+    112,
+    -4,
+    120,
+    20
+   ],
+   "effects": [
+    {
+     "resolve_encounter": "enc_engineering",
+     "resolution": "bypassed"
+    },
+    {
+     "set_flag": "engineering_bypassed"
+    }
+   ],
+   "if": [
+    {
+     "encounter": "enc_engineering",
+     "state": "pending"
+    }
+   ]
+  },
+  {
+   "id": "t_cold",
+   "rect": [
+    118,
+    21,
+    126,
+    27
+   ],
+   "effects": [
+    {
+     "set_flag": "senna_found"
+    },
+    {
+     "npc": "senna",
+     "set": {
+      "spawn": true
+     }
+    },
+    {
+     "notify": "A wounded reclaimer is hiding behind the cold-storage crates."
+    }
+   ],
+   "if": [
+    {
+     "not": {
+      "flag": "senna_found"
+     }
+    }
+   ]
+  },
+  {
+   "id": "t_bay",
+   "rect": [
+    150,
+    -8,
+    158,
+    24
+   ],
+   "encounter": "enc_bay",
+   "alert": false,
+   "dialogue": "bay_quill",
+   "speaker_uid": "bay_quill",
+   "effects": [
+    {
+     "autosave": "Evacuation Bay"
+    }
+   ]
+  }
+ ],
+ "rules": [
+  {
+   "id": "r_pumps",
+   "if": [
+    {
+     "flag": "pump_north_fixed"
+    },
+    {
+     "flag": "pump_south_fixed"
+    }
+   ],
+   "effects": [
+    {
+     "set_flag": "pumps_restored"
+    },
+    {
+     "notify": "Both coolant pumps are running. The archive purge and the bay turrets have power again."
+    }
+   ]
+  }
+ ]
 }

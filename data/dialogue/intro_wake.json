@@ -1,0 +1,119 @@
+{
+ "id": "intro_wake",
+ "names": {
+  "intercom": "Ship Intercom — Purser Dray"
+ },
+ "entry": [
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "narrator",
+   "text": "The deck hums against your back. Transfer Cabin 4-C: a bunk, a desk, a viewport full of Haldis Reach shrinking to an amber coin. Somewhere aft, the Cinder Wake's drive is spooling for the jump.",
+   "next": "intercom"
+  },
+  "intercom": {
+   "speaker": "intercom",
+   "text": "Attention passengers. This is Purser Dray. We have cleared Haldis high orbit. All evacuees please report to Muster Point B in the crew commons for manifest check-in before jump. Thank you for flying with the Concord Evacuation Authority. Please do not touch the archive hold.",
+   "next": "memory"
+  },
+  "memory": {
+   "speaker": "narrator",
+   "text": "You remember all of it: the Lattice Corps, the operator's chair, the war over the world below. You remember the last link, the morning you took the cable out of your skull and told your commander you were finished. The hum at the back of your head never quite left.",
+   "choices": [
+    {
+     "text": "The people still on Haldis are waiting for ships that won't come. I owe them better than staring out a window.",
+     "next": "end_c",
+     "effects": [
+      {
+       "set_flag": "opening_tone",
+       "value": "compassionate"
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "Check in, keep your head down, make the jump. One step at a time.",
+     "next": "end_p",
+     "effects": [
+      {
+       "set_flag": "opening_tone",
+       "value": "pragmatic"
+      }
+     ],
+     "tone": "pragmatic"
+    },
+    {
+     "text": "This ticket is the only thing I got out of that war. Nobody is taking it from me.",
+     "next": "end_s",
+     "effects": [
+      {
+       "set_flag": "opening_tone",
+       "value": "self"
+      }
+     ],
+     "tone": "self-interested"
+    },
+    {
+     "text": "A Concord ship carrying 'medical archive cores' out of a warzone. I've read cargo manifests before.",
+     "next": "end_k",
+     "effects": [
+      {
+       "set_flag": "opening_tone",
+       "value": "skeptical"
+      }
+     ],
+     "tone": "skeptical"
+    },
+    {
+     "text": "Six years in the Lattice. A cramped cabin is not what scares me.",
+     "next": "end_h",
+     "effects": [
+      {
+       "set_flag": "opening_tone",
+       "value": "hard"
+      }
+     ],
+     "tone": "hard"
+    }
+   ]
+  },
+  "end_c": {
+   "speaker": "narrator",
+   "text": "You straighten your coat. Muster Point B, then. Maybe someone there needs a steady hand.",
+   "next": "tut"
+  },
+  "end_p": {
+   "speaker": "narrator",
+   "text": "Locker, case, commons. You have done harder checklists under fire.",
+   "next": "tut"
+  },
+  "end_s": {
+   "speaker": "narrator",
+   "text": "You check your pockets twice. The war took enough. The rest is yours.",
+   "next": "tut"
+  },
+  "end_k": {
+   "speaker": "narrator",
+   "text": "You file the thought away where the Lattice taught you to keep things that might matter later.",
+   "next": "tut"
+  },
+  "end_h": {
+   "speaker": "narrator",
+   "text": "You roll your shoulders until the old scar along your neck stops pulling.",
+   "next": "tut"
+  },
+  "tut": {
+   "speaker": "system",
+   "text": "Your locker and operator's case are here in the cabin. Muster Point B is through the door, in the crew commons.",
+   "effects": [
+    {
+     "tutorial": "movement"
+    }
+   ],
+   "end": true
+  }
+ }
+}

@@ -1,1 +1,448 @@
-{}
+{
+ "_comment": "Encounters. spawn_on: load | trigger (spawned by a trigger or effect). Spawns may carry conditions evaluated when the encounter spawns. mods apply when their conditions hold. resolve_encounter (peaceful/bypassed) grants the same per-enemy XP once; killing them afterwards awards nothing.",
+ "enc_corridor": {
+  "name": "Corridor Pickets",
+  "area": "corridor",
+  "spawn_on": "load",
+  "tutorial": "combat_basics",
+  "spawns": [
+   {
+    "uid": "corr_d1",
+    "enemy": "picket_drone",
+    "pos": [
+     39.5,
+     6.0
+    ],
+    "rot": 90
+   },
+   {
+    "uid": "corr_d2",
+    "enemy": "picket_drone",
+    "pos": [
+     41.5,
+     8.2
+    ],
+    "rot": 90
+   }
+  ],
+  "on_resolve": [
+   {
+    "world": "d_corridor_east",
+    "set": {
+     "locked": false
+    }
+   },
+   {
+    "set_flag": "corridor_clear"
+   },
+   {
+    "tutorial": "after_first_fight"
+   },
+   {
+    "start_dialogue": "iona_meet"
+   }
+  ]
+ },
+ "enc_checkpoint": {
+  "name": "Checkpoint Security",
+  "area": "checkpoint",
+  "spawn_on": "load",
+  "spawns": [
+   {
+    "uid": "chk_turret",
+    "enemy": "warden_turret",
+    "pos": [
+     60.5,
+     2.5
+    ],
+    "rot": 250
+   },
+   {
+    "uid": "chk_d1",
+    "enemy": "picket_drone",
+    "pos": [
+     56.5,
+     5.0
+    ],
+    "rot": 270
+   },
+   {
+    "uid": "chk_d2",
+    "enemy": "picket_drone",
+    "pos": [
+     57.5,
+     10.5
+    ],
+    "rot": 270
+   }
+  ],
+  "on_resolve": [
+   {
+    "set_flag": "checkpoint_clear"
+   }
+  ]
+ },
+ "enc_medical": {
+  "name": "Medical Deck Cutters",
+  "area": "medical",
+  "spawn_on": "load",
+  "tutorial": "party_control",
+  "spawns": [
+   {
+    "uid": "med_s1",
+    "enemy": "spider_drone",
+    "pos": [
+     72.5,
+     8.0
+    ],
+    "rot": 90
+   },
+   {
+    "uid": "med_s2",
+    "enemy": "spider_drone",
+    "pos": [
+     74.0,
+     11.5
+    ],
+    "rot": 90
+   }
+  ],
+  "on_resolve": [
+   {
+    "set_flag": "medical_clear"
+   },
+   {
+    "start_dialogue": "tav7_meet"
+   }
+  ]
+ },
+ "enc_engineering": {
+  "name": "Sentinel Post",
+  "area": "engineering",
+  "spawn_on": "load",
+  "spawns": [
+   {
+    "uid": "eng_sentinel",
+    "enemy": "warden_sentinel",
+    "pos": [
+     108.0,
+     7.5
+    ],
+    "rot": 0
+   },
+   {
+    "uid": "eng_supp",
+    "enemy": "suppression_drone",
+    "pos": [
+     107.0,
+     2.5
+    ],
+    "rot": 0
+   },
+   {
+    "uid": "eng_spider",
+    "enemy": "spider_drone",
+    "pos": [
+     108.5,
+     13.0
+    ],
+    "rot": 0
+   },
+   {
+    "uid": "eng_spider2",
+    "enemy": "spider_drone",
+    "pos": [
+     106.5,
+     17.5
+    ],
+    "rot": 270,
+    "if": [
+     {
+      "flag": "warden_tracking"
+     }
+    ]
+   }
+  ],
+  "on_resolve": [
+   {
+    "set_flag": "engineering_clear"
+   }
+  ]
+ },
+ "enc_archive": {
+  "name": "Reclaimer Squad",
+  "area": "archive",
+  "spawn_on": "load",
+  "parley_dialogue": "reclaimer_parley",
+  "spawns": [
+   {
+    "uid": "arc_breacher",
+    "enemy": "reclaimer_breacher",
+    "pos": [
+     122.5,
+     8.0
+    ],
+    "rot": 270
+   },
+   {
+    "uid": "arc_marksman",
+    "enemy": "reclaimer_marksman",
+    "pos": [
+     127.5,
+     7.0
+    ],
+    "rot": 270
+   },
+   {
+    "uid": "arc_signalist",
+    "enemy": "reclaimer_signalist",
+    "pos": [
+     125.0,
+     9.5
+    ],
+    "rot": 250
+   }
+  ],
+  "on_resolve": [
+   {
+    "set_flag": "archive_clear"
+   }
+  ]
+ },
+ "enc_varr": {
+  "name": "Commander Varr",
+  "area": "command",
+  "spawn_on": "trigger",
+  "spawns": [
+   {
+    "uid": "cmd_sentinel",
+    "enemy": "warden_sentinel",
+    "pos": [
+     139.5,
+     4.0
+    ],
+    "rot": 90,
+    "faction": "crew"
+   }
+  ],
+  "on_resolve": [
+   {
+    "set_flag": "varr_fight_over"
+   }
+  ]
+ },
+ "enc_bay": {
+  "name": "Evacuation Bay",
+  "area": "bay",
+  "spawn_on": "trigger",
+  "parley_dialogue": "bay_quill",
+  "spawns": [
+   {
+    "uid": "bay_quill",
+    "enemy": "marshal_quill",
+    "pos": [
+     160.0,
+     -4.0
+    ],
+    "rot": 180
+   },
+   {
+    "uid": "bay_b1",
+    "enemy": "reclaimer_breacher",
+    "pos": [
+     158.0,
+     -2.5
+    ],
+    "rot": 180
+   },
+   {
+    "uid": "bay_b2",
+    "enemy": "reclaimer_breacher",
+    "pos": [
+     163.0,
+     -2.5
+    ],
+    "rot": 180,
+    "if": [
+     {
+      "not": {
+       "flag": "lantern_reduced"
+      }
+     }
+    ]
+   },
+   {
+    "uid": "bay_m1",
+    "enemy": "reclaimer_marksman",
+    "pos": [
+     155.5,
+     -5.5
+    ],
+    "rot": 160
+   },
+   {
+    "uid": "bay_m2",
+    "enemy": "reclaimer_marksman",
+    "pos": [
+     165.5,
+     -5.5
+    ],
+    "rot": 200,
+    "if": [
+     {
+      "not": {
+       "flag": "lantern_reduced"
+      }
+     }
+    ]
+   },
+   {
+    "uid": "bay_sig",
+    "enemy": "reclaimer_signalist",
+    "pos": [
+     161.0,
+     -6.5
+    ],
+    "rot": 180,
+    "if": [
+     {
+      "not": {
+       "flag": "breach_sealed"
+      }
+     }
+    ]
+   },
+   {
+    "uid": "bay_b3",
+    "enemy": "reclaimer_breacher",
+    "pos": [
+     166.0,
+     -4.0
+    ],
+    "rot": 200,
+    "if": [
+     {
+      "any": [
+       {
+        "flag": "senna_fate",
+        "eq": "killed"
+       },
+       {
+        "flag": "archive_bypassed"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "uid": "bay_m3",
+    "enemy": "reclaimer_marksman",
+    "pos": [
+     153.5,
+     -3.0
+    ],
+    "rot": 160,
+    "if": [
+     {
+      "flag": "evac_choice",
+      "eq": "archive"
+     }
+    ]
+   },
+   {
+    "uid": "bay_wd1",
+    "enemy": "picket_drone",
+    "pos": [
+     172.0,
+     14.0
+    ],
+    "rot": 270,
+    "if": [
+     {
+      "not": {
+       "flag": "warden_neutralized"
+      }
+     }
+    ]
+   },
+   {
+    "uid": "bay_wd2",
+    "enemy": "picket_drone",
+    "pos": [
+     172.0,
+     2.0
+    ],
+    "rot": 270,
+    "if": [
+     {
+      "not": {
+       "flag": "warden_neutralized"
+      }
+     }
+    ]
+   },
+   {
+    "uid": "bay_wsup",
+    "enemy": "suppression_drone",
+    "pos": [
+     174.0,
+     8.0
+    ],
+    "rot": 270,
+    "if": [
+     {
+      "not": {
+       "flag": "warden_neutralized"
+      }
+     }
+    ]
+   },
+   {
+    "uid": "bay_t1",
+    "enemy": "warden_turret",
+    "pos": [
+     151.5,
+     0.5
+    ],
+    "rot": 45,
+    "state": "offline",
+    "if": [
+     {
+      "flag": "pumps_restored"
+     }
+    ]
+   },
+   {
+    "uid": "bay_t2",
+    "enemy": "warden_turret",
+    "pos": [
+     151.5,
+     18.0
+    ],
+    "rot": 135,
+    "state": "offline",
+    "if": [
+     {
+      "flag": "pumps_restored"
+     }
+    ]
+   }
+  ],
+  "mods": [
+   {
+    "if": [
+     {
+      "flag": "senna_fate",
+      "eq": "killed"
+     }
+    ],
+    "attack_bonus": 1
+   }
+  ],
+  "on_resolve": [
+   {
+    "set_flag": "bay_resolved"
+   }
+  ]
+ }
+}

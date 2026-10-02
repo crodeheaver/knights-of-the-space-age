@@ -1,0 +1,69 @@
+{
+ "id": "launch_after",
+ "entry": [
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "turret_result",
+       "eq": "player_win"
+      }
+     ],
+     "node": "win"
+    },
+    {
+     "if": [],
+     "node": "loss"
+    }
+   ]
+  },
+  "win": {
+   "speaker": "narrator",
+   "text": "The second interceptor comes apart in your sights. Brann whoops. Someone in the back starts laughing and can't stop.",
+   "next": "out",
+   "effects": [
+    {
+     "xp": 60,
+     "key": "turret",
+     "reason": "Shot down the interceptors"
+    }
+   ]
+  },
+  "loss": {
+   "speaker": "narrator",
+   "text": "An interceptor gets close enough to burn a line along the Petrel's spine before your fire drives it off. The hull holds.",
+   "next": "out",
+   "effects": [
+    {
+     "set_flag": "petrel_damaged",
+     "value": true
+    },
+    {
+     "xp": 30,
+     "key": "turret",
+     "reason": "Drove off the interceptors"
+    }
+   ]
+  },
+  "out": {
+   "speaker": "narrator",
+   "text": "The Cinder Wake shrinks behind you, a dark seed against Haldis's amber disc.",
+   "effects": [
+    {
+     "set_flag": "escaped",
+     "value": true
+    },
+    {
+     "start_dialogue": "ending_exchange"
+    }
+   ],
+   "end": true
+  }
+ }
+}

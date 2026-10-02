@@ -1,0 +1,202 @@
+{
+ "id": "bay_terminal",
+ "entry": [
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "system",
+   "text": "BAY 2 DEFENSE CONTROL.",
+   "choices": [
+    {
+     "text": "Bring the bay turrets online, targeting the boarders.",
+     "next": "turrets_ok",
+     "if": [
+      {
+       "flag": "pumps_restored"
+      },
+      {
+       "not": {
+        "flag": "turrets_active"
+       }
+      }
+     ],
+     "check": {
+      "skill": "computer_use",
+      "dc": 12,
+      "id": "bay_turrets",
+      "who": "actor"
+     },
+     "success": "turrets_ok",
+     "failure": "turrets_fail",
+     "success_effects": [
+      {
+       "set_flag": "turrets_active",
+       "value": true
+      },
+      {
+       "enemy": "bay_t1",
+       "set": {
+        "faction": "party",
+        "hostile_override": "",
+        "alert": true
+       }
+      },
+      {
+       "enemy": "bay_t2",
+       "set": {
+        "faction": "party",
+        "hostile_override": "",
+        "alert": true
+       }
+      },
+      {
+       "xp": 40,
+       "key": "bay_turrets",
+       "reason": "Turned the bay turrets"
+      }
+     ]
+    },
+    {
+     "text": "Bring the turrets online with your neural signature.",
+     "next": "turrets_ok",
+     "tag": "Resonance credential",
+     "if": [
+      {
+       "flag": "pumps_restored"
+      },
+      {
+       "not": {
+        "flag": "turrets_active"
+       }
+      },
+      {
+       "controlled": "player"
+      }
+     ],
+     "effects": [
+      {
+       "set_flag": "turrets_active",
+       "value": true
+      },
+      {
+       "set_flag": "used_credential",
+       "value": true
+      },
+      {
+       "enemy": "bay_t1",
+       "set": {
+        "faction": "party",
+        "hostile_override": "",
+        "alert": true
+       }
+      },
+      {
+       "enemy": "bay_t2",
+       "set": {
+        "faction": "party",
+        "hostile_override": "",
+        "alert": true
+       }
+      }
+     ]
+    },
+    {
+     "text": "(The turrets have no power. The engineering pumps are down.)",
+     "next": "start",
+     "if": [
+      {
+       "not": {
+        "flag": "pumps_restored"
+       }
+      }
+     ],
+     "show_locked": "Restart both coolant pumps in engineering to power the turrets"
+    },
+    {
+     "text": "Drop the launch apron's blast shield between the boarders and the Petrel.",
+     "next": "shield_ok",
+     "if": [
+      {
+       "not": {
+        "cleared": "enc_bay"
+       }
+      }
+     ],
+     "check": {
+      "skill": "computer_use",
+      "dc": 16,
+      "id": "bay_shield",
+      "who": "actor"
+     },
+     "success": "shield_ok",
+     "failure": "shield_fail"
+    },
+    {
+     "text": "Tav-7, drop the blast shield.",
+     "next": "shield_ok",
+     "tag": "Tav-7 – Computer Use",
+     "if": [
+      {
+       "in_party": "tav7"
+      },
+      {
+       "not": {
+        "cleared": "enc_bay"
+       }
+      }
+     ],
+     "check": {
+      "skill": "computer_use",
+      "dc": 14,
+      "id": "bay_shield_tav",
+      "who": "tav7"
+     },
+     "success": "shield_ok",
+     "failure": "shield_fail"
+    },
+    {
+     "text": "Log off.",
+     "end": true
+    }
+   ]
+  },
+  "turrets_ok": {
+   "speaker": "system",
+   "text": "BAY TURRETS ONLINE. IFF: PETREL ESCORT.",
+   "next": "start"
+  },
+  "turrets_fail": {
+   "speaker": "system",
+   "text": "IFF REJECTED.",
+   "next": "start"
+  },
+  "shield_ok": {
+   "speaker": "system",
+   "text": "APRON BLAST SHIELD DEPLOYED. The Petrel's ramp is sealed off from the north half of the bay.",
+   "effects": [
+    {
+     "set_flag": "bay_resolution",
+     "value": "technical"
+    },
+    {
+     "resolve_encounter": "enc_bay",
+     "resolution": "technical"
+    },
+    {
+     "xp": 60,
+     "key": "bay_shield",
+     "reason": "Sealed off the launch apron"
+    }
+   ],
+   "end": true
+  },
+  "shield_fail": {
+   "speaker": "system",
+   "text": "SHIELD MOTORS JAMMED.",
+   "next": "start"
+  }
+ }
+}

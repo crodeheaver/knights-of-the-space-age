@@ -1,0 +1,411 @@
+{
+ "id": "checkpoint_terminal",
+ "names": {
+  "terminal": "Checkpoint Terminal"
+ },
+ "entry": [
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "system",
+   "text": "CHECKPOINT SECURITY — WARDEN SUBNET 3. Guest session. Operator: {name}... (the acting character is shown on each option).",
+   "choices": [
+    {
+     "text": "Review the camera logs.",
+     "next": "logs"
+    },
+    {
+     "text": "Take the point-defense turret offline.",
+     "next": "turret_ok",
+     "if": [
+      {
+       "not": {
+        "flag": "turret_disabled"
+       }
+      },
+      {
+       "not": {
+        "flag": "checkpoint_clear"
+       }
+      }
+     ],
+     "check": {
+      "skill": "computer_use",
+      "dc": 13,
+      "id": "chk_turret",
+      "who": "actor"
+     },
+     "success": "turret_ok",
+     "failure": "turret_fail",
+     "success_effects": [
+      {
+       "set_flag": "turret_disabled",
+       "value": true
+      },
+      {
+       "enemy": "chk_turret",
+       "set": {
+        "hostile_override": "offline"
+       }
+      },
+      {
+       "xp": 50,
+       "key": "chk_turret_off",
+       "reason": "Took the checkpoint turret offline"
+      }
+     ],
+     "failure_effects": [
+      {
+       "start_encounter": "enc_checkpoint"
+      },
+      {
+       "set_flag": "checkpoint_alarm",
+       "value": true
+      }
+     ]
+    },
+    {
+     "text": "Override the forward blast door.",
+     "next": "door_ok",
+     "if": [
+      {
+       "not": {
+        "flag": "checkpoint_solved"
+       }
+      }
+     ],
+     "check": {
+      "skill": "computer_use",
+      "dc": 15,
+      "id": "chk_door",
+      "who": "actor"
+     },
+     "success": "door_ok",
+     "failure": "door_fail",
+     "success_effects": [
+      {
+       "world": "d_blast",
+       "set": {
+        "locked": false,
+        "open": true
+       }
+      },
+      {
+       "set_flag": "checkpoint_solved",
+       "value": true
+      },
+      {
+       "set_flag": "checkpoint_by",
+       "value": "terminal"
+      },
+      {
+       "xp": 60,
+       "key": "checkpoint_door",
+       "reason": "Opened the forward blast door"
+      }
+     ],
+     "failure_effects": [
+      {
+       "start_encounter": "enc_checkpoint"
+      },
+      {
+       "set_flag": "checkpoint_alarm",
+       "value": true
+      }
+     ]
+    },
+    {
+     "text": "Order the picket drones back to their charging cradles.",
+     "next": "drones_ok",
+     "if": [
+      {
+       "not": {
+        "flag": "drones_recalled"
+       }
+      },
+      {
+       "not": {
+        "flag": "checkpoint_clear"
+       }
+      }
+     ],
+     "check": {
+      "skill": "computer_use",
+      "dc": 17,
+      "id": "chk_drones",
+      "who": "actor"
+     },
+     "success": "drones_ok",
+     "failure": "drones_fail",
+     "success_effects": [
+      {
+       "set_flag": "drones_recalled",
+       "value": true
+      },
+      {
+       "enemy": "chk_d1",
+       "set": {
+        "hostile_override": "offline"
+       }
+      },
+      {
+       "enemy": "chk_d2",
+       "set": {
+        "hostile_override": "offline"
+       }
+      },
+      {
+       "xp": 50,
+       "key": "chk_drones",
+       "reason": "Recalled the checkpoint drones"
+      }
+     ],
+     "failure_effects": [
+      {
+       "start_encounter": "enc_checkpoint"
+      },
+      {
+       "set_flag": "checkpoint_alarm",
+       "value": true
+      }
+     ]
+    },
+    {
+     "text": "Authenticate with your neural signature.",
+     "next": "cred",
+     "tag": "Resonance credential",
+     "if": [
+      {
+       "controlled": "player"
+      },
+      {
+       "not": {
+        "flag": "checkpoint_solved"
+       }
+      }
+     ]
+    },
+    {
+     "text": "Log off.",
+     "end": true
+    }
+   ]
+  },
+  "logs": {
+   "speaker": "system",
+   "text": "Camera logs cycle across the screen: reclaimer pods latching onto the dorsal hull, turrets waking, Commander Varr sealing herself in, and Officer Rell's hand resting on the Ward 2 panel for eleven seconds.",
+   "next": "start",
+   "effects": [
+    {
+     "codex": "cx_camera_logs"
+    }
+   ]
+  },
+  "turret_ok": {
+   "speaker": "system",
+   "text": "POINT DEFENSE 3-A: MAINTENANCE MODE. The turret's barrels droop toward the deck.",
+   "next": "after_turret"
+  },
+  "after_turret": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "drones_recalled"
+      }
+     ],
+     "node": "all_quiet"
+    },
+    {
+     "if": [],
+     "node": "start"
+    }
+   ]
+  },
+  "turret_fail": {
+   "speaker": "system",
+   "text": "INTRUSION DETECTED. SESSION TERMINATED. The checkpoint lights snap to red and the turret swings toward you.",
+   "end": true
+  },
+  "door_ok": {
+   "speaker": "system",
+   "text": "FORWARD BLAST DOOR: OVERRIDE ACCEPTED. The door to the medical deck rumbles open.",
+   "next": "start"
+  },
+  "door_fail": {
+   "speaker": "system",
+   "text": "OVERRIDE REJECTED. SECURITY ALERT. Something in the room starts moving.",
+   "end": true
+  },
+  "drones_ok": {
+   "speaker": "system",
+   "text": "PICKETS 3-1, 3-2: RETURN TO CRADLE. The drones drift to the wall and power down.",
+   "next": "after_drones"
+  },
+  "after_drones": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "turret_disabled"
+      }
+     ],
+     "node": "all_quiet"
+    },
+    {
+     "if": [],
+     "node": "start"
+    }
+   ]
+  },
+  "all_quiet": {
+   "speaker": "system",
+   "text": "CHECKPOINT 3: ALL UNITS INACTIVE.",
+   "next": "start",
+   "effects": [
+    {
+     "resolve_encounter": "enc_checkpoint",
+     "resolution": "technical"
+    }
+   ]
+  },
+  "drones_fail": {
+   "speaker": "system",
+   "text": "COMMAND REJECTED: GUEST PRIVILEGES. SECURITY ALERT.",
+   "end": true
+  },
+  "cred": {
+   "speaker": "narrator",
+   "text": "You lay your palm on the reader and feel the old hum answer: a cold, familiar attention brushing the back of your skull.",
+   "next": "cred2"
+  },
+  "cred2": {
+   "speaker": "warden",
+   "text": "CUSTODIAN AUTHORITY ACCEPTED. CHECKPOINT 3: STAND DOWN. FORWARD ACCESS GRANTED. WELCOME BACK.",
+   "next": "cred_react",
+   "effects": [
+    {
+     "world": "d_blast",
+     "set": {
+      "locked": false,
+      "open": true
+     }
+    },
+    {
+     "set_flag": "checkpoint_solved",
+     "value": true
+    },
+    {
+     "set_flag": "checkpoint_by",
+     "value": "credential"
+    },
+    {
+     "set_flag": "used_credential",
+     "value": true
+    },
+    {
+     "set_flag": "warden_tracking",
+     "value": true
+    },
+    {
+     "inc_flag": "credential_uses",
+     "key": "cred_terminal"
+    },
+    {
+     "codex": "cx_credential"
+    },
+    {
+     "resolve_encounter": "enc_checkpoint",
+     "resolution": "credential"
+    },
+    {
+     "xp": 60,
+     "key": "checkpoint_door",
+     "reason": "Opened the forward blast door"
+    }
+   ]
+  },
+  "cred_react": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "node": "iona_react"
+    },
+    {
+     "if": [],
+     "node": "end_node"
+    }
+   ]
+  },
+  "iona_react": {
+   "speaker": "iona",
+   "text": "'Welcome back.' The ship knows you. That system is shooting passengers in the halls and it just opened a door for you. Explain that.",
+   "choices": [
+    {
+     "text": "I don't know. It shouldn't. I'm going to find out why.",
+     "next": "honest",
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": 2,
+       "key": "cred_honest",
+       "reason": "Answered honestly about the credential"
+      }
+     ]
+    },
+    {
+     "text": "Something from the Lattice program. I'll tell you when I understand it.",
+     "next": "honest2",
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": 1,
+       "key": "cred_later",
+       "reason": "Promised to explain the credential"
+      }
+     ]
+    },
+    {
+     "text": "Does it matter? The door's open.",
+     "next": "dismiss",
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": -3,
+       "key": "cred_dismiss",
+       "reason": "Brushed off the credential"
+      }
+     ],
+     "tone": "hard"
+    }
+   ]
+  },
+  "honest": {
+   "speaker": "iona",
+   "text": "Then we find out together. And if that thing starts calling you 'commander', I'm going to have questions.",
+   "next": "end_node"
+  },
+  "honest2": {
+   "speaker": "iona",
+   "text": "Hold me to that.",
+   "next": "end_node"
+  },
+  "dismiss": {
+   "speaker": "iona",
+   "text": "It matters to the people it isn't opening doors for.",
+   "next": "end_node"
+  },
+  "end_node": {
+   "speaker": "system",
+   "text": "The checkpoint falls silent.",
+   "end": true
+  }
+ }
+}

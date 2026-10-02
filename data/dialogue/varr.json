@@ -1,0 +1,1237 @@
+{
+ "id": "varr",
+ "names": {
+  "varr": "Commander Ysolde Varr"
+ },
+ "entry": [
+  {
+   "if": [
+    {
+     "flag": "launch_decided"
+    }
+   ],
+   "node": "after"
+  },
+  {
+   "if": [
+    {
+     "flag": "varr_met"
+    }
+   ],
+   "node": "hub"
+  },
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "used_credential"
+      }
+     ],
+     "node": "start_cred"
+    },
+    {
+     "if": [],
+     "node": "start_plain"
+    }
+   ]
+  },
+  "start_cred": {
+   "speaker": "varr",
+   "text": "So. The Lattice finally sends me an operator, and the WARDEN finally has its Custodian in the room. It has been saying your designation since 0612. Commander Ysolde Varr. Sit down before you fall down.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "varr_met",
+     "value": true
+    }
+   ]
+  },
+  "start_plain": {
+   "speaker": "varr",
+   "text": "Commander Ysolde Varr. You're the passenger from 4-C. The one the WARDEN flagged. Sit down before you fall down; we have very little time and a great deal to decide.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "varr_met",
+     "value": true
+    }
+   ]
+  },
+  "hub": {
+   "speaker": "varr",
+   "text": "Ask what you need to ask. Then we decide what the Petrel carries.",
+   "choices": [
+    {
+     "text": "What is the WARDEN protecting?",
+     "next": "q_archive"
+    },
+    {
+     "text": "Those engrams were stolen from Haldis prisoners.",
+     "next": "q_stolen",
+     "if": [
+      {
+       "flag": "archive_evidence_stolen"
+      },
+      {
+       "not": {
+        "flag": "varr_q_stolen"
+       }
+      }
+     ]
+    },
+    {
+     "text": "You had Iona seal Ward 2 with five people inside.",
+     "next": "q_ward",
+     "if": [
+      {
+       "in_party": "iona"
+      },
+      {
+       "any": [
+        {
+         "flag": "iona_told_ward"
+        },
+        {
+         "flag": "ward_decided"
+        }
+       ]
+      },
+      {
+       "not": {
+        "flag": "varr_q_ward"
+       }
+      }
+     ]
+    },
+    {
+     "text": "What is a Custodian?",
+     "next": "q_cust",
+     "if": [
+      {
+       "not": {
+        "flag": "varr_q_cust"
+       }
+      }
+     ]
+    },
+    {
+     "text": "You served in the Lattice war too. You know what it did.",
+     "next": "q_vet",
+     "tag": "Veteran",
+     "if": [
+      {
+       "background": "veteran"
+      },
+      {
+       "not": {
+        "flag": "varr_q_vet"
+       }
+      }
+     ]
+    },
+    {
+     "text": "Let's decide what the Petrel carries.",
+     "next": "capacity"
+    }
+   ]
+  },
+  "q_archive": {
+   "speaker": "varr",
+   "text": "Evidence. Three thousand engrams. One of them is Corporal Eshe Darrow at Vesper Station, feeling a Lattice operator move her hands while she shot singing civilians. There is a tribunal on Tessaly waiting to hear her. Without that hold, the Lattice will tell the inquiry it was the Haldis insurgents, and the inquiry will believe it, because it wants to.",
+   "next": "hub"
+  },
+  "q_stolen": {
+   "speaker": "varr",
+   "text": "Yes. Taken from detainees, by the Lattice, without asking. I didn't take them. I'm the one trying to make their theft mean something in a courtroom instead of a research lab.",
+   "next": "q_stolen_r",
+   "effects": [
+    {
+     "set_flag": "varr_q_stolen",
+     "value": true
+    }
+   ]
+  },
+  "q_stolen_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "node": "q_stolen_tav"
+    },
+    {
+     "if": [],
+     "node": "hub"
+    }
+   ]
+  },
+  "q_stolen_tav": {
+   "speaker": "tav7",
+   "text": "They are not exhibits, Commander. They are people who were never asked. You are asking the same question the Lattice did and giving the same answer.",
+   "next": "q_stolen_varr"
+  },
+  "q_stolen_varr": {
+   "speaker": "varr",
+   "text": "And you're a maintenance unit with opinions, which a week ago I'd have had normalized. Today I'm listening. That's as much as I can offer.",
+   "next": "hub"
+  },
+  "q_ward": {
+   "speaker": "iona",
+   "text": "Commander. You used my oath like a lock. Five people. You told me it was the deck or them.",
+   "next": "q_ward2",
+   "effects": [
+    {
+     "set_flag": "varr_q_ward",
+     "value": true
+    }
+   ]
+  },
+  "q_ward2": {
+   "speaker": "varr",
+   "text": "It was the deck or them, Rell. I used the officer I had. If you want an apology, you'll get one at my court-martial.",
+   "choices": [
+    {
+     "text": "She's right, Commander. You made her carry it so you wouldn't have to.",
+     "next": "ward_back_iona",
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": 6,
+       "key": "varr_ward",
+       "reason": "Stood with her against Varr"
+      },
+      {
+       "set_flag": "varr_humbled",
+       "value": true
+      }
+     ]
+    },
+    {
+     "text": "It was a hard call, Iona. She made it. You followed it. That's command.",
+     "next": "ward_back_varr",
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": -6,
+       "key": "varr_ward",
+       "reason": "Sided with Varr over the ward"
+      }
+     ]
+    },
+    {
+     "text": "This isn't the time. We settle it after we're off the ship.",
+     "next": "ward_neutral"
+    }
+   ]
+  },
+  "ward_back_iona": {
+   "speaker": "varr",
+   "text": "...Noted. Both of you. Noted.",
+   "next": "hub"
+  },
+  "ward_back_varr": {
+   "speaker": "iona",
+   "text": "Right. Command.",
+   "next": "hub"
+  },
+  "ward_neutral": {
+   "speaker": "iona",
+   "text": "After, then. I'm holding you to after.",
+   "next": "hub"
+  },
+  "q_cust": {
+   "speaker": "varr",
+   "text": "The WARDEN's mind was grown from a Lattice operator's calibration scan. I was told it was an anonymous template. Then at 0612 it logged a custodian handshake from cabin 4-C, and it started rerouting the whole ship around you. I can count. Talk to it, if you want the rest. It talks to you.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "varr_q_cust",
+     "value": true
+    },
+    {
+     "codex": "cx_warden_spec"
+    }
+   ]
+  },
+  "q_vet": {
+   "speaker": "varr",
+   "text": "I know exactly what it did. I signed the transfer orders that put some of you in the chair. This hold is how I pay for that. Don't tell me it isn't enough; I already know.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "varr_q_vet",
+     "value": true
+    },
+    {
+     "set_flag": "varr_humbled",
+     "value": true
+    }
+   ]
+  },
+  "capacity": {
+   "speaker": "varr",
+   "text": "The Petrel seats fifteen. The archive core's cradle takes the space of five. You have brought me {survivors} passengers, and there are you and your people besides. Do the arithmetic, then choose.",
+   "next": "decide",
+   "effects": [
+    {
+     "codex": "cx_petrel"
+    }
+   ]
+  },
+  "decide": {
+   "speaker": "varr",
+   "text": "What does the Petrel carry?",
+   "choices": [
+    {
+     "text": "Passengers first. Every seat goes to a person.",
+     "next": "a_obj",
+     "tone": "compassionate"
+    },
+    {
+     "text": "Load the core. That proof matters more than any of us.",
+     "next": "b_load",
+     "tone": "pragmatic"
+    },
+    {
+     "text": "We copied the Vesper testimony. Leave the core, take the testimony and every passenger.",
+     "next": "c_copy",
+     "tag": "Vesper testimony",
+     "if": [
+      {
+       "item": "vesper_testimony"
+      }
+     ]
+    },
+    {
+     "text": "Hand the archive to the Lantern Office for safe passage. They're its families.",
+     "next": "d_obj",
+     "if": [
+      {
+       "any": [
+        {
+         "flag": "senna_message"
+        },
+        {
+         "flag": "promised_lantern"
+        },
+        {
+         "flag": "archive_peace"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "text": "Not yet. I have more questions.",
+     "next": "hub"
+    }
+   ]
+  },
+  "a_obj": {
+   "speaker": "varr",
+   "text": "And the archive stays aboard a ship full of boarders. The Lattice walks free. Darrow's forty minutes die here. Convince me that's right.",
+   "choices": [
+    {
+     "text": "The testimony on this spike is enough. One engram convicts them.",
+     "next": "a_agree",
+     "tag": "Vesper testimony",
+     "if": [
+      {
+       "item": "vesper_testimony"
+      }
+     ]
+    },
+    {
+     "text": "Those minds were stolen. Using them as exhibits makes us the Lattice.",
+     "next": "a_agree",
+     "tag": "Persuasion",
+     "check": {
+      "skill": "persuasion",
+      "dc": 16,
+      "id": "varr_passengers",
+      "bonus_if": [
+       {
+        "if": [
+         {
+          "flag": "archive_evidence_stolen"
+         }
+        ],
+        "bonus": 2
+       },
+       {
+        "if": [
+         {
+          "flag": "varr_humbled"
+         }
+        ],
+        "bonus": 2
+       },
+       {
+        "if": [
+         {
+          "background": "veteran"
+         }
+        ],
+        "bonus": 2
+       }
+      ]
+     },
+     "success": "a_agree",
+     "failure": "refuse"
+    },
+    {
+     "text": "Iona?",
+     "next": "a_iona",
+     "tag": "Iona",
+     "if": [
+      {
+       "in_party": "iona"
+      },
+      {
+       "influence": "iona",
+       "gte": 60
+      }
+     ]
+    },
+    {
+     "text": "(Reach into her resolve with Resonance and bend it.)",
+     "next": "compel",
+     "effects": [
+      {
+       "alignment": -10,
+       "key": "varr_compel",
+       "reason": "Bent Commander Varr's will with Resonance"
+      },
+      {
+       "influence": "iona",
+       "delta": -8,
+       "key": "varr_compel",
+       "reason": "Forced Varr's mind"
+      },
+      {
+       "influence": "tav7",
+       "delta": -6,
+       "key": "varr_compel",
+       "reason": "Overrode a will"
+      }
+     ],
+     "check": {
+      "skill": "persuasion",
+      "dc": 13,
+      "id": "varr_compel",
+      "power": "sway",
+      "energy": 3
+     },
+     "success": "compel",
+     "failure": "refuse",
+     "tone": "hard"
+    }
+   ]
+  },
+  "a_iona": {
+   "speaker": "iona",
+   "text": "Commander. I sealed Ward 2 on your word. I won't load cargo over people on it too. Stand down.",
+   "next": "a_agree",
+   "effects": [
+    {
+     "influence": "iona",
+     "delta": 3,
+     "key": "varr_iona",
+     "reason": "Trusted her to speak"
+    }
+   ]
+  },
+  "a_agree": {
+   "speaker": "varr",
+   "text": "...Every seat to a person. God help me, it's the right answer and I hate it. Then what happens to the core?",
+   "choices": [
+    {
+     "text": "Leave the archive for the Lantern Office. Let their dead go home.",
+     "next": "a_hand",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "handed_over"
+      },
+      {
+       "influence": "tav7",
+       "delta": 6,
+       "key": "fate",
+       "reason": "Sent the archived minds home"
+      },
+      {
+       "alignment": 3,
+       "key": "fate",
+       "reason": "Returned the archive to the families"
+      }
+     ]
+    },
+    {
+     "text": "Purge it. No one uses those minds ever again.",
+     "next": "a_purge",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "purged"
+      },
+      {
+       "influence": "tav7",
+       "delta": -12,
+       "key": "fate",
+       "reason": "Purged 3,112 minds"
+      },
+      {
+       "alignment": -6,
+       "key": "fate",
+       "reason": "Destroyed the archived minds"
+      }
+     ],
+     "tone": "hard"
+    },
+    {
+     "text": "Leave it where it is. It's not our cargo anymore.",
+     "next": "a_left",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "left"
+      },
+      {
+       "influence": "tav7",
+       "delta": -2,
+       "key": "fate",
+       "reason": "Abandoned the archive"
+      }
+     ]
+    }
+   ],
+   "effects": [
+    {
+     "evac": "passengers"
+    },
+    {
+     "set_flag": "varr_fate",
+     "value": "cooperated"
+    },
+    {
+     "influence": "iona",
+     "delta": 4,
+     "key": "evac",
+     "reason": "Put passengers first"
+    }
+   ]
+  },
+  "a_hand": {
+   "speaker": "varr",
+   "text": "The Lantern Office takes the evidence of Vesper home to bury it. Maybe that's justice. It isn't mine.",
+   "next": "codes"
+  },
+  "a_purge": {
+   "speaker": "varr",
+   "text": "So nobody gets them. Not the tribunal, not the families. Clean. Cold. I won't stop you.",
+   "next": "codes",
+   "effects": [
+    {
+     "set_flag": "archive_purge_ordered",
+     "value": true
+    }
+   ]
+  },
+  "a_left": {
+   "speaker": "varr",
+   "text": "Then the WARDEN keeps them until someone with a breaching charge decides otherwise.",
+   "next": "codes"
+  },
+  "refuse": {
+   "speaker": "varr",
+   "text": "No. I won't hand the launch codes to someone who'll leave Vesper's only witnesses to rot. Pick again, or take them from me.",
+   "choices": [
+    {
+     "text": "Then let's talk about the core.",
+     "next": "decide"
+    },
+    {
+     "text": "Iona, relieve the commander of command.",
+     "next": "arrest",
+     "tag": "Iona",
+     "if": [
+      {
+       "in_party": "iona"
+      },
+      {
+       "influence": "iona",
+       "gte": 50
+      }
+     ]
+    },
+    {
+     "text": "Then I'll take the codes.",
+     "next": "fight",
+     "tone": "hard"
+    }
+   ]
+  },
+  "compel": {
+   "speaker": "narrator",
+   "text": "You reach into the space behind her eyes, where her certainty lives, and lean on it until it bends. Her hand moves to the console as if someone else were moving it. You know exactly how that feels from the other side.",
+   "next": "compel2"
+  },
+  "compel2": {
+   "speaker": "varr",
+   "text": "...Passengers first. Every seat to a person.",
+   "next": "compel_fate",
+   "effects": [
+    {
+     "evac": "passengers"
+    },
+    {
+     "set_flag": "varr_fate",
+     "value": "compelled"
+    }
+   ]
+  },
+  "compel_fate": {
+   "speaker": "varr",
+   "text": "(flatly) And the core?",
+   "choices": [
+    {
+     "text": "Leave the archive for the Lantern Office. Let their dead go home.",
+     "next": "a_hand",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "handed_over"
+      },
+      {
+       "influence": "tav7",
+       "delta": 6,
+       "key": "fate",
+       "reason": "Sent the archived minds home"
+      },
+      {
+       "alignment": 3,
+       "key": "fate",
+       "reason": "Returned the archive to the families"
+      }
+     ]
+    },
+    {
+     "text": "Purge it. No one uses those minds ever again.",
+     "next": "a_purge",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "purged"
+      },
+      {
+       "influence": "tav7",
+       "delta": -12,
+       "key": "fate",
+       "reason": "Purged 3,112 minds"
+      },
+      {
+       "alignment": -6,
+       "key": "fate",
+       "reason": "Destroyed the archived minds"
+      }
+     ],
+     "tone": "hard"
+    },
+    {
+     "text": "Leave it where it is. It's not our cargo anymore.",
+     "next": "a_left",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "left"
+      },
+      {
+       "influence": "tav7",
+       "delta": -2,
+       "key": "fate",
+       "reason": "Abandoned the archive"
+      }
+     ]
+    }
+   ]
+  },
+  "arrest": {
+   "speaker": "iona",
+   "text": "Commander Varr, I'm relieving you of command under section forty, for endangering passengers. Hand me your codes.",
+   "next": "arrest2",
+   "effects": [
+    {
+     "influence": "iona",
+     "delta": 4,
+     "key": "arrest",
+     "reason": "Backed her against an abuse of authority"
+    }
+   ]
+  },
+  "arrest2": {
+   "speaker": "varr",
+   "text": "Section forty. You actually read the manual. ...Fine. Take them. Take your seats. I'll stand trial for both of us.",
+   "next": "arrest_fate",
+   "effects": [
+    {
+     "evac": "passengers"
+    },
+    {
+     "set_flag": "varr_fate",
+     "value": "arrested"
+    }
+   ]
+  },
+  "arrest_fate": {
+   "speaker": "iona",
+   "text": "Passengers first. And the core?",
+   "choices": [
+    {
+     "text": "Leave the archive for the Lantern Office. Let their dead go home.",
+     "next": "a_hand",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "handed_over"
+      },
+      {
+       "influence": "tav7",
+       "delta": 6,
+       "key": "fate",
+       "reason": "Sent the archived minds home"
+      },
+      {
+       "alignment": 3,
+       "key": "fate",
+       "reason": "Returned the archive to the families"
+      }
+     ]
+    },
+    {
+     "text": "Purge it. No one uses those minds ever again.",
+     "next": "a_purge",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "purged"
+      },
+      {
+       "influence": "tav7",
+       "delta": -12,
+       "key": "fate",
+       "reason": "Purged 3,112 minds"
+      },
+      {
+       "alignment": -6,
+       "key": "fate",
+       "reason": "Destroyed the archived minds"
+      }
+     ],
+     "tone": "hard"
+    },
+    {
+     "text": "Leave it where it is. It's not our cargo anymore.",
+     "next": "a_left",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "left"
+      },
+      {
+       "influence": "tav7",
+       "delta": -2,
+       "key": "fate",
+       "reason": "Abandoned the archive"
+      }
+     ]
+    }
+   ]
+  },
+  "fight": {
+   "speaker": "varr",
+   "text": "Then do it properly. WARDEN: command authority, defend launch control.",
+   "effects": [
+    {
+     "set_flag": "varr_fate",
+     "value": "fought"
+    },
+    {
+     "npc": "varr",
+     "set": {
+      "hostile": true,
+      "encounter": "enc_varr"
+     }
+    },
+    {
+     "start_encounter": "enc_varr"
+    }
+   ],
+   "end": true
+  },
+  "b_load": {
+   "speaker": "varr",
+   "text": "Thank you. Somebody on this ship finally understands what we're carrying.",
+   "next": "b_r",
+   "effects": [
+    {
+     "evac": "archive"
+    },
+    {
+     "set_flag": "archive_fate",
+     "value": "loaded"
+    },
+    {
+     "influence": "tav7",
+     "delta": 4,
+     "key": "evac",
+     "reason": "Kept the archived minds safe"
+    }
+   ]
+  },
+  "b_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "evac_left",
+       "gte": 1
+      }
+     ],
+     "node": "b_left"
+    },
+    {
+     "if": [],
+     "node": "b_none"
+    }
+   ]
+  },
+  "b_left": {
+   "speaker": "varr",
+   "text": "That leaves {evac_left_text}. I'll stay with them. Someone has to answer for this ship, and the boarders want the core, not me. Rell, take care of them on the other side.",
+   "next": "b_iona",
+   "effects": [
+    {
+     "set_flag": "varr_fate",
+     "value": "stayed"
+    },
+    {
+     "alignment": -4,
+     "key": "evac",
+     "reason": "Left passengers behind for the archive"
+    },
+    {
+     "influence": "iona",
+     "delta": -6,
+     "key": "evac",
+     "reason": "Chose cargo over people"
+    }
+   ]
+  },
+  "b_none": {
+   "speaker": "varr",
+   "text": "Everyone fits. That's the first piece of luck this ship has had all day.",
+   "next": "codes",
+   "effects": [
+    {
+     "set_flag": "varr_fate",
+     "value": "cooperated"
+    },
+    {
+     "influence": "iona",
+     "delta": -1,
+     "key": "evac",
+     "reason": "Took the archive"
+    }
+   ]
+  },
+  "b_iona": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "node": "b_iona2"
+    },
+    {
+     "if": [],
+     "node": "codes"
+    }
+   ]
+  },
+  "b_iona2": {
+   "speaker": "iona",
+   "text": "We just chose a box of evidence over people standing in this room.",
+   "next": "codes"
+  },
+  "c_copy": {
+   "speaker": "varr",
+   "text": "One engram. Darrow, I assume. It's thin. A good advocate will call it cherry-picked. ...But it's not nothing.",
+   "choices": [
+    {
+     "text": "It's the best of every bad option. Every passenger lives and Vesper still has a witness.",
+     "next": "c_agree",
+     "tag": "Persuasion",
+     "check": {
+      "skill": "persuasion",
+      "dc": 12,
+      "id": "varr_copy",
+      "bonus_if": [
+       {
+        "if": [
+         {
+          "flag": "varr_humbled"
+         }
+        ],
+        "bonus": 4
+       }
+      ]
+     },
+     "success": "c_agree",
+     "failure": "c_grudging"
+    },
+    {
+     "text": "It'll have to be enough.",
+     "next": "c_grudging"
+    }
+   ]
+  },
+  "c_agree": {
+   "speaker": "varr",
+   "text": "...Yes. All right. Then the core stays. What happens to it?",
+   "choices": [
+    {
+     "text": "Leave the archive for the Lantern Office. Let their dead go home.",
+     "next": "a_hand",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "handed_over"
+      },
+      {
+       "influence": "tav7",
+       "delta": 6,
+       "key": "fate",
+       "reason": "Sent the archived minds home"
+      },
+      {
+       "alignment": 3,
+       "key": "fate",
+       "reason": "Returned the archive to the families"
+      }
+     ]
+    },
+    {
+     "text": "Purge it. No one uses those minds ever again.",
+     "next": "a_purge",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "purged"
+      },
+      {
+       "influence": "tav7",
+       "delta": -12,
+       "key": "fate",
+       "reason": "Purged 3,112 minds"
+      },
+      {
+       "alignment": -6,
+       "key": "fate",
+       "reason": "Destroyed the archived minds"
+      }
+     ],
+     "tone": "hard"
+    },
+    {
+     "text": "Leave it where it is. It's not our cargo anymore.",
+     "next": "a_left",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "left"
+      },
+      {
+       "influence": "tav7",
+       "delta": -2,
+       "key": "fate",
+       "reason": "Abandoned the archive"
+      }
+     ]
+    }
+   ],
+   "effects": [
+    {
+     "evac": "testimony"
+    },
+    {
+     "set_flag": "varr_fate",
+     "value": "cooperated"
+    },
+    {
+     "set_flag": "copy_route",
+     "value": true
+    },
+    {
+     "influence": "iona",
+     "delta": 3,
+     "key": "evac",
+     "reason": "Saved every passenger"
+    }
+   ]
+  },
+  "c_grudging": {
+   "speaker": "varr",
+   "text": "It will have to be. I'll take your word over the alternative. And the core?",
+   "choices": [
+    {
+     "text": "Leave the archive for the Lantern Office. Let their dead go home.",
+     "next": "a_hand",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "handed_over"
+      },
+      {
+       "influence": "tav7",
+       "delta": 6,
+       "key": "fate",
+       "reason": "Sent the archived minds home"
+      },
+      {
+       "alignment": 3,
+       "key": "fate",
+       "reason": "Returned the archive to the families"
+      }
+     ]
+    },
+    {
+     "text": "Purge it. No one uses those minds ever again.",
+     "next": "a_purge",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "purged"
+      },
+      {
+       "influence": "tav7",
+       "delta": -12,
+       "key": "fate",
+       "reason": "Purged 3,112 minds"
+      },
+      {
+       "alignment": -6,
+       "key": "fate",
+       "reason": "Destroyed the archived minds"
+      }
+     ],
+     "tone": "hard"
+    },
+    {
+     "text": "Leave it where it is. It's not our cargo anymore.",
+     "next": "a_left",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "left"
+      },
+      {
+       "influence": "tav7",
+       "delta": -2,
+       "key": "fate",
+       "reason": "Abandoned the archive"
+      }
+     ]
+    }
+   ],
+   "effects": [
+    {
+     "evac": "testimony"
+    },
+    {
+     "set_flag": "varr_fate",
+     "value": "cooperated"
+    },
+    {
+     "set_flag": "copy_route",
+     "value": true
+    },
+    {
+     "influence": "iona",
+     "delta": 3,
+     "key": "evac",
+     "reason": "Saved every passenger"
+    }
+   ]
+  },
+  "d_obj": {
+   "speaker": "varr",
+   "text": "You'd give the only proof of Vesper to the people who just blew a hole in my ship?",
+   "choices": [
+    {
+     "text": "They're its families. And we keep the testimony.",
+     "next": "d_agree",
+     "tag": "Vesper testimony",
+     "if": [
+      {
+       "item": "vesper_testimony"
+      }
+     ]
+    },
+    {
+     "text": "Those people are Haldis's dead. Giving them back is the only clean thing anyone can do today.",
+     "next": "d_agree",
+     "tag": "Persuasion",
+     "check": {
+      "skill": "persuasion",
+      "dc": 15,
+      "id": "varr_handover",
+      "bonus_if": [
+       {
+        "if": [
+         {
+          "flag": "archive_evidence_stolen"
+         }
+        ],
+        "bonus": 2
+       },
+       {
+        "if": [
+         {
+          "flag": "varr_humbled"
+         }
+        ],
+        "bonus": 2
+       }
+      ]
+     },
+     "success": "d_agree",
+     "failure": "refuse"
+    },
+    {
+     "text": "Let's talk about something else.",
+     "next": "decide"
+    }
+   ]
+  },
+  "d_agree": {
+   "speaker": "varr",
+   "text": "...Then give them back. And may the Lantern Office do better with them than we did.",
+   "next": "codes",
+   "effects": [
+    {
+     "evac": "handover"
+    },
+    {
+     "set_flag": "archive_fate",
+     "value": "handed_over"
+    },
+    {
+     "set_flag": "varr_fate",
+     "value": "cooperated"
+    },
+    {
+     "influence": "tav7",
+     "delta": 8,
+     "key": "evac",
+     "reason": "Returned the dead to their families"
+    },
+    {
+     "influence": "iona",
+     "delta": 2,
+     "key": "evac",
+     "reason": "Saved every passenger"
+    },
+    {
+     "alignment": 5,
+     "key": "evac",
+     "reason": "Gave the archive back to Haldis"
+    }
+   ]
+  },
+  "codes": {
+   "speaker": "varr",
+   "text": "Codes are in. Bay 2 is releasing. One more thing: the Lantern breach is in Bay 2's north wall. From here, I can drop the emergency bulkhead over it and cut their numbers before you walk in.",
+   "choices": [
+    {
+     "text": "Do it. Seal the breach.",
+     "next": "breach",
+     "effects": [
+      {
+       "set_flag": "breach_sealed",
+       "value": true
+      },
+      {
+       "set_flag": "lantern_reduced",
+       "value": true
+      }
+     ]
+    },
+    {
+     "text": "No. Some of them might want to talk, and I'd rather they weren't trapped.",
+     "next": "nobreach"
+    },
+    {
+     "text": "I'll handle the bay.",
+     "next": "nobreach"
+    }
+   ],
+   "effects": [
+    {
+     "set_flag": "launch_decided",
+     "value": true
+    },
+    {
+     "give_item": "launch_authorization",
+     "count": 1,
+     "key": "launch_codes"
+    },
+    {
+     "world": "d_bay",
+     "set": {
+      "locked": false
+     }
+    },
+    {
+     "xp": 150,
+     "key": "launch_decision",
+     "reason": "Decided what the Petrel carries"
+    }
+   ]
+  },
+  "breach": {
+   "speaker": "varr",
+   "text": "Bulkhead down. Whoever's already in the bay stays in, and the rest stay out. Go.",
+   "next": "warden_hint"
+  },
+  "nobreach": {
+   "speaker": "varr",
+   "text": "Your call. Go.",
+   "next": "warden_hint"
+  },
+  "warden_hint": {
+   "speaker": "varr",
+   "text": "And {name}. The WARDEN will try to stop the Petrel from leaving, whatever's aboard. It's in the core over there. It talks to you. I'd talk back, before you go.",
+   "end": true
+  },
+  "after": {
+   "speaker": "varr",
+   "text": "Bay 2 is open. Go. Every minute on this ship is a minute the WARDEN gets to change its mind.",
+   "choices": [
+    {
+     "text": "Going.",
+     "end": true
+    }
+   ]
+  }
+ }
+}

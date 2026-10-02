@@ -1,0 +1,677 @@
+{
+ "id": "varga_triage",
+ "entry": [
+  {
+   "if": [
+    {
+     "flag": "varga_hostile"
+    }
+   ],
+   "node": "hostile"
+  },
+  {
+   "if": [
+    {
+     "flag": "supplies_decided"
+    }
+   ],
+   "node": "after"
+  },
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "varga",
+   "text": "You're armed and upright, which makes you the most useful people on this deck. I have six doses of trauma gel. Corin Ashe has burns over a third of his body. Mae Toller took shrapnel under the ribs. Benedikt Sorrow's leg was pinned under a bulkhead for an hour. Without gel, two of them die before your launch craft clears the bay. With all six doses, all three live, and there's nothing left for the people who still have to fight their way out.",
+   "next": "choose",
+   "effects": [
+    {
+     "set_flag": "q_ward_met",
+     "value": true
+    },
+    {
+     "codex": "cx_triage_notes"
+    }
+   ]
+  },
+  "choose": {
+   "speaker": "varga",
+   "text": "I don't have time to be diplomatic. Tell me what we're doing.",
+   "choices": [
+    {
+     "text": "Use it on them. All of it.",
+     "next": "treat",
+     "effects": [
+      {
+       "set_flag": "med_supplies_choice",
+       "value": "treated"
+      },
+      {
+       "set_flag": "supplies_decided",
+       "value": true
+      },
+      {
+       "survivors": 3,
+       "key": "triage"
+      },
+      {
+       "alignment": 8,
+       "key": "triage",
+       "reason": "Gave the medical reserve to the wounded"
+      },
+      {
+       "influence": "iona",
+       "delta": 5,
+       "key": "triage",
+       "reason": "Put the wounded first"
+      },
+      {
+       "influence": "tav7",
+       "delta": 3,
+       "key": "triage",
+       "reason": "Preserved three patterns"
+      },
+      {
+       "npc": "corin",
+       "set": {
+        "downed": false
+       }
+      },
+      {
+       "npc": "mae",
+       "set": {
+        "downed": false
+       }
+      },
+      {
+       "npc": "benedikt",
+       "set": {
+        "downed": false
+       }
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "Let me help. Clean and pack the wounds first and you'll stretch the doses.",
+     "next": "split_ok",
+     "tag": "Medicine",
+     "check": {
+      "skill": "medicine",
+      "dc": 14,
+      "id": "triage_split"
+     },
+     "success": "split_ok",
+     "failure": "split_fail",
+     "success_effects": [
+      {
+       "set_flag": "med_supplies_choice",
+       "value": "split"
+      },
+      {
+       "set_flag": "supplies_decided",
+       "value": true
+      },
+      {
+       "survivors": 3,
+       "key": "triage"
+      },
+      {
+       "give_item": "trauma_pack",
+       "count": 1,
+       "key": "triage_split"
+      },
+      {
+       "give_item": "med_reagents",
+       "count": 2,
+       "key": "triage_split_r"
+      },
+      {
+       "alignment": 5,
+       "key": "triage",
+       "reason": "Saved the wounded and kept supplies"
+      },
+      {
+       "influence": "iona",
+       "delta": 3,
+       "key": "triage",
+       "reason": "Found a better way to help"
+      },
+      {
+       "influence": "tav7",
+       "delta": 2,
+       "key": "triage",
+       "reason": "Preserved three patterns"
+      },
+      {
+       "xp": 60,
+       "key": "triage_skill",
+       "reason": "Stretched the medical reserve"
+      },
+      {
+       "npc": "corin",
+       "set": {
+        "downed": false
+       }
+      },
+      {
+       "npc": "mae",
+       "set": {
+        "downed": false
+       }
+      },
+      {
+       "npc": "benedikt",
+       "set": {
+        "downed": false
+       }
+      }
+     ],
+     "failure_effects": [
+      {
+       "set_flag": "med_supplies_choice",
+       "value": "split_failed"
+      },
+      {
+       "set_flag": "supplies_decided",
+       "value": true
+      },
+      {
+       "survivors": 2,
+       "key": "triage"
+      },
+      {
+       "set_flag": "patient_lost_note",
+       "value": true
+      },
+      {
+       "alignment": 2,
+       "key": "triage",
+       "reason": "Tried to stretch the reserve"
+      },
+      {
+       "npc": "corin",
+       "set": {
+        "downed": false
+       }
+      },
+      {
+       "npc": "mae",
+       "set": {
+        "downed": false
+       }
+      }
+     ],
+     "tone": "pragmatic"
+    },
+    {
+     "text": "Iona has field training. Iona, help her stretch the doses.",
+     "next": "split_ok",
+     "tag": "Iona – Medicine",
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "check": {
+      "skill": "medicine",
+      "dc": 12,
+      "id": "triage_split_iona",
+      "who": "iona"
+     },
+     "success": "split_ok",
+     "failure": "split_fail",
+     "success_effects": [
+      {
+       "set_flag": "med_supplies_choice",
+       "value": "split"
+      },
+      {
+       "set_flag": "supplies_decided",
+       "value": true
+      },
+      {
+       "survivors": 3,
+       "key": "triage"
+      },
+      {
+       "give_item": "trauma_pack",
+       "count": 1,
+       "key": "triage_split"
+      },
+      {
+       "give_item": "med_reagents",
+       "count": 2,
+       "key": "triage_split_r"
+      },
+      {
+       "alignment": 5,
+       "key": "triage",
+       "reason": "Saved the wounded and kept supplies"
+      },
+      {
+       "influence": "iona",
+       "delta": 5,
+       "key": "triage",
+       "reason": "Trusted her training"
+      },
+      {
+       "influence": "tav7",
+       "delta": 2,
+       "key": "triage",
+       "reason": "Preserved three patterns"
+      },
+      {
+       "xp": 60,
+       "key": "triage_skill",
+       "reason": "Stretched the medical reserve"
+      },
+      {
+       "npc": "corin",
+       "set": {
+        "downed": false
+       }
+      },
+      {
+       "npc": "mae",
+       "set": {
+        "downed": false
+       }
+      },
+      {
+       "npc": "benedikt",
+       "set": {
+        "downed": false
+       }
+      }
+     ],
+     "failure_effects": [
+      {
+       "set_flag": "med_supplies_choice",
+       "value": "split_failed"
+      },
+      {
+       "set_flag": "supplies_decided",
+       "value": true
+      },
+      {
+       "survivors": 2,
+       "key": "triage"
+      },
+      {
+       "set_flag": "patient_lost_note",
+       "value": true
+      },
+      {
+       "alignment": 2,
+       "key": "triage",
+       "reason": "Tried to stretch the reserve"
+      },
+      {
+       "influence": "iona",
+       "delta": 1,
+       "key": "triage",
+       "reason": "Trusted her training"
+      },
+      {
+       "npc": "corin",
+       "set": {
+        "downed": false
+       }
+      },
+      {
+       "npc": "mae",
+       "set": {
+        "downed": false
+       }
+      }
+     ],
+     "companion": "iona"
+    },
+    {
+     "text": "If we die in the next corridor, nobody gets off this ship. We take the gel.",
+     "next": "took",
+     "effects": [
+      {
+       "set_flag": "med_supplies_choice",
+       "value": "took"
+      },
+      {
+       "set_flag": "supplies_decided",
+       "value": true
+      },
+      {
+       "survivors": 1,
+       "key": "triage"
+      },
+      {
+       "set_flag": "patient_lost_note",
+       "value": true
+      },
+      {
+       "give_item": "trauma_pack",
+       "count": 3,
+       "key": "triage_took"
+      },
+      {
+       "give_item": "med_reagents",
+       "count": 2,
+       "key": "triage_took_r"
+      },
+      {
+       "alignment": -8,
+       "key": "triage",
+       "reason": "Took the medical reserve for the party"
+      },
+      {
+       "influence": "iona",
+       "delta": -6,
+       "key": "triage",
+       "reason": "Left the wounded without treatment"
+      },
+      {
+       "influence": "tav7",
+       "delta": -3,
+       "key": "triage",
+       "reason": "A hard calculus"
+      },
+      {
+       "npc": "mae",
+       "set": {
+        "downed": false
+       }
+      }
+     ],
+     "tone": "self-interested"
+    },
+    {
+     "text": "Hand it over, doctor. All of it, and the reagents in the back.",
+     "next": "seize",
+     "effects": [
+      {
+       "set_flag": "med_supplies_choice",
+       "value": "seized"
+      },
+      {
+       "set_flag": "supplies_decided",
+       "value": true
+      },
+      {
+       "set_flag": "varga_hostile",
+       "value": true
+      },
+      {
+       "set_flag": "patient_lost_note",
+       "value": true
+      },
+      {
+       "give_item": "trauma_pack",
+       "count": 4,
+       "key": "triage_seize"
+      },
+      {
+       "give_item": "med_reagents",
+       "count": 4,
+       "key": "triage_seize_r"
+      },
+      {
+       "alignment": -15,
+       "key": "triage",
+       "reason": "Seized the medical reserve at gunpoint"
+      },
+      {
+       "influence": "iona",
+       "delta": -10,
+       "key": "triage",
+       "reason": "Robbed a doctor at gunpoint"
+      },
+      {
+       "influence": "tav7",
+       "delta": -6,
+       "key": "triage",
+       "reason": "Coerced Dr. Varga"
+      }
+     ],
+     "tone": "hard"
+    },
+    {
+     "text": "Why is Ward 2 sealed?",
+     "next": "ward_info"
+    },
+    {
+     "text": "I need a moment.",
+     "end": true
+    }
+   ]
+  },
+  "ward_info": {
+   "speaker": "varga",
+   "text": "Coolant line burst inside it two hours ago. Commander Varr ordered it sealed before the vapour reached triage. The scrubbers in there are failing. Five people. Pell Okafor still answers the intercom.",
+   "next": "ward_r"
+  },
+  "ward_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "node": "ward_iona"
+    },
+    {
+     "if": [],
+     "node": "choose"
+    }
+   ]
+  },
+  "ward_iona": {
+   "speaker": "iona",
+   "text": "I sealed it. Varr's order. I stood there eleven seconds deciding whether to be the kind of officer who obeys. I obeyed.",
+   "next": "ward_tav"
+  },
+  "ward_tav": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "node": "ward_tav2"
+    },
+    {
+     "if": [],
+     "node": "choose"
+    }
+   ]
+  },
+  "ward_tav2": {
+   "speaker": "tav7",
+   "text": "The purge valve by the ward door could clear the vapour first. It needs steady hands. Mine are steady.",
+   "next": "choose"
+  },
+  "treat": {
+   "speaker": "varga",
+   "text": "Then I'll stop talking and work. Go. Get these people a ship to get on.",
+   "next": "react_treat"
+  },
+  "react_treat": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "node": "iona_treat"
+    },
+    {
+     "if": [],
+     "node": "end_node"
+    }
+   ]
+  },
+  "iona_treat": {
+   "speaker": "iona",
+   "text": "Good call.",
+   "next": "end_node"
+  },
+  "split_ok": {
+   "speaker": "varga",
+   "text": "...That's clean work. All three will hold. Take this. One kit, a little reagent. Don't waste it.",
+   "next": "end_node"
+  },
+  "split_fail": {
+   "speaker": "varga",
+   "text": "No, no — you're tearing the packing. Move. I'll save the two I can. Benedikt... I'm sorry. Get out of my way.",
+   "next": "end_node"
+  },
+  "took": {
+   "speaker": "varga",
+   "text": "There it is: the mathematics. Fine. I'll keep Mae alive with what's left. Don't come back here for absolution.",
+   "next": "react_took"
+  },
+  "react_took": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "node": "iona_took"
+    },
+    {
+     "if": [],
+     "node": "end_node"
+    }
+   ]
+  },
+  "iona_took": {
+   "speaker": "iona",
+   "text": "You could have argued with her. You didn't even argue.",
+   "next": "tav_took"
+  },
+  "tav_took": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "node": "tav_took2"
+    },
+    {
+     "if": [],
+     "node": "end_node"
+    }
+   ]
+  },
+  "tav_took2": {
+   "speaker": "tav7",
+   "text": "Patterns persist only if bodies do. I understand the logic. I do not have to like its arithmetic.",
+   "next": "end_node"
+  },
+  "seize": {
+   "speaker": "varga",
+   "text": "Take it. Take all of it. Get out of my triage and never let me see you again.",
+   "next": "react_seize"
+  },
+  "react_seize": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "node": "iona_seize"
+    },
+    {
+     "if": [],
+     "node": "end_node"
+    }
+   ]
+  },
+  "iona_seize": {
+   "speaker": "iona",
+   "text": "Put the weapon down. You never point it at a doctor again, or you and I are finished.",
+   "next": "end_node"
+  },
+  "end_node": {
+   "speaker": "system",
+   "text": "The medical reserve is decided.",
+   "end": true
+  },
+  "after": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "med_supplies_choice",
+       "eq": "treated"
+      }
+     ],
+     "node": "a_treat"
+    },
+    {
+     "if": [
+      {
+       "flag": "med_supplies_choice",
+       "eq": "split"
+      }
+     ],
+     "node": "a_split"
+    },
+    {
+     "if": [],
+     "node": "a_other"
+    }
+   ]
+  },
+  "a_treat": {
+   "speaker": "varga",
+   "text": "They're stable. You did that. Now go and do it again for the people in Ward 2.",
+   "choices": [
+    {
+     "text": "We're going.",
+     "end": true
+    }
+   ]
+  },
+  "a_split": {
+   "speaker": "varga",
+   "text": "Benedikt asked who you were. I told him you were with security. Seemed simpler.",
+   "choices": [
+    {
+     "text": "Take care of them.",
+     "end": true
+    }
+   ]
+  },
+  "a_other": {
+   "speaker": "varga",
+   "text": "I'm working. Unless you've brought me another dose, there's nothing to say.",
+   "choices": [
+    {
+     "text": "(Leave her be.)",
+     "end": true
+    }
+   ]
+  },
+  "hostile": {
+   "speaker": "varga",
+   "text": "Get away from my patients.",
+   "choices": [
+    {
+     "text": "(Leave.)",
+     "end": true
+    }
+   ]
+  }
+ }
+}

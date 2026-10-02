@@ -1,0 +1,598 @@
+{
+ "id": "bay_quill",
+ "names": {
+  "quill": "Marshal Teodor Quill"
+ },
+ "entry": [
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "senna_fate",
+       "eq": "killed"
+      }
+     ],
+     "node": "s_killed"
+    },
+    {
+     "if": [
+      {
+       "flag": "senna_message"
+      }
+     ],
+     "node": "s_message"
+    },
+    {
+     "if": [],
+     "node": "s_plain"
+    }
+   ]
+  },
+  "s_plain": {
+   "speaker": "quill",
+   "text": "Stand where you are. Marshal Teodor Quill, Lantern Office. You're the escort for the Concord's passengers. And the one the ship calls Custodian, if the Concord's chatter is right.",
+   "next": "want"
+  },
+  "s_message": {
+   "speaker": "quill",
+   "text": "Stand easy. Marshal Teodor Quill. Senna Thorne sent word ahead. She says an operator let her live. I assume that was you. That buys you my attention.",
+   "next": "want",
+   "effects": [
+    {
+     "influence": "iona",
+     "delta": 1,
+     "key": "quill_msg",
+     "reason": "Mercy paid off"
+    }
+   ]
+  },
+  "s_killed": {
+   "speaker": "quill",
+   "text": "Marshal Teodor Quill. My scouts found Senna Thorne in cold storage. You put her down like an animal. Blood for blood, operator. Give me a reason not to.",
+   "next": "killed_hub"
+  },
+  "killed_hub": {
+   "speaker": "quill",
+   "text": "Speak.",
+   "choices": [
+    {
+     "text": "She was a soldier who boarded a refugee ship. So are you.",
+     "next": "fight",
+     "tone": "hard"
+    },
+    {
+     "text": "It was a mistake. One I'll carry. Don't make the passengers pay for it.",
+     "next": "k_ok",
+     "tag": "Persuasion",
+     "check": {
+      "skill": "persuasion",
+      "dc": 20,
+      "id": "quill_killed",
+      "bonus_if": [
+       {
+        "if": [
+         {
+          "item": "kinship_token"
+         }
+        ],
+        "bonus": 4
+       },
+       {
+        "if": [
+         {
+          "flag": "archive_fate",
+          "eq": "handed_over"
+         }
+        ],
+        "bonus": 4
+       }
+      ]
+     },
+     "success": "k_ok",
+     "failure": "fight"
+    },
+    {
+     "text": "(Seize his will with Resonance.)",
+     "next": "compelled",
+     "tag": "Resonance",
+     "if": [
+      {
+       "power": "compel"
+      }
+     ],
+     "effects": [
+      {
+       "alignment": -10,
+       "key": "quill_compel",
+       "reason": "Forced Quill's will"
+      },
+      {
+       "influence": "iona",
+       "delta": -6,
+       "key": "quill_compel",
+       "reason": "Coerced Quill"
+      },
+      {
+       "influence": "tav7",
+       "delta": -6,
+       "key": "quill_compel",
+       "reason": "Overrode a will"
+      }
+     ],
+     "check": {
+      "skill": "persuasion",
+      "dc": 16,
+      "id": "quill_compel_k",
+      "power": "compel",
+      "energy": 6
+     },
+     "success": "compelled",
+     "failure": "fight"
+    },
+    {
+     "text": "Tav-7, the apron shield. Now.",
+     "next": "tech",
+     "tag": "Tav-7 – Computer Use",
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "check": {
+      "skill": "computer_use",
+      "dc": 14,
+      "id": "quill_tech_k",
+      "who": "tav7"
+     },
+     "success": "tech",
+     "failure": "fight"
+    }
+   ]
+  },
+  "k_ok": {
+   "speaker": "quill",
+   "text": "...A mistake. You'll carry it. Then carry it far from here. Go, before I change my mind.",
+   "next": "peace"
+  },
+  "want": {
+   "speaker": "quill",
+   "text": "We came for our dead. Three thousand of them. Where are they?",
+   "choices": [
+    {
+     "text": "Still in the hold, waiting for you. We're not taking them.",
+     "next": "w_left",
+     "if": [
+      {
+       "any": [
+        {
+         "flag": "archive_fate",
+         "eq": "handed_over"
+        },
+        {
+         "flag": "archive_fate",
+         "eq": "left"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "text": "Aboard the Petrel. They go to the tribunal on Tessaly.",
+     "next": "w_loaded",
+     "if": [
+      {
+       "flag": "archive_fate",
+       "eq": "loaded"
+      }
+     ]
+    },
+    {
+     "text": "Purged. They're gone.",
+     "next": "w_purged",
+     "if": [
+      {
+       "flag": "archive_fate",
+       "eq": "purged"
+      }
+     ]
+    },
+    {
+     "text": "I don't know yet.",
+     "next": "w_unknown",
+     "if": [
+      {
+       "not": {
+        "flag": "archive_fate"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "w_unknown": {
+   "speaker": "quill",
+   "text": "Then you have not been to launch control. Go, decide, and come back when you can answer me.",
+   "end": true
+  },
+  "w_left": {
+   "speaker": "quill",
+   "text": "In the hold. Not on your craft. ...Then you and I have no quarrel left. Senna would want me to say that. By the lantern, go.",
+   "next": "w_left_more"
+  },
+  "w_left_more": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "evac_left",
+       "gte": 1
+      }
+     ],
+     "node": "refugees"
+    },
+    {
+     "if": [
+      {
+       "flag": "ward_choice",
+       "eq": "sealed"
+      }
+     ],
+     "node": "refugees_ward"
+    },
+    {
+     "if": [],
+     "node": "peace"
+    }
+   ]
+  },
+  "refugees": {
+   "speaker": "quill",
+   "text": "And the ones your craft can't hold. We'll take them aboard our ships. Haldis will treat them better than the Concord treated ours. On my lantern.",
+   "next": "peace",
+   "effects": [
+    {
+     "set_flag": "lantern_rescues",
+     "value": true
+    }
+   ]
+  },
+  "refugees_ward": {
+   "speaker": "quill",
+   "text": "There's a sealed ward on your medical deck. We'll open it. They'll come to Haldis with us. On my lantern.",
+   "next": "peace",
+   "effects": [
+    {
+     "set_flag": "lantern_rescues",
+     "value": true
+    }
+   ]
+  },
+  "w_purged": {
+   "speaker": "quill",
+   "text": "Gone. Three thousand lights, and you put them out so no one could have them. Do you know what you've done?",
+   "choices": [
+    {
+     "text": "It was that, or let the Lattice use them again. I chose the fire.",
+     "next": "p_ok",
+     "tag": "Persuasion",
+     "check": {
+      "skill": "persuasion",
+      "dc": 17,
+      "id": "quill_purged",
+      "bonus_if": [
+       {
+        "if": [
+         {
+          "flag": "senna_message"
+         }
+        ],
+        "bonus": 3
+       }
+      ]
+     },
+     "success": "p_ok",
+     "failure": "fight"
+    },
+    {
+     "text": "Yes. And I'd do it again.",
+     "next": "fight",
+     "tone": "hard"
+    },
+    {
+     "text": "Tav-7, the apron shield. Now.",
+     "next": "tech",
+     "tag": "Tav-7 – Computer Use",
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "check": {
+      "skill": "computer_use",
+      "dc": 14,
+      "id": "quill_tech_p",
+      "who": "tav7"
+     },
+     "success": "tech",
+     "failure": "fight"
+    }
+   ]
+  },
+  "p_ok": {
+   "speaker": "quill",
+   "text": "The fire. ...We have a word for that too, on Haldis. Go. I can't look at you.",
+   "next": "peace"
+  },
+  "w_loaded": {
+   "speaker": "quill",
+   "text": "Then you are carrying our grandmothers into a Concord courtroom to be exhibits. Unload the core and go in peace, or don't, and we burn the Petrel where it sits.",
+   "choices": [
+    {
+     "text": "Fine. Unload the core. They're yours.",
+     "next": "unload",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "handed_over"
+      },
+      {
+       "evac": "handover"
+      },
+      {
+       "influence": "tav7",
+       "delta": 6,
+       "key": "quill_unload",
+       "reason": "Returned the dead after all"
+      },
+      {
+       "influence": "iona",
+       "delta": 3,
+       "key": "quill_unload",
+       "reason": "Freed seats for people"
+      }
+     ]
+    },
+    {
+     "text": "The tribunal convicts the Lattice. Then every one of them comes home. You have my oath.",
+     "next": "oath",
+     "tag": "Persuasion",
+     "check": {
+      "skill": "persuasion",
+      "dc": 18,
+      "id": "quill_oath",
+      "bonus_if": [
+       {
+        "if": [
+         {
+          "flag": "senna_message"
+         }
+        ],
+        "bonus": 3
+       },
+       {
+        "if": [
+         {
+          "flag": "archive_peace"
+         }
+        ],
+        "bonus": 3
+       },
+       {
+        "if": [
+         {
+          "item": "vesper_testimony"
+         }
+        ],
+        "bonus": 2
+       },
+       {
+        "if": [
+         {
+          "item": "kinship_token"
+         }
+        ],
+        "bonus": 2
+       }
+      ]
+     },
+     "success": "oath",
+     "failure": "fight"
+    },
+    {
+     "text": "Look around, Marshal. Turrets, my people, and a very bad day. Walk away.",
+     "next": "intim",
+     "tag": "Persuasion (intimidate)",
+     "if": [
+      {
+       "flag": "turrets_active"
+      }
+     ],
+     "check": {
+      "skill": "persuasion",
+      "dc": 14,
+      "id": "quill_intim"
+     },
+     "success": "intim",
+     "failure": "fight"
+    },
+    {
+     "text": "(Seize his will with Resonance.)",
+     "next": "compelled",
+     "tag": "Resonance",
+     "if": [
+      {
+       "power": "compel"
+      }
+     ],
+     "effects": [
+      {
+       "alignment": -10,
+       "key": "quill_compel",
+       "reason": "Forced Quill's will"
+      },
+      {
+       "influence": "iona",
+       "delta": -6,
+       "key": "quill_compel",
+       "reason": "Coerced Quill"
+      },
+      {
+       "influence": "tav7",
+       "delta": -6,
+       "key": "quill_compel",
+       "reason": "Overrode a will"
+      }
+     ],
+     "check": {
+      "skill": "persuasion",
+      "dc": 16,
+      "id": "quill_compel",
+      "power": "compel",
+      "energy": 6
+     },
+     "success": "compelled",
+     "failure": "fight"
+    },
+    {
+     "text": "Tav-7, the apron shield. Now.",
+     "next": "tech",
+     "tag": "Tav-7 – Computer Use",
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "check": {
+      "skill": "computer_use",
+      "dc": 14,
+      "id": "quill_tech",
+      "who": "tav7"
+     },
+     "success": "tech",
+     "failure": "fight"
+    },
+    {
+     "text": "Then burn it if you can.",
+     "next": "fight",
+     "tone": "hard"
+    }
+   ]
+  },
+  "unload": {
+   "speaker": "quill",
+   "text": "...You'd actually do it. Then go with your passengers, all of them. There's room now. By the lantern.",
+   "next": "peace",
+   "effects": [
+    {
+     "xp": 60,
+     "key": "quill_unload",
+     "reason": "Returned the archive to the Lantern Office"
+    }
+   ]
+  },
+  "oath": {
+   "speaker": "quill",
+   "text": "An oath. We remember oaths longer than names, operator. If they do not come home, I will come and ask you why. Go.",
+   "next": "peace",
+   "effects": [
+    {
+     "set_flag": "oath_to_quill",
+     "value": true
+    }
+   ]
+  },
+  "intim": {
+   "speaker": "quill",
+   "text": "...Lanterns down. Back to the breach. This isn't the place.",
+   "next": "withdrew"
+  },
+  "compelled": {
+   "speaker": "narrator",
+   "text": "You find the place behind his grief where his orders live, and you press until they bend. Marshal Quill lowers his swords and steps aside, and his own people stare at him.",
+   "next": "peace"
+  },
+  "tech": {
+   "speaker": "tav7",
+   "text": "Shield coming down. Marshal, I apologise for the manners.",
+   "next": "tech2"
+  },
+  "tech2": {
+   "speaker": "system",
+   "text": "The apron's blast shield slams down between the reclaimers and the Petrel's ramp.",
+   "effects": [
+    {
+     "set_flag": "bay_resolution",
+     "value": "technical"
+    },
+    {
+     "resolve_encounter": "enc_bay",
+     "resolution": "technical"
+    },
+    {
+     "xp": 60,
+     "key": "bay_shield",
+     "reason": "Sealed off the launch apron"
+    }
+   ],
+   "end": true
+  },
+  "peace": {
+   "speaker": "system",
+   "text": "The reclaimers stand aside.",
+   "effects": [
+    {
+     "set_flag": "bay_resolution",
+     "value": "negotiated"
+    },
+    {
+     "set_flag": "lantern_truce",
+     "value": true
+    },
+    {
+     "resolve_encounter": "enc_bay",
+     "resolution": "negotiated"
+    }
+   ],
+   "end": true
+  },
+  "withdrew": {
+   "speaker": "system",
+   "text": "The reclaimers withdraw.",
+   "effects": [
+    {
+     "set_flag": "bay_resolution",
+     "value": "negotiated"
+    },
+    {
+     "set_flag": "lantern_truce",
+     "value": true
+    },
+    {
+     "resolve_encounter": "enc_bay",
+     "resolution": "withdrew"
+    }
+   ],
+   "end": true
+  },
+  "fight": {
+   "speaker": "quill",
+   "text": "Lanterns up!",
+   "effects": [
+    {
+     "set_flag": "bay_resolution",
+     "value": "combat"
+    },
+    {
+     "start_encounter": "enc_bay"
+    }
+   ],
+   "end": true
+  }
+ }
+}

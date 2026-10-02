@@ -1,0 +1,324 @@
+{
+ "id": "archive_index",
+ "entry": [
+  {
+   "if": [
+    {
+     "flag": "index_open"
+    }
+   ],
+   "node": "hub"
+  },
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "system",
+   "text": "ARCHIVE INDEX — CINDER WAKE HOLD. RESTRICTED: COMMAND AND CUSTODIAN ONLY.",
+   "choices": [
+    {
+     "text": "Slice the index.",
+     "next": "opened",
+     "check": {
+      "skill": "computer_use",
+      "dc": 14,
+      "id": "arc_index",
+      "who": "actor"
+     },
+     "success": "opened",
+     "failure": "locked"
+    },
+    {
+     "text": "Tav-7, can you talk to it?",
+     "next": "opened",
+     "tag": "Tav-7 – Computer Use",
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "check": {
+      "skill": "computer_use",
+      "dc": 12,
+      "id": "arc_index_tav",
+      "who": "tav7"
+     },
+     "success": "opened",
+     "failure": "locked_tav"
+    },
+    {
+     "text": "Authenticate with your neural signature.",
+     "next": "opened_cred",
+     "tag": "Resonance credential",
+     "if": [
+      {
+       "controlled": "player"
+      }
+     ]
+    },
+    {
+     "text": "Read the physical labels on the cylinders instead.",
+     "next": "labels"
+    },
+    {
+     "text": "Log off.",
+     "end": true
+    }
+   ]
+  },
+  "locked": {
+   "speaker": "system",
+   "text": "ACCESS DENIED. This console locks out for the session. The cylinders themselves have printed labels.",
+   "next": "start"
+  },
+  "locked_tav": {
+   "speaker": "tav7",
+   "text": "It does not want to talk to me. It knows I refused normalization. Perhaps another way.",
+   "next": "start"
+  },
+  "labels": {
+   "speaker": "narrator",
+   "text": "Each cylinder carries a strip label: an index number, a camp code — VESPER, CALLAN — and a name. Hundreds of names. The label on the nearest one reads 0441 DARROW, E.",
+   "next": "start",
+   "effects": [
+    {
+     "set_flag": "archive_evidence_stolen",
+     "value": true
+    },
+    {
+     "codex": "cx_harvest"
+    }
+   ]
+  },
+  "opened_cred": {
+   "speaker": "warden",
+   "text": "CUSTODIAN ACCESS. INDEX UNSEALED. You do not need to ask, Source. Everything here is yours to see.",
+   "next": "opened",
+   "effects": [
+    {
+     "set_flag": "used_credential",
+     "value": true
+    },
+    {
+     "set_flag": "warden_tracking",
+     "value": true
+    },
+    {
+     "inc_flag": "credential_uses",
+     "key": "cred_index"
+    }
+   ]
+  },
+  "opened": {
+   "speaker": "system",
+   "text": "INDEX OPEN. 3,112 records. Program: DIRECTIVE 9 — PATTERN HARVEST.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "index_open",
+     "value": true
+    },
+    {
+     "xp": 50,
+     "key": "arc_index_open",
+     "reason": "Opened the archive index"
+    }
+   ]
+  },
+  "hub": {
+   "speaker": "system",
+   "text": "The index waits.",
+   "choices": [
+    {
+     "text": "Read the program summary.",
+     "next": "harvest"
+    },
+    {
+     "text": "Open engram 0441: Vesper Station.",
+     "next": "vesper"
+    },
+    {
+     "text": "Copy engram 0441 to a data spike.",
+     "next": "copy",
+     "if": [
+      {
+       "flag": "vesper_read"
+      },
+      {
+       "not": {
+        "flag": "vesper_recovered"
+       }
+      }
+     ]
+    },
+    {
+     "text": "Search the index for 'custodian'.",
+     "next": "custodian"
+    },
+    {
+     "text": "Close the index.",
+     "end": true
+    }
+   ]
+  },
+  "harvest": {
+   "speaker": "system",
+   "text": "DIRECTIVE 9. Engrams archived: 3,112. Source: Haldis detainees. Consent: not required (security exemption). Purpose: operator training substrate; custodian template validation.",
+   "next": "harvest_r",
+   "effects": [
+    {
+     "set_flag": "archive_evidence_stolen",
+     "value": true
+    },
+    {
+     "codex": "cx_harvest"
+    }
+   ]
+  },
+  "harvest_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "node": "harvest_tav"
+    },
+    {
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "node": "harvest_iona"
+    },
+    {
+     "if": [],
+     "node": "hub"
+    }
+   ]
+  },
+  "harvest_tav": {
+   "speaker": "tav7",
+   "text": "'Consent: not required.' Three thousand people, and the field for their consent says not required.",
+   "next": "harvest_iona_r"
+  },
+  "harvest_iona_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "node": "harvest_iona"
+    },
+    {
+     "if": [],
+     "node": "hub"
+    }
+   ]
+  },
+  "harvest_iona": {
+   "speaker": "iona",
+   "text": "And we were told it was medical archive cores. I signed the cargo manifest.",
+   "next": "hub"
+  },
+  "vesper": {
+   "speaker": "system",
+   "text": "ENGRAM 0441 — DARROW, ESHE, CORPORAL, CONCORD GARRISON, VESPER STATION. Playback: forty minutes.",
+   "next": "vesper2",
+   "effects": [
+    {
+     "set_flag": "archive_evidence_atrocity",
+     "value": true
+    },
+    {
+     "set_flag": "vesper_read",
+     "value": true
+    },
+    {
+     "codex": "cx_vesper"
+    }
+   ]
+  },
+  "vesper2": {
+   "speaker": "narrator",
+   "text": "You only let it run for a minute. It is enough: the singing at the gate, the cold attention settling behind Darrow's eyes, her hands rising without her. You know that attention. You were taught how to be it.",
+   "choices": [
+    {
+     "text": "Close it. I've seen enough.",
+     "next": "hub"
+    },
+    {
+     "text": "(Let the rest play. Someone should witness all of it.)",
+     "next": "witness",
+     "effects": [
+      {
+       "alignment": 4,
+       "key": "vesper_witness",
+       "reason": "Witnessed the Vesper testimony in full"
+      }
+     ]
+    }
+   ]
+  },
+  "witness": {
+   "speaker": "narrator",
+   "text": "Forty minutes. When it ends, your hands are steady and your face is wet.",
+   "next": "hub",
+   "effects": [
+    {
+     "xp": 30,
+     "key": "vesper_witness",
+     "reason": "Witnessed the Vesper testimony"
+    }
+   ]
+  },
+  "copy": {
+   "speaker": "system",
+   "text": "ENGRAM 0441 COPIED TO DATA SPIKE. Original retained.",
+   "next": "hub",
+   "effects": [
+    {
+     "give_item": "vesper_testimony",
+     "count": 1,
+     "key": "vesper_copy"
+    },
+    {
+     "set_flag": "vesper_recovered",
+     "value": true
+    }
+   ]
+  },
+  "custodian": {
+   "speaker": "system",
+   "text": "CUSTODIAN TEMPLATE — SOURCE RECORD SEALED. AUTHORITY: COMMAND. NOTE: CUSTODIAN PRESENT ABOARD.",
+   "next": "cust_r"
+  },
+  "cust_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "used_credential"
+      }
+     ],
+     "node": "cust_known"
+    },
+    {
+     "if": [],
+     "node": "hub"
+    }
+   ]
+  },
+  "cust_known": {
+   "speaker": "warden",
+   "text": "Present. Present. Present. You are standing at the index, Source.",
+   "next": "hub"
+  }
+ }
+}

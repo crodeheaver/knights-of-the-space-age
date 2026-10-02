@@ -1,0 +1,68 @@
+{
+ "id": "wounded",
+ "entry": [
+  {
+   "if": [
+    {
+     "flag": "supplies_decided"
+    }
+   ],
+   "node": "after"
+  },
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "narrator",
+   "text": "The patient is barely conscious, breath rattling. Dr. Varga's tag on the bed reads CRITICAL — TRAUMA GEL REQUIRED.",
+   "choices": [
+    {
+     "text": "(Step back and speak to Dr. Varga.)",
+     "end": true
+    }
+   ]
+  },
+  "after": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "med_supplies_choice",
+       "eq": "took"
+      },
+      {
+       "flag": "patient_lost_note"
+      }
+     ],
+     "node": "lost"
+    },
+    {
+     "if": [],
+     "node": "stable"
+    }
+   ]
+  },
+  "stable": {
+   "speaker": "narrator",
+   "text": "The patient is breathing easier now. Someone has written THANK YOU on the bed tag in shaky marker.",
+   "choices": [
+    {
+     "text": "(Leave them to rest.)",
+     "end": true
+    }
+   ]
+  },
+  "lost": {
+   "speaker": "narrator",
+   "text": "A sheet has been drawn up over the bed. Dr. Varga does not look at you.",
+   "choices": [
+    {
+     "text": "(Step away.)",
+     "end": true
+    }
+   ]
+  }
+ }
+}

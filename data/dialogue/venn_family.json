@@ -1,0 +1,210 @@
+{
+ "id": "venn_family",
+ "names": {
+  "dalia": "Dalia Venn"
+ },
+ "entry": [
+  {
+   "if": [
+    {
+     "flag": "emergency_started"
+    },
+    {
+     "flag": "venn_emergency_talked"
+    }
+   ],
+   "node": "after2"
+  },
+  {
+   "if": [
+    {
+     "flag": "emergency_started"
+    }
+   ],
+   "node": "after"
+  },
+  {
+   "if": [
+    {
+     "flag": "venn_met"
+    }
+   ],
+   "node": "again"
+  },
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "dalia",
+   "text": "Oh, sorry, we're in your way. Ilo, sit down, love. He hasn't spoken since we left the surface. He keeps looking at the hull like it's going to open.",
+   "choices": [
+    {
+     "text": "Hey, Ilo. Ships like this are built to take a beating. I've seen worse hold together.",
+     "next": "kind",
+     "effects": [
+      {
+       "alignment": 3,
+       "key": "venn_kind",
+       "reason": "Comforted a frightened child"
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "Where are you headed?",
+     "next": "where"
+    },
+    {
+     "text": "(In Haldis dialect) Little sparrow, the sky only looks big from the ground.",
+     "next": "dialect",
+     "tag": "Haldis Native",
+     "if": [
+      {
+       "background": "colonist"
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "Keep him close and keep out of the way if anything happens.",
+     "next": "practical",
+     "tone": "pragmatic"
+    }
+   ],
+   "effects": [
+    {
+     "set_flag": "venn_met",
+     "value": true
+    }
+   ]
+  },
+  "kind": {
+   "speaker": "dalia",
+   "text": "Did you hear that, Ilo? The operator says so. Thank you. You don't know what that face does to me.",
+   "next": "where"
+  },
+  "dialect": {
+   "speaker": "narrator",
+   "text": "Ilo's head snaps around at the sound of home. For the first time since you sat down, he almost smiles.",
+   "next": "dialect2",
+   "effects": [
+    {
+     "xp": 20,
+     "key": "venn_dialect",
+     "reason": "Reached Ilo in his own language"
+    }
+   ]
+  },
+  "dialect2": {
+   "speaker": "dalia",
+   "text": "You're from the Reach. And you flew for the Lattice. I worked for the Concord too. A clerk. Nobody asks clerks what they signed.",
+   "next": "where"
+  },
+  "practical": {
+   "speaker": "dalia",
+   "text": "Out of the way. Yes. That's been our whole war.",
+   "next": "where"
+  },
+  "where": {
+   "speaker": "dalia",
+   "text": "Tessaly. My sister's there. I filed Concord paperwork for nine years on Haldis, and now the Assembly calls me a collaborator and the Concord calls me a refugee. Ilo just calls me tired.",
+   "choices": [
+    {
+     "text": "For what it's worth, I hope Tessaly is kind to you both.",
+     "effects": [
+      {
+       "alignment": 1,
+       "key": "venn_hope",
+       "reason": "Wished the Venns well"
+      }
+     ],
+     "end": true
+    },
+    {
+     "text": "The Concord owes you. Make them pay it.",
+     "end": true
+    },
+    {
+     "text": "Good luck.",
+     "end": true
+    }
+   ]
+  },
+  "again": {
+   "speaker": "dalia",
+   "text": "Ilo's drawing ships now. That's an improvement.",
+   "choices": [
+    {
+     "text": "Take care of each other.",
+     "end": true
+    }
+   ]
+  },
+  "after": {
+   "speaker": "dalia",
+   "text": "What's happening? The announcement said obstructions, what does that mean, are we obstructions? Ilo, Ilo, look at me.",
+   "choices": [
+    {
+     "text": "Stay with Purser Dray at the muster point. I promise I'll clear the way to the launch craft.",
+     "next": "promise",
+     "effects": [
+      {
+       "set_flag": "promised_venns",
+       "value": true
+      },
+      {
+       "alignment": 4,
+       "key": "venn_promise",
+       "reason": "Promised the Venns safe passage"
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "Stay here and stay down. That's all I can tell you.",
+     "next": "down",
+     "tone": "pragmatic"
+    },
+    {
+     "text": "I don't know. Nobody does. Keep him quiet.",
+     "next": "down",
+     "tone": "hard"
+    }
+   ]
+  },
+  "promise": {
+   "speaker": "dalia",
+   "text": "You promise. All right. All right, Ilo, the operator promised.",
+   "effects": [
+    {
+     "set_flag": "venn_emergency_talked",
+     "value": true
+    }
+   ],
+   "end": true
+  },
+  "down": {
+   "speaker": "dalia",
+   "text": "Down. We know how to do down.",
+   "effects": [
+    {
+     "set_flag": "venn_emergency_talked",
+     "value": true
+    }
+   ],
+   "end": true
+  },
+  "after2": {
+   "speaker": "dalia",
+   "text": "We're staying with Dray. Go. Please.",
+   "choices": [
+    {
+     "text": "I'm going.",
+     "end": true
+    }
+   ]
+  }
+ }
+}

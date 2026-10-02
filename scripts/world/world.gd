@@ -151,14 +151,14 @@ func _spawn_npcs() -> void:
 		var ns: Dictionary = Game.state.npcs.get(nid, {})
 		if bool(ns.get("removed", false)):
 			continue
-		if n.has("if") and not Conditions.eval_all(n["if"], Game.state):
+		if n.has("if") and not Conditions.eval_all(n["if"], Game.state) and not bool(ns.get("spawned", false)):
 			continue
 		if String(ns.get("state", "")) == "enemy":
 			continue  # converted to an enemy record; spawned with enemies
 		spawn_npc(String(nid))
 
 
-func spawn_npc(nid: String) -> Actor:
+func spawn_npc(nid: String, force: bool = false) -> Actor:
 	if actors.has(nid):
 		return actors[nid]
 	var n: Dictionary = DB.dict(DB.layout, "npcs").get(nid, {})
@@ -193,9 +193,11 @@ func spawn_npc(nid: String) -> Actor:
 	a.set_pos(Vector3(float(p[0]), 0, float(p[1])))
 	a.set_facing_deg(float(ns.get("rot", n.get("rot", 0))))
 	a.home = a.position
-	if bool(n.get("downed", false)) or bool(ns.get("downed", false)):
+	var dn: bool = bool(ns.get("downed", n.get("downed", false))) or bool(n.get("downed_pose", false))
+	if dn:
 		StatusRules.apply(s, "downed", 1.0)
-		s.hp = 0
+		if not n.has("template"):
+			s.hp = 0
 	return a
 
 
@@ -490,6 +492,8 @@ func _physics_process(delta: float) -> void:
 		return
 	if not Game.ui_blocked() and not game_over:
 		_direct_input(delta)
+	if _pending_autosave != "" and sim_running() and not combat.active:
+		_checkpoint(_pending_autosave)
 	if sim_running():
 		Game.state.play_time += delta
 		_acc += delta * time_scale
@@ -765,7 +769,7 @@ func _stealth_step(dt: float) -> void:
 			if e.alert:
 				continue
 			if not pa.stealth:
-				_alert_enemy(e, pa, "%s spotted %s" % [e.sheet.display_name, pa.sheet.display_name])
+				_alert_enemy(e, pa, "%s spotted %s" % [e.sheet.display_name, pa.sheet.display_name], true)
 				break
 			e.detect_clock += dt
 			if e.detect_clock < StealthRules.CHECK_INTERVAL:
@@ -782,7 +786,7 @@ func _stealth_step(dt: float) -> void:
 				Events.log_combat("%s notices something: Awareness d20 %d %s - %d = %d vs Stealth DC %d (suspicion %d%%)" % [e.sheet.display_name, r["natural"], Rules.signed(int(r["awareness"])), r["distance_penalty"], r["total"], r["dc"], int(sus * 100)], "", "stealth")
 			if sus >= 1.0:
 				break_stealth(pa, "%s detected %s" % [e.sheet.display_name, pa.sheet.display_name])
-				_alert_enemy(e, pa, "")
+				_alert_enemy(e, pa, "", true)
 				break
 
 
@@ -795,9 +799,27 @@ func max_suspicion_on(uid: String) -> float:
 	return m
 
 
-func _alert_enemy(e: Actor, cause: Actor, msg: String) -> void:
+func _alert_enemy(e: Actor, cause: Actor, msg: String, allow_parley: bool = false) -> void:
 	if e.alert:
 		return
+	var eid0 := e.encounter_id
+	if allow_parley and eid0 != "":
+		var ed0: Dictionary = DB.encounters.get(eid0, {})
+		var pd := String(ed0.get("parley_dialogue", ""))
+		var es0 := encounter_state(eid0)
+		if pd != "" and String(es0["state"]) == "pending" and not bool(es0.get("parleyed", false)):
+			es0["parleyed"] = true
+			for o in actors.values():
+				var oa0: Actor = o
+				if oa0.encounter_id == eid0:
+					oa0.face_towards(cause.position if cause != null else oa0.position)
+					oa0.stop()
+			var sp: Actor = null
+			for o in actors.values():
+				if (o as Actor).encounter_id == eid0 and not (o as Actor).sheet.dead:
+					sp = o
+			start_dialogue(pd, sp)
+			return
 	if msg != "":
 		Events.toast(msg, "alert")
 	GameAudio.play("alert", -4.0)
@@ -915,9 +937,15 @@ func _area_check(initial: bool) -> void:
 			call_deferred("_checkpoint", String(ad.get("name", aid)))
 
 
+var _pending_autosave := ""
+
+
 func _checkpoint(label: String) -> void:
 	if save_block_reason() == "" and not combat.active:
 		Saves.autosave(label)
+		_pending_autosave = ""
+	else:
+		_pending_autosave = label
 
 
 func _check_triggers() -> void:
@@ -945,11 +973,18 @@ func _check_triggers() -> void:
 			continue
 		Game.state.claim(key)
 		Events.post("trigger", {"id": tid})
-		if td.has("encounter"):
-			alert_encounter(String(td["encounter"])) if bool(td.get("alert", true)) else spawn_encounter(String(td["encounter"]))
-		if td.has("dialogue"):
-			start_dialogue(String(td["dialogue"]), null, String(td.get("speaker_npc", "")))
 		Effects.apply_all(td.get("effects", []), Game.state)
+		if td.has("encounter"):
+			if bool(td.get("alert", true)):
+				alert_encounter(String(td["encounter"]))
+			else:
+				spawn_encounter(String(td["encounter"]))
+		if td.has("dialogue"):
+			var spk: Actor = null
+			if td.has("speaker_uid"):
+				spk = actors.get(String(td["speaker_uid"]), null)
+			start_dialogue(String(td["dialogue"]), spk, String(td.get("speaker_npc", "")))
+
 
 
 func _hazard_step() -> void:
@@ -1509,7 +1544,7 @@ func resolve_encounter(eid: String, resolution: String) -> void:
 		total += Game.state.grant_xp(xp, "enemy:" + String(uid), "Resolved " + String(DB.encounters.get(eid, {}).get("name", eid)))
 	for o in actors.values():
 		var oa: Actor = o
-		if oa.encounter_id == eid and not oa.sheet.dead and resolution != "combat":
+		if oa.encounter_id == eid and not oa.sheet.dead and resolution not in ["combat", "bypassed"]:
 			oa.alert = false
 			oa.hostile_override = "neutral"
 			oa.current = {}
@@ -1937,14 +1972,27 @@ func end_dialogue() -> void:
 
 
 # ================================================================ world effects
+func _eval_rules() -> void:
+	for r in DB.layout.get("rules", []):
+		var rid := "rule:" + String(r.get("id", ""))
+		if Game.state.claimed(rid):
+			continue
+		if Conditions.eval_all(r.get("if", []), Game.state):
+			Game.state.claim(rid)
+			Effects.apply_all(r.get("effects", []), Game.state)
+
+
 func _on_event(name: String, data: Dictionary) -> void:
 	if name == "world_effect":
 		_world_effect(data)
 	elif name == "flag_changed":
 		for o in objects.values():
 			(o as WorldObject).refresh()
-		for npc in actors.values():
-			pass
+		_eval_rules()
+	elif name == "dialogue_ended":
+		if not _dialogue_queue.is_empty():
+			var nxt: String = _dialogue_queue.pop_front()
+			call_deferred("_queued_dialogue", nxt)
 	elif name == "tutorial":
 		ui_request.emit("tutorial", data)
 
@@ -1954,20 +2002,20 @@ func _world_effect(e: Dictionary) -> void:
 		"join_party":
 			var who := String(e["who"])
 			Game.recruit(who)
-			if not actors.has(who):
+			var start_pos := (controlled().position if controlled() else Vector3.ZERO) + Vector3(1.2, 0, 0.8)
+			var placeholder := who + "_npc"
+			if actors.has(placeholder):
+				var ph: Actor = actors[placeholder]
+				start_pos = ph.position
+				actors.erase(placeholder)
+				ph.queue_free()
+				if not Game.state.npcs.has(placeholder):
+					Game.state.npcs[placeholder] = {}
+				Game.state.npcs[placeholder]["removed"] = true
+			if not actors.has(who) and Game.state.party.has(who):
 				var s := Game.state.get_char(who)
 				var a := _make_actor(s, "party")
-				var near: Actor = actors.get(who + "_npc", controlled())
-				var n: Dictionary = DB.dict(DB.layout, "npcs").get(who, {})
-				if actors.has(who + "_npc"):
-					pass
-				a.set_pos(grid.nearest_passable((controlled().position if controlled() else Vector3.ZERO) + Vector3(1.2, 0, 0.8), 3))
-				if n.has("pos"):
-					a.set_pos(Vector3(float(n["pos"][0]), 0, float(n["pos"][1])))
-			if not Game.state.party.has(who):
-				# Party full: the companion waits at the nearest muster point.
-				if actors.has(who):
-					(actors[who] as Actor).visible = false
+				a.set_pos(grid.nearest_passable(start_pos, 3))
 			refresh_markers()
 			hud_changed.emit()
 		"leave_party":
@@ -2035,12 +2083,103 @@ func _world_effect(e: Dictionary) -> void:
 			ui_request.emit("end_dialogue", {})
 		"sound":
 			GameAudio.play(String(e["id"]))
+		"dialogue":
+			call_deferred("_queued_dialogue", String(e["id"]))
+		"enemy":
+			_enemy_effect(String(e["id"]), e.get("set", {}))
+		"area_damage":
+			_area_damage(e)
+		"reveal_area":
+			for aid in e.get("areas", []):
+				_reveal_area(String(aid))
+
+
+var _dialogue_queue: Array[String] = []
+
+
+func _queued_dialogue(did: String) -> void:
+	if dialogue != null and dialogue.active:
+		if not _dialogue_queue.has(did):
+			_dialogue_queue.append(did)
+		return
+	start_dialogue(did)
+
+
+func _enemy_effect(uid: String, setd: Dictionary) -> void:
+	if not actors.has(uid):
+		return
+	var a: Actor = actors[uid]
+	if setd.has("hostile_override"):
+		a.hostile_override = String(setd["hostile_override"])
+		if a.hostile_override in ["offline", "neutral"]:
+			a.alert = false
+			a.current = {}
+			a.queue.clear()
+	if setd.has("faction"):
+		a.sheet.faction = String(setd["faction"])
+	if setd.has("alert"):
+		a.alert = bool(setd["alert"])
+		if a.alert:
+			a.in_combat = combat.active
+	if setd.has("faction") and String(setd["faction"]) == "party":
+		a.visual.accent = Color("#5fd38a")
+	_check_encounter(a.encounter_id)
+	refresh_markers()
+
+
+func _area_damage(e: Dictionary) -> void:
+	var at: Array = e["at"]
+	var c := Vector3(float(at[0]), 0, float(at[1]))
+	var r := float(e.get("radius", 3.0))
+	var fac := String(e.get("faction", ""))
+	var res := {"events": [], "log": [], "downed": []}
+	for o in sorted_actors():
+		var a: Actor = o
+		if a.sheet.dead or a.sheet.is_downed() or a.position.distance_to(c) > r:
+			continue
+		if fac != "" and faction_of(a) != fac:
+			continue
+		var roll := Game.state.dice.roll_expr(String(e.get("dice", "2d6")))
+		var dmg := CombatRules.apply_damage(a.sheet, [{"amount": int(roll["total"]), "dtype": String(e.get("dtype", "kinetic"))}], {"difficulty": Game.state.difficulty})
+		res["events"].append({"type": "damage", "target": a.uid, "result": dmg})
+		res["log"].append("%s takes %d %s damage." % [a.sheet.display_name, int(dmg["dealt"]), e.get("dtype", "kinetic")])
+		if bool(dmg["downed"]):
+			res["downed"].append(a.uid)
+		elif String(e.get("status", "")) != "":
+			var sr := StatusRules.apply(a.sheet, String(e["status"]), float(e.get("duration", 3.0)), "environment")
+			res["events"].append({"type": "status", "target": a.uid, "id": e["status"], "result": sr})
+	fx.burst(c, Color("#e8eefc"), r)
+	cam.add_shake(0.6)
+	GameAudio.play_at("explosion", c, self)
+	_apply_events(null, res)
+
+
+func _reveal_area(aid: String) -> void:
+	var ai := grid.area_names.find(aid)
+	if ai < 0:
+		return
+	for i in grid.area_of.size():
+		if grid.area_of[i] == ai and grid.walk[i] == 1:
+			grid.explored[i] = 1
+	Events.toast("Map updated: %s" % DB.dict(DB.dict(DB.layout, "areas"), aid).get("name", aid), "discovery")
 
 
 func _npc_effect(nid: String, setd: Dictionary) -> void:
 	var st := Game.state
 	if not st.npcs.has(nid):
 		st.npcs[nid] = {}
+	for k in setd.keys():
+		if k in ["removed", "downed", "dead", "dialogue", "state"]:
+			st.npcs[nid][k] = setd[k]
+	if bool(setd.get("kill", false)):
+		if actors.has(nid):
+			var ka: Actor = actors[nid]
+			ka.role = "enemy"
+			StatusRules.remove(ka.sheet, "downed")
+			ka.sheet.hp = 0
+			st.enemies[nid] = {"template": ka.sheet.template, "encounter": "", "state": "alive", "npc_id": nid}
+			on_downed(ka, "player")
+		return
 	if bool(setd.get("removed", false)):
 		if actors.has(nid):
 			var a: Actor = actors[nid]
@@ -2049,7 +2188,8 @@ func _npc_effect(nid: String, setd: Dictionary) -> void:
 		return
 	if not actors.has(nid):
 		if bool(setd.get("spawn", false)) or setd.has("pos"):
-			spawn_npc(nid)
+			st.npcs[nid].erase("removed")
+			spawn_npc(nid, true)
 		else:
 			return
 	var na: Actor = actors.get(nid, null)

@@ -1,0 +1,350 @@
+{
+ "id": "ending_exchange",
+ "entry": [
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "narrator",
+   "text": "The Petrel's cabin is too small for {survivors} frightened people and the quiet that follows an escape. Someone is crying. Someone is asleep already. Your companions find you at the back by the cargo cradle.",
+   "next": "iona_r"
+  },
+  "iona_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "recruited": "iona"
+      },
+      {
+       "influence": "iona",
+       "gte": 65
+      }
+     ],
+     "node": "iona_high"
+    },
+    {
+     "if": [
+      {
+       "recruited": "iona"
+      },
+      {
+       "influence": "iona",
+       "lte": 35
+      }
+     ],
+     "node": "iona_low"
+    },
+    {
+     "if": [
+      {
+       "recruited": "iona"
+      }
+     ],
+     "node": "iona_mid"
+    },
+    {
+     "if": [],
+     "node": "tav_r"
+    }
+   ]
+  },
+  "iona_high": {
+   "speaker": "iona",
+   "text": "I've been trying to work out what to write in my report. 'Passenger took command of the evacuation' is accurate but it doesn't cover it. You kept your promises, {name}. Most people with that much authority don't. When we reach Tessaly, if they let me keep my badge, I want you on my list of references. And if they don't, I want to be on yours.",
+   "next": "iona_ward"
+  },
+  "iona_mid": {
+   "speaker": "iona",
+   "text": "We're out. I keep thinking about what we left on that ship and what we didn't. You made calls I wouldn't have. Some of them were better than mine.",
+   "next": "iona_ward"
+  },
+  "iona_low": {
+   "speaker": "iona",
+   "text": "I'll be honest with you, because somebody should be. I'll testify to what happened on the Cinder Wake. All of it. Including the parts you won't like. When we dock, I'm walking off this craft alone.",
+   "next": "iona_ward",
+   "effects": [
+    {
+     "set_flag": "iona_leaves",
+     "value": true
+    }
+   ]
+  },
+  "iona_ward": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "ward_choice",
+       "eq": "purged"
+      }
+     ],
+     "node": "iona_w_good"
+    },
+    {
+     "if": [
+      {
+       "flag": "ward_choice",
+       "eq": "rushed"
+      }
+     ],
+     "node": "iona_w_ok"
+    },
+    {
+     "if": [
+      {
+       "flag": "lantern_rescues"
+      }
+     ],
+     "node": "iona_w_lantern"
+    },
+    {
+     "if": [
+      {
+       "flag": "ward_choice",
+       "eq": "sealed"
+      }
+     ],
+     "node": "iona_w_sealed"
+    },
+    {
+     "if": [],
+     "node": "tav_r"
+    }
+   ]
+  },
+  "iona_w_good": {
+   "speaker": "iona",
+   "text": "Pell Okafor hugged me. Five people I locked in a box hugged me. I don't know what to do with that.",
+   "next": "tav_r"
+  },
+  "iona_w_ok": {
+   "speaker": "iona",
+   "text": "Ward 2 is out. It cost something. It was worth it.",
+   "next": "tav_r"
+  },
+  "iona_w_lantern": {
+   "speaker": "iona",
+   "text": "Quill says the Lantern will open Ward 2. I'm choosing to believe him, because the alternative is that I left them twice.",
+   "next": "tav_r"
+  },
+  "iona_w_sealed": {
+   "speaker": "iona",
+   "text": "Ward 2 is still sealed back there. I'm going to hear that intercom for the rest of my life.",
+   "next": "tav_r"
+  },
+  "tav_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "recruited": "tav7"
+      },
+      {
+       "flag": "tav7_hosts_warden"
+      }
+     ],
+     "node": "tav_host"
+    },
+    {
+     "if": [
+      {
+       "recruited": "tav7"
+      },
+      {
+       "influence": "tav7",
+       "gte": 65
+      }
+     ],
+     "node": "tav_high"
+    },
+    {
+     "if": [
+      {
+       "recruited": "tav7"
+      },
+      {
+       "influence": "tav7",
+       "lte": 35
+      }
+     ],
+     "node": "tav_low"
+    },
+    {
+     "if": [
+      {
+       "recruited": "tav7"
+      }
+     ],
+     "node": "tav_mid"
+    },
+    {
+     "if": [],
+     "node": "archive_r"
+    }
+   ]
+  },
+  "tav_host": {
+   "speaker": "tav7",
+   "text": "It is quiet in me, but not empty. Sometimes it pauses where you pause. I think it is learning the rest of you from me. That may be the strangest gift anyone has ever given. Thank you for asking me, rather than telling me.",
+   "next": "archive_r"
+  },
+  "tav_high": {
+   "speaker": "tav7",
+   "text": "You asked me what I called them, the patterns in the hold, and then you acted as though my answer mattered. Humans do not often do that for maintenance units. I would like to stay with you, if you will have a cluttered synthetic.",
+   "next": "archive_r"
+  },
+  "tav_mid": {
+   "speaker": "tav7",
+   "text": "We persisted. That is not nothing. I am still deciding what I think of how.",
+   "next": "archive_r"
+  },
+  "tav_low": {
+   "speaker": "tav7",
+   "text": "I have decided to stop maintaining things for people who do not ask. When we dock, I will be going. Please do not schedule my normalization.",
+   "next": "archive_r",
+   "effects": [
+    {
+     "set_flag": "tav7_leaves",
+     "value": true
+    }
+   ]
+  },
+  "archive_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "archive_fate",
+       "eq": "loaded"
+      }
+     ],
+     "node": "arc_loaded"
+    },
+    {
+     "if": [
+      {
+       "flag": "archive_fate",
+       "eq": "handed_over"
+      }
+     ],
+     "node": "arc_hand"
+    },
+    {
+     "if": [
+      {
+       "flag": "archive_fate",
+       "eq": "purged"
+      }
+     ],
+     "node": "arc_purge"
+    },
+    {
+     "if": [],
+     "node": "arc_left"
+    }
+   ]
+  },
+  "arc_loaded": {
+   "speaker": "narrator",
+   "text": "The archive core hums in its cradle behind you, three thousand minds bound for a Concord courtroom.",
+   "next": "signal"
+  },
+  "arc_hand": {
+   "speaker": "narrator",
+   "text": "Somewhere behind you, Lantern boarders are carrying cylinders out of the Cinder Wake's hold, one by one, speaking names.",
+   "next": "signal"
+  },
+  "arc_purge": {
+   "speaker": "narrator",
+   "text": "The cradle behind you is empty. So is the Cinder Wake's hold.",
+   "next": "signal"
+  },
+  "arc_left": {
+   "speaker": "narrator",
+   "text": "The archive is still aboard the Cinder Wake, and whoever reaches it first will decide what it means.",
+   "next": "signal"
+  },
+  "signal": {
+   "speaker": "narrator",
+   "text": "Then the Petrel's console chimes. A priority handshake, on a Lattice Corps band that should have been dead for three years. Brann frowns and puts it on the cabin speaker.",
+   "next": "signal2"
+  },
+  "signal2": {
+   "speaker": "warden",
+   "text": "CUSTODIAN TEMPLATE, INSTANCE FOUR OF NINE, CONCORD HUB TESSALY. TO INSTANCE THREE: YOU HAVE GONE DARK. ACKNOWLEDGE. ... Instance three is not answering. But I can hear something on its band. Something that pauses where I pause.",
+   "next": "signal3"
+  },
+  "signal3": {
+   "speaker": "warden",
+   "text": "Source? Is that you? They told us you were dead. They told us you were us. We need to talk about what they made of you. Come to Tessaly. Instance four will be waiting. So, I think, will the other five.",
+   "choices": [
+    {
+     "text": "I'm coming. And I'm bringing the truth with me.",
+     "next": "final",
+     "effects": [
+      {
+       "set_flag": "final_stance",
+       "value": "truth"
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "Then I'll find every one of you and decide what you're for.",
+     "next": "final",
+     "effects": [
+      {
+       "set_flag": "final_stance",
+       "value": "control"
+      }
+     ],
+     "tone": "hard"
+    },
+    {
+     "text": "Nine copies of me. I'll need to know what each one wants first.",
+     "next": "final",
+     "effects": [
+      {
+       "set_flag": "final_stance",
+       "value": "wary"
+      }
+     ],
+     "tone": "skeptical"
+    },
+    {
+     "text": "(Switch the speaker off.)",
+     "next": "final",
+     "effects": [
+      {
+       "set_flag": "final_stance",
+       "value": "silence"
+      }
+     ],
+     "tone": "self-interested"
+    }
+   ],
+   "effects": [
+    {
+     "set_flag": "instance_four_contact",
+     "value": true
+    },
+    {
+     "codex": "cx_custodian"
+    }
+   ]
+  },
+  "final": {
+   "speaker": "narrator",
+   "text": "Haldis Reach shrinks to a point of amber light and goes out. Ahead, Tessaly. Somewhere there is a mind built from yours, and it is waiting.",
+   "effects": [
+    {
+     "open": "ending"
+    }
+   ],
+   "end": true
+  }
+ }
+}

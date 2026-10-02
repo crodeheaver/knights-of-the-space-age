@@ -1,0 +1,161 @@
+{
+ "id": "command_intercom",
+ "names": {
+  "varr": "Commander Ysolde Varr (intercom)"
+ },
+ "entry": [
+  {
+   "if": [
+    {
+     "flag": "command_open"
+    }
+   ],
+   "node": "open_already"
+  },
+  {
+   "if": [
+    {
+     "encounter": "enc_archive",
+     "state": "active"
+    }
+   ],
+   "node": "busy"
+  },
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "varr",
+   "text": "This is Commander Varr. You're standing at my door in a hold full of boarders. Identify yourself.",
+   "choices": [
+    {
+     "text": "Commander, it's Rell. I have passengers' escorts with me. Open the door.",
+     "next": "iona",
+     "tag": "Iona",
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ]
+    },
+    {
+     "text": "{name}, passenger. We're going to Bay 2, and Bay 2 is through you.",
+     "next": "plain"
+    },
+    {
+     "text": "WARDEN. Open the command door.",
+     "next": "cred",
+     "tag": "Resonance credential",
+     "if": [
+      {
+       "controlled": "player"
+      }
+     ]
+    },
+    {
+     "text": "You need us more than we need you, Commander. You're sealed in a room with no guards.",
+     "next": "persuade",
+     "tag": "Persuasion",
+     "check": {
+      "skill": "persuasion",
+      "dc": 12,
+      "id": "intercom_persuade"
+     },
+     "success": "persuade",
+     "failure": "plain_fail"
+    }
+   ]
+  },
+  "iona": {
+   "speaker": "varr",
+   "text": "Rell. You're alive. ...Fine. Come in, all of you. Slowly.",
+   "next": "open"
+  },
+  "plain": {
+   "speaker": "varr",
+   "text": "A passenger. With a Lumen Edge, I imagine. ...I've been expecting you. Come in.",
+   "next": "open"
+  },
+  "plain_fail": {
+   "speaker": "varr",
+   "text": "Nice try. But you're right about the guards. Come in, slowly.",
+   "next": "open"
+  },
+  "persuade": {
+   "speaker": "varr",
+   "text": "...You're not wrong. Come in.",
+   "next": "open",
+   "effects": [
+    {
+     "xp": 30,
+     "key": "intercom_persuade",
+     "reason": "Talked Varr into opening command"
+    }
+   ]
+  },
+  "cred": {
+   "speaker": "warden",
+   "text": "CUSTODIAN PRIORITY EXCEEDS COMMAND. DOOR OPENING.",
+   "next": "cred2",
+   "effects": [
+    {
+     "set_flag": "used_credential",
+     "value": true
+    },
+    {
+     "set_flag": "varr_overridden",
+     "value": true
+    },
+    {
+     "inc_flag": "credential_uses",
+     "key": "cred_command"
+    }
+   ]
+  },
+  "cred2": {
+   "speaker": "varr",
+   "text": "WARDEN, belay — of course. Of course it opens for you. Get in here.",
+   "next": "open"
+  },
+  "open": {
+   "speaker": "system",
+   "text": "The command chamber's blast door grinds open.",
+   "effects": [
+    {
+     "set_flag": "command_open",
+     "value": true
+    },
+    {
+     "world": "d_command",
+     "set": {
+      "locked": false,
+      "open": true
+     }
+    }
+   ],
+   "end": true
+  },
+  "busy": {
+   "speaker": "varr",
+   "text": "Not with reclaimers shooting at my door! Deal with them and then we'll talk.",
+   "choices": [
+    {
+     "text": "(Close the intercom.)",
+     "end": true
+    }
+   ]
+  },
+  "open_already": {
+   "speaker": "system",
+   "text": "The door is already open.",
+   "choices": [
+    {
+     "text": "(Close.)",
+     "end": true
+    }
+   ]
+  }
+ }
+}

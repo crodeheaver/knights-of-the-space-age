@@ -1,0 +1,316 @@
+{
+ "id": "steward",
+ "entry": [
+  {
+   "if": [
+    {
+     "flag": "emergency_started"
+    }
+   ],
+   "node": "after"
+  },
+  {
+   "if": [
+    {
+     "flag": "dray_met"
+    }
+   ],
+   "node": "again"
+  },
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "steward",
+   "text": "Name? Sorry, sorry, it's the jump, everyone gets nervous at the jump. Passenger {name}, cabin 4-C. Ah. You're the... Lattice Corps. Discharged.",
+   "next": "bg",
+   "effects": [
+    {
+     "set_flag": "dray_met",
+     "value": true
+    }
+   ]
+  },
+  "bg": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "background": "veteran"
+      }
+     ],
+     "node": "vet"
+    },
+    {
+     "if": [
+      {
+       "background": "colonist"
+      }
+     ],
+     "node": "col"
+    },
+    {
+     "if": [
+      {
+       "background": "salvager"
+      }
+     ],
+     "node": "sal"
+    }
+   ]
+  },
+  "vet": {
+   "speaker": "steward",
+   "text": "My nephew was a vanguard on the Callan line. Came home with half his hearing. Thank you for, well. For whatever you did out there.",
+   "next": "hub"
+  },
+  "col": {
+   "speaker": "steward",
+   "text": "You're... Haldis-born? Born there and flew for the Concord. That can't have made you many friends on either side. I'm not judging. I'm a purser. I count people, I don't weigh them.",
+   "next": "hub"
+  },
+  "sal": {
+   "speaker": "steward",
+   "text": "Breaker yards after the corps, it says. Then you can probably fix the sim booth. It's eaten three of Brann Ketterick's tokens.",
+   "next": "hub"
+  },
+  "hub": {
+   "speaker": "steward",
+   "text": "Muster check-in only takes a moment, but corridor C-3 stays in departure lockdown until the jump spools, so there's no hurry. There's a card table, the racing sim, and the requisition terminal still takes colony scrip.",
+   "choices": [
+    {
+     "text": "What is this ship actually carrying?",
+     "next": "cargo",
+     "tone": "skeptical"
+    },
+    {
+     "text": "Those ships shadowing us off the port side. Who are they?",
+     "next": "lantern"
+    },
+    {
+     "text": "How are the other passengers holding up?",
+     "next": "people",
+     "tone": "compassionate"
+    },
+    {
+     "text": "Tell me about the WARDEN defense network.",
+     "next": "warden"
+    },
+    {
+     "text": "Check me in. I'm ready.",
+     "next": "checkin"
+    },
+    {
+     "text": "I'll take a look around first.",
+     "end": true
+    }
+   ]
+  },
+  "again": {
+   "speaker": "steward",
+   "text": "Back again? Check-in's open whenever you're ready, {name}.",
+   "choices": [
+    {
+     "text": "What is this ship actually carrying?",
+     "next": "cargo"
+    },
+    {
+     "text": "Who's shadowing us?",
+     "next": "lantern"
+    },
+    {
+     "text": "Check me in.",
+     "next": "checkin"
+    },
+    {
+     "text": "Later.",
+     "end": true
+    }
+   ]
+  },
+  "cargo": {
+   "speaker": "steward",
+   "text": "Passengers, mostly. Medical supplies. And the archive hold, which I'm told contains 'Concord medical archive cores for the Tessaly tribunal' and which I'm told, firmly, not to ask about. Commander Varr has the only access. The WARDEN guards it.",
+   "choices": [
+    {
+     "text": "A tribunal? Who's on trial?",
+     "next": "tribunal"
+    },
+    {
+     "text": "Back to the other questions.",
+     "next": "hub"
+    }
+   ]
+  },
+  "tribunal": {
+   "speaker": "steward",
+   "text": "War crimes inquiry, the bulletins say. Both sides accuse the other. I don't follow it. I count heads and hand out blankets.",
+   "next": "hub",
+   "effects": [
+    {
+     "xp": 10,
+     "key": "dray_tribunal",
+     "reason": "Asked about the tribunal"
+    }
+   ]
+  },
+  "lantern": {
+   "speaker": "steward",
+   "text": "Lantern Office pickets. Haldis Free Assembly. Reclamation corps, they call themselves. They've been hailing us since orbit, demanding we 'return what was taken'. The commander isn't answering. Don't worry: the Concord flag still means something out here.",
+   "choices": [
+    {
+     "text": "And if it doesn't?",
+     "next": "lantern2",
+     "tone": "skeptical"
+    },
+    {
+     "text": "Back to the other questions.",
+     "next": "hub"
+    }
+   ]
+  },
+  "lantern2": {
+   "speaker": "steward",
+   "text": "Then I suppose we find out what the WARDEN is for.",
+   "next": "hub"
+  },
+  "people": {
+   "speaker": "steward",
+   "text": "Frightened. The Venn woman's boy hasn't said a word since we boarded. Brann's losing at cards to calm his nerves. Three of the medical deck's patients are in a bad way. Don't tell anyone I said that.",
+   "next": "hub",
+   "effects": [
+    {
+     "alignment": 2,
+     "key": "dray_people",
+     "reason": "Asked after the other passengers"
+    }
+   ]
+  },
+  "warden": {
+   "speaker": "steward",
+   "text": "Integrated defense lattice. Concord surplus from the war, refitted. It runs the turrets, the security drones, the locks. It's never said a word to me in three years. It talks to the commander. Honestly, it gives me the shivers.",
+   "next": "hub"
+  },
+  "checkin": {
+   "speaker": "steward",
+   "text": "Lovely. {name}, cabin 4-C, checked in at — ",
+   "next": "boom",
+   "effects": [
+    {
+     "set_flag": "checked_in",
+     "value": true
+    }
+   ]
+  },
+  "boom": {
+   "speaker": "narrator",
+   "text": "The deck jumps. Light fixtures swing on their cables. A long groan of tortured metal rolls forward from the stern, then a muffled thud, then another. Every panel in the commons flashes red.",
+   "next": "warden_says"
+  },
+  "warden_says": {
+   "speaker": "warden",
+   "text": "ARCHIVE PROTECTION PROTOCOL ENGAGED. HULL BREACH: DORSAL, ARCHIVE SECTION. BOARDERS DETECTED. ALL NON-ESSENTIAL PERSONNEL ARE CLASSIFIED AS ARCHIVE OBSTRUCTIONS. OBSTRUCTIONS WILL BE CLEARED. PLEASE REMAIN STILL.",
+   "next": "dray2"
+  },
+  "dray2": {
+   "speaker": "steward",
+   "text": "Remain — WARDEN, belay that! I am the purser, these are passengers! Oh, saints. Oh no. Listen to me. Everyone stay in the commons. {name}! You were Lattice Corps. Security's pinned down in corridor C-3, I can hear them on the band. Please. I can't — I count people.",
+   "choices": [
+    {
+     "text": "Keep everyone here and keep them calm. I'll go.",
+     "next": "go_c",
+     "effects": [
+      {
+       "alignment": 5,
+       "key": "dray_go",
+       "reason": "Answered Dray's plea for help"
+      },
+      {
+       "set_flag": "promised_dray",
+       "value": true
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "The corridor's the way forward anyway. I'll see what's there.",
+     "next": "go_p",
+     "tone": "pragmatic"
+    },
+    {
+     "text": "Why should I risk my neck for the ship's security?",
+     "next": "go_s",
+     "tone": "self-interested"
+    },
+    {
+     "text": "Dray. Breathe. Lock this door behind me and do not open it for anything that isn't human.",
+     "next": "go_h",
+     "tone": "hard"
+    }
+   ]
+  },
+  "go_c": {
+   "speaker": "steward",
+   "text": "Thank you. Thank you. We'll be right here.",
+   "next": "unlock"
+  },
+  "go_p": {
+   "speaker": "steward",
+   "text": "Forward, yes. The launch craft's forward too. Bay 2. If anyone makes it off this ship, it's from there.",
+   "next": "unlock"
+  },
+  "go_s": {
+   "speaker": "steward",
+   "text": "Because the launch craft is past them! Because if security falls there's nobody between those drones and the rest of us! I — please.",
+   "next": "unlock"
+  },
+  "go_h": {
+   "speaker": "steward",
+   "text": "Nothing that isn't human. Right. Right.",
+   "next": "unlock"
+  },
+  "unlock": {
+   "speaker": "system",
+   "text": "The lockdown on Corridor C-3 releases. Purser Dray gathers the passengers around Muster Point B; they will follow your route toward the launch bays.",
+   "effects": [
+    {
+     "set_flag": "emergency_started",
+     "value": true
+    },
+    {
+     "survivors": 4,
+     "key": "commons_group"
+    },
+    {
+     "world": "d_commons_east",
+     "set": {
+      "locked": false
+     }
+    },
+    {
+     "tutorial": "muster"
+    },
+    {
+     "sound": "alarm"
+    }
+   ],
+   "end": true
+  },
+  "after": {
+   "speaker": "steward",
+   "text": "We're holding here, like you said. Bay 2, {name}. The launch craft is at Bay 2. Please hurry.",
+   "choices": [
+    {
+     "text": "Stay together. I'll come back for you or clear the way.",
+     "end": true
+    },
+    {
+     "text": "Go.",
+     "end": true
+    }
+   ]
+  }
+ }
+}

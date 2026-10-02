@@ -1,84 +1,1374 @@
 {
-  "_comment": "Item definitions. type: weapon|armor|gear|consumable|grenade|mine|resource|upgrade|quest. slot: head|body|hands|belt|implant|wrist|weapon. Machines use the same slot keys under machine labels (Sensor Array, Chassis, Manipulators, Utility Mount, Core Module, Interface Port). quest/bound items cannot be sold or dismantled.",
-  "unarmed": {"name": "Unarmed", "type": "weapon", "slot": "weapon", "implicit": true, "value": 0, "desc": "Fists, elbows and bad intentions.", "weapon": {"category": "melee", "prof": "melee", "hands": 1, "dice": "1d3", "dtype": "kinetic", "threat": 20, "crit_mult": 2, "range": 1.8, "light": true, "sound": "punch"}},
-  "vibro_knife": {"name": "Vibro-Knife", "type": "weapon", "slot": "weapon", "value": 60, "desc": "A short oscillating blade. Light and finesse: uses DEX for attacks, and it is the best off-hand weapon.", "weapon": {"category": "melee", "prof": "melee", "hands": 1, "dice": "1d4", "dtype": "kinetic", "threat": 19, "crit_mult": 2, "range": 1.8, "light": true, "finesse": true, "sound": "blade"}, "upgrade_slots": 1, "dismantle": {"tech_components": 1}},
-  "stun_baton": {"name": "Stun Baton", "type": "weapon", "slot": "weapon", "value": 70, "desc": "Security issue: a weighted baton that adds a jolt of 1d3 energy damage.", "weapon": {"category": "melee", "prof": "melee", "hands": 1, "dice": "1d6", "dtype": "kinetic", "threat": 20, "crit_mult": 2, "range": 1.9, "extra": {"dice": "1d3", "dtype": "energy"}, "sound": "baton"}, "upgrade_slots": 1, "dismantle": {"tech_components": 1}},
-  "vibro_sword": {"name": "Vibrosword", "type": "weapon", "slot": "weapon", "value": 150, "desc": "A long oscillating blade. A reliable one-handed weapon.", "weapon": {"category": "melee", "prof": "melee", "hands": 1, "dice": "1d8", "dtype": "kinetic", "threat": 19, "crit_mult": 2, "range": 2.0, "sound": "blade"}, "upgrade_slots": 1, "dismantle": {"tech_components": 2}},
-  "shear_glaive": {"name": "Shear Glaive", "type": "weapon", "slot": "weapon", "value": 220, "req": {"attrs": {"str": 13}}, "desc": "A reclaimer boarding polearm. Two-handed: 2d6, critical x3, adds 1.5x STR to damage.", "weapon": {"category": "melee", "prof": "melee", "hands": 2, "dice": "2d6", "dtype": "kinetic", "threat": 20, "crit_mult": 3, "range": 2.4, "sound": "heavy"}, "upgrade_slots": 1, "dismantle": {"tech_components": 2}},
-  "breach_maul": {"name": "Breach Maul", "type": "weapon", "slot": "weapon", "value": 260, "req": {"attrs": {"str": 14}}, "desc": "A two-handed hydraulic hammer for doors and the people behind them. 2d8 damage at -1 to attack.", "weapon": {"category": "melee", "prof": "melee", "hands": 2, "dice": "2d8", "dtype": "kinetic", "threat": 20, "crit_mult": 2, "range": 2.2, "attack": -1, "sound": "heavy"}, "upgrade_slots": 1, "dismantle": {"tech_components": 3}},
-  "lumen_edge": {"name": "Lumen Edge", "type": "weapon", "slot": "weapon", "value": 1200, "bound": true, "desc": "Your operator's blade: a filament of plasma held in shape by Resonance. It only ignites for your neural signature. 2d6 energy damage, threat 19-20, and it can deflect energy bolts with the Bolt Deflection feat. Bound to you: cannot be sold or dismantled.", "weapon": {"category": "melee", "prof": "melee", "hands": 1, "dice": "2d6", "dtype": "energy", "threat": 19, "crit_mult": 2, "range": 2.0, "energy_blade": true, "sound": "lumen"}, "upgrade_slots": 2},
-  "shock_spanner": {"name": "Shock Spanner", "type": "weapon", "slot": "weapon", "value": 90, "desc": "A maintenance tool turned into a weapon. It also deals 1d4 ion damage, which is doubled against machines.", "weapon": {"category": "melee", "prof": "melee", "hands": 1, "dice": "1d6", "dtype": "kinetic", "threat": 20, "crit_mult": 2, "range": 1.9, "extra": {"dice": "1d4", "dtype": "ion"}, "sound": "baton"}, "upgrade_slots": 1, "dismantle": {"tech_components": 1}},
-  "holdout_pistol": {"name": "Holdout Pistol", "type": "weapon", "slot": "weapon", "value": 80, "desc": "A compact sidearm: 1d6 energy, +1 attack.", "weapon": {"category": "pistol", "prof": "pistol", "hands": 1, "dice": "1d6", "dtype": "energy", "threat": 20, "crit_mult": 2, "range": 12.0, "attack": 1, "sound": "blaster"}, "upgrade_slots": 1, "dismantle": {"tech_components": 1}},
-  "service_pistol": {"name": "Service Pistol", "type": "weapon", "slot": "weapon", "value": 140, "desc": "Standard officer's sidearm: 1d8 energy.", "weapon": {"category": "pistol", "prof": "pistol", "hands": 1, "dice": "1d8", "dtype": "energy", "threat": 20, "crit_mult": 2, "range": 14.0, "sound": "blaster"}, "upgrade_slots": 1, "dismantle": {"tech_components": 2}},
-  "ion_pistol": {"name": "Ion Pistol", "type": "weapon", "slot": "weapon", "value": 160, "desc": "1d6 ion: doubled against machines, nearly harmless to organics.", "weapon": {"category": "pistol", "prof": "pistol", "hands": 1, "dice": "1d6", "dtype": "ion", "threat": 20, "crit_mult": 2, "range": 12.0, "sound": "ion"}, "upgrade_slots": 1, "dismantle": {"tech_components": 2}},
-  "carbine": {"name": "Security Carbine", "type": "weapon", "slot": "weapon", "value": 200, "desc": "Two-handed long arm: 1d8 energy, +1 attack, long range.", "weapon": {"category": "rifle", "prof": "rifle", "hands": 2, "dice": "1d8", "dtype": "energy", "threat": 20, "crit_mult": 2, "range": 20.0, "attack": 1, "sound": "rifle"}, "upgrade_slots": 1, "dismantle": {"tech_components": 2}},
-  "arc_rifle": {"name": "Arc Rifle", "type": "weapon", "slot": "weapon", "value": 320, "req": {"attrs": {"dex": 12}}, "desc": "A reclaimer marksman's rifle: 2d6 energy at -1 to attack, critical x3.", "weapon": {"category": "rifle", "prof": "rifle", "hands": 2, "dice": "2d6", "dtype": "energy", "threat": 20, "crit_mult": 3, "range": 18.0, "attack": -1, "sound": "rifle"}, "upgrade_slots": 1, "dismantle": {"tech_components": 3}},
-  "ion_carbine": {"name": "Ion Carbine", "type": "weapon", "slot": "weapon", "value": 260, "desc": "1d10 ion, built for disabling machines.", "weapon": {"category": "rifle", "prof": "rifle", "hands": 2, "dice": "1d10", "dtype": "ion", "threat": 20, "crit_mult": 2, "range": 18.0, "sound": "ion"}, "upgrade_slots": 1, "dismantle": {"tech_components": 2}},
-  "drone_blaster": {"name": "Drone Emitter", "type": "weapon", "slot": "weapon", "natural": true, "value": 0, "desc": "Integrated WARDEN picket emitter.", "weapon": {"category": "pistol", "prof": "natural", "hands": 1, "dice": "1d6", "dtype": "energy", "threat": 20, "crit_mult": 2, "range": 12.0, "sound": "drone"}},
-  "turret_cannon": {"name": "Turret Cannon", "type": "weapon", "slot": "weapon", "natural": true, "value": 0, "desc": "WARDEN point-defense cannon.", "weapon": {"category": "rifle", "prof": "natural", "hands": 2, "dice": "1d8", "dtype": "energy", "threat": 20, "crit_mult": 2, "range": 16.0, "damage": 1, "sound": "rifle"}},
-  "spider_mandibles": {"name": "Shock Mandibles", "type": "weapon", "slot": "weapon", "natural": true, "value": 0, "desc": "Electrified cutting mandibles.", "weapon": {"category": "melee", "prof": "natural", "hands": 1, "dice": "1d6", "dtype": "energy", "threat": 20, "crit_mult": 2, "range": 1.8, "sound": "spider"}},
-  "sentinel_cannon": {"name": "Sentinel Cannon", "type": "weapon", "slot": "weapon", "natural": true, "value": 0, "desc": "Heavy WARDEN arm cannon.", "weapon": {"category": "rifle", "prof": "natural", "hands": 2, "dice": "2d6", "dtype": "energy", "threat": 20, "crit_mult": 2, "range": 14.0, "sound": "heavy_blaster"}},
-
-  "travel_jacket": {"name": "Travel Jacket", "type": "armor", "slot": "body", "value": 40, "desc": "Civilian layers with a padded lining. +1 Defense, max DEX bonus +8.", "armor": {"category": "light", "defense": 1, "max_dex": 8}, "upgrade_slots": 1, "dismantle": {"tech_components": 1}},
-  "padded_vest": {"name": "Padded Vest", "type": "armor", "slot": "body", "value": 90, "desc": "Impact-gel vest. +2 Defense, max DEX bonus +6.", "armor": {"category": "light", "defense": 2, "max_dex": 6}, "upgrade_slots": 1, "dismantle": {"tech_components": 1}},
-  "operator_coat": {"name": "Operator's Coat", "type": "armor", "slot": "body", "value": 160, "desc": "A Lattice Corps operator coat with resonant thread in the lining. +2 Defense, max DEX +6, +4 maximum energy, +1 Awareness.", "armor": {"category": "light", "defense": 2, "max_dex": 6}, "mods": {"energy_max": 4, "skills": {"awareness": 1}}, "upgrade_slots": 1, "dismantle": {"tech_components": 1}},
-  "security_weave": {"name": "Security Weave", "type": "armor", "slot": "body", "value": 260, "req": {"armor_prof": "medium"}, "desc": "Ship security medium armor. +4 Defense, max DEX +4. Requires Medium Armor Proficiency. Resonance powers cost +2 energy in medium armor.", "armor": {"category": "medium", "defense": 4, "max_dex": 4}, "upgrade_slots": 1, "dismantle": {"tech_components": 2}},
-  "reclaimer_mesh": {"name": "Reclaimer Mesh", "type": "armor", "slot": "body", "value": 180, "req": {"armor_prof": "medium"}, "desc": "Lantern Office boarding mesh, patched and repainted. +3 Defense, max DEX +5. Medium armor.", "armor": {"category": "medium", "defense": 3, "max_dex": 5}, "upgrade_slots": 1, "dismantle": {"tech_components": 2}},
-  "breacher_plate": {"name": "Breacher Plate", "type": "armor", "slot": "body", "value": 420, "req": {"armor_prof": "heavy", "attrs": {"str": 13}}, "desc": "Heavy boarding plate. +6 Defense, max DEX +1. Requires Heavy Armor Proficiency and blocks Resonance powers.", "armor": {"category": "heavy", "defense": 6, "max_dex": 1}, "upgrade_slots": 1, "dismantle": {"tech_components": 3}},
-  "chassis_plating": {"name": "Chassis Plating", "type": "armor", "slot": "body", "value": 200, "req": {"kind": "machine"}, "desc": "Bolt-on armor plates for a synthetic frame. +3 Defense, max DEX +4. Machines only.", "armor": {"category": "light", "defense": 3, "max_dex": 4}, "upgrade_slots": 1, "dismantle": {"tech_components": 2}},
-
-  "sensor_visor": {"name": "Sensor Visor", "type": "gear", "slot": "head", "value": 120, "req": {"kind": "organic"}, "desc": "Heads-up threat overlay. +2 Awareness.", "mods": {"skills": {"awareness": 2}}, "dismantle": {"tech_components": 1}},
-  "respirator_mask": {"name": "Respirator Mask", "type": "gear", "slot": "head", "value": 80, "req": {"kind": "organic"}, "desc": "Filters vented coolant and smoke. Immune to Coolant Exposure; +1 Fortitude.", "mods": {"immune": ["toxin"], "saves": {"fort": 1}}, "dismantle": {"tech_components": 1}},
-  "machine_optics": {"name": "Targeting Optics", "type": "gear", "slot": "head", "value": 150, "req": {"kind": "machine"}, "desc": "Sensor-array upgrade for synthetics. +1 ranged attack, +1 Awareness.", "mods": {"attack_ranged": 1, "skills": {"awareness": 1}}, "dismantle": {"tech_components": 1}},
-  "grip_gloves": {"name": "Grip Gloves", "type": "gear", "slot": "hands", "value": 90, "req": {"kind": "organic"}, "desc": "Micro-textured gloves. +1 melee attack.", "mods": {"attack_melee": 1}, "dismantle": {"tech_components": 1}},
-  "tech_gauntlets": {"name": "Tech Gauntlets", "type": "gear", "slot": "hands", "value": 120, "req": {"kind": "organic"}, "desc": "Tool-laden gauntlets. +2 Security, +1 Repair.", "mods": {"skills": {"security": 2, "repair": 1}}, "dismantle": {"tech_components": 1}},
-  "machine_manipulators": {"name": "Precision Manipulators", "type": "gear", "slot": "hands", "value": 130, "req": {"kind": "machine"}, "desc": "Fine manipulator heads for a synthetic. +2 Repair, +2 Security.", "mods": {"skills": {"repair": 2, "security": 2}}, "dismantle": {"tech_components": 1}},
-  "stealth_field_belt": {"name": "Stealth Field Belt", "type": "gear", "slot": "belt", "value": 220, "desc": "Bends light around the wearer when standing still or creeping. +4 Stealth.", "mods": {"skills": {"stealth": 4}}, "dismantle": {"tech_components": 2}},
-  "strength_harness": {"name": "Load Harness", "type": "gear", "slot": "belt", "value": 180, "req": {"kind": "organic"}, "desc": "Servo-assisted harness. +1 STR.", "mods": {"attrs": {"str": 1}}, "dismantle": {"tech_components": 2}},
-  "utility_mount": {"name": "Utility Mount", "type": "gear", "slot": "belt", "value": 120, "req": {"kind": "machine"}, "desc": "A synthetic's tool mount. +2 Demolitions, +1 Fortitude.", "mods": {"skills": {"demolitions": 2}, "saves": {"fort": 1}}, "dismantle": {"tech_components": 1}},
-  "reflex_implant": {"name": "Reflex Implant", "type": "gear", "slot": "implant", "value": 200, "req": {"implant_tier": 1, "kind": "organic"}, "desc": "Spinal accelerator. +1 DEX. Requires Implant Tolerance.", "mods": {"attrs": {"dex": 1}}},
-  "vital_implant": {"name": "Vital Implant", "type": "gear", "slot": "implant", "value": 200, "req": {"implant_tier": 1, "kind": "organic"}, "desc": "Cardiac regulator. +1 CON. Requires Implant Tolerance.", "mods": {"attrs": {"con": 1}}},
-  "neural_dampener": {"name": "Neural Dampener", "type": "gear", "slot": "implant", "value": 180, "req": {"implant_tier": 1, "kind": "organic"}, "desc": "Lattice Corps issue: blunts intrusion into your mind. +2 Will. Requires Implant Tolerance.", "mods": {"saves": {"will": 2}}},
-  "cortex_amp": {"name": "Cortex Amplifier", "type": "gear", "slot": "implant", "value": 380, "req": {"implant_tier": 2, "kind": "organic"}, "desc": "+2 INT. Requires Advanced Implant Tolerance.", "mods": {"attrs": {"int": 2}}},
-  "core_module": {"name": "Diagnostic Core Module", "type": "gear", "slot": "implant", "value": 220, "req": {"kind": "machine"}, "desc": "Synthetic co-processor. +2 Computer Use, +1 INT.", "mods": {"skills": {"computer_use": 2}, "attrs": {"int": 1}}},
-  "wrist_scanner": {"name": "Wrist Scanner", "type": "gear", "slot": "wrist", "value": 140, "desc": "Explosive-residue sniffer. +2 Demolitions, +1 Awareness.", "mods": {"skills": {"demolitions": 2, "awareness": 1}}, "dismantle": {"tech_components": 1}},
-  "med_injector": {"name": "Med Injector", "type": "gear", "slot": "wrist", "value": 150, "req": {"kind": "organic"}, "desc": "Dosing assistant. +2 Medicine.", "mods": {"skills": {"medicine": 2}}, "dismantle": {"tech_components": 1}},
-  "resonance_band": {"name": "Resonance Band", "type": "gear", "slot": "wrist", "value": 220, "req": {"kind": "organic"}, "desc": "An operator's focusing band. +6 maximum energy.", "mods": {"energy_max": 6}},
-  "interface_port": {"name": "Interface Port", "type": "gear", "slot": "wrist", "value": 140, "req": {"kind": "machine"}, "desc": "Hard-line data port for a synthetic. +2 Computer Use.", "mods": {"skills": {"computer_use": 2}}, "dismantle": {"tech_components": 1}},
-  "insulated_gloves": {"name": "Insulated Gloves", "type": "gear", "slot": "hands", "value": 70, "req": {"kind": "organic"}, "desc": "Rated for live conduits. Immune to Shocked; +1 Repair.", "mods": {"immune": ["shock"], "skills": {"repair": 1}}, "dismantle": {"tech_components": 1}},
-
-  "medpac": {"name": "Medpac", "type": "consumable", "stack": true, "value": 30, "desc": "Heals an organic ally within reach for 2d6+5, plus half the user's Medicine bonus. Takes the user's action.", "use": {"heal": "2d6+5", "heal_kind": "organic", "target": "ally", "skill": "medicine"}, "dismantle": {"med_reagents": 1}},
-  "trauma_pack": {"name": "Trauma Pack", "type": "consumable", "stack": true, "value": 70, "desc": "Military trauma kit: heals 3d6+12 (+ half the user's Medicine) and stops bleeding.", "use": {"heal": "3d6+12", "heal_kind": "organic", "target": "ally", "skill": "medicine", "cleanse": ["bleeding"]}, "dismantle": {"med_reagents": 1}},
-  "repair_kit": {"name": "Repair Kit", "type": "consumable", "stack": true, "value": 30, "desc": "Patches a machine ally within reach for 2d6+5, plus half the user's Repair bonus.", "use": {"heal": "2d6+5", "heal_kind": "machine", "target": "ally", "skill": "repair"}, "dismantle": {"tech_components": 1}},
-  "adrenal_stim": {"name": "Adrenal Stimulant", "type": "consumable", "stack": true, "value": 40, "desc": "+2 STR and +1 Fortitude for 10 rounds. Organics only.", "use": {"status": {"id": "adrenal", "duration": 30.0}, "target": "self", "kind": "organic"}},
-  "reflex_stim": {"name": "Reflex Stimulant", "type": "consumable", "stack": true, "value": 40, "desc": "+2 DEX and +1 Defense for 10 rounds. Organics only.", "use": {"status": {"id": "reflex_stim", "duration": 30.0}, "target": "self", "kind": "organic"}},
-  "antitox": {"name": "Antitoxin Shot", "type": "consumable", "stack": true, "value": 20, "desc": "Purges toxins and bleeding and grants immunity to both for 10 rounds.", "use": {"cleanse": ["toxin", "bleeding"], "status": {"id": "antitox", "duration": 30.0}, "target": "ally", "kind": "organic"}},
-  "focus_ampoule": {"name": "Focus Ampoule", "type": "consumable", "stack": true, "value": 35, "desc": "A resonant tincture: restores 12 energy.", "use": {"energy": 12, "target": "self"}},
-  "shield_cell": {"name": "Deflector Cell", "type": "consumable", "stack": true, "value": 60, "desc": "Activates a personal deflector that absorbs 15 kinetic/energy damage for 5 rounds.", "use": {"status": {"id": "shield_basic", "duration": 15.0}, "target": "self"}, "dismantle": {"tech_components": 1}},
-  "heavy_shield_cell": {"name": "Heavy Deflector Cell", "type": "consumable", "stack": true, "value": 110, "desc": "Absorbs 30 kinetic/energy damage for 5 rounds.", "use": {"status": {"id": "shield_heavy", "duration": 15.0}, "target": "self"}, "dismantle": {"tech_components": 1}},
-  "frag_grenade": {"name": "Frag Grenade", "type": "grenade", "stack": true, "value": 45, "desc": "3d6 kinetic in a 3 m radius (Reflex DC 15 for half). Hits friends too.", "throw": {"range": 12.0, "radius": 3.0, "dice": "3d6", "dtype": "kinetic", "save": "ref", "dc": 15, "half": true}, "dismantle": {"tech_components": 1}},
-  "ion_grenade": {"name": "Ion Grenade", "type": "grenade", "stack": true, "value": 50, "desc": "3d6 ion in 3 m: doubled against machines, and a machine that fails a Fortitude save (DC 14) is stunned for 1 round.", "throw": {"range": 12.0, "radius": 3.0, "dice": "3d6", "dtype": "ion", "save": "fort", "dc": 14, "machine_status_on_fail": {"id": "stunned", "duration": 3.0}}, "dismantle": {"tech_components": 1}},
-  "stun_grenade": {"name": "Stun Grenade", "type": "grenade", "stack": true, "value": 55, "desc": "Concussive flash: organics within 3 m that fail a Fortitude save (DC 14) are stunned for 2 rounds.", "throw": {"range": 12.0, "radius": 3.0, "save": "fort", "dc": 14, "status_on_fail": {"id": "stunned", "duration": 6.0}, "organic_only": true}, "dismantle": {"tech_components": 1}},
-  "adhesive_grenade": {"name": "Adhesive Grenade", "type": "grenade", "stack": true, "value": 50, "desc": "Sticky foam: targets within 3 m that fail a Reflex save (DC 14) are immobilized for 3 rounds.", "throw": {"range": 12.0, "radius": 3.0, "save": "ref", "dc": 14, "status_on_fail": {"id": "immobilized", "duration": 9.0}}, "dismantle": {"tech_components": 1}},
-  "thermal_grenade": {"name": "Thermal Grenade", "type": "grenade", "stack": true, "value": 60, "desc": "2d6 thermal in 2.5 m; on a failed Reflex save (DC 14) the target also burns for 3 rounds.", "throw": {"range": 12.0, "radius": 2.5, "dice": "2d6", "dtype": "thermal", "save": "ref", "dc": 14, "status_on_fail": {"id": "burning", "duration": 9.0}}, "dismantle": {"tech_components": 1}},
-  "frag_mine": {"name": "Frag Mine", "type": "mine", "stack": true, "value": 70, "desc": "Place at your feet. Arms after 2 s and detonates when a hostile comes within 1.5 m: 4d6 kinetic in 2.5 m (Reflex DC 16 for half).", "mine": {"radius": 2.5, "trigger": 1.5, "dice": "4d6", "dtype": "kinetic", "save": "ref", "dc": 16, "half": true, "detect_dc": 14, "disarm_dc": 14}, "dismantle": {"tech_components": 2}},
-  "stun_mine": {"name": "Stun Mine", "type": "mine", "stack": true, "value": 70, "desc": "Organics within 2.5 m that fail a Fortitude save (DC 15) are stunned for 2 rounds.", "mine": {"radius": 2.5, "trigger": 1.5, "save": "fort", "dc": 15, "status_on_fail": {"id": "stunned", "duration": 6.0}, "organic_only": true, "detect_dc": 14, "disarm_dc": 14}, "dismantle": {"tech_components": 2}},
-
-  "tech_components": {"name": "Technical Components", "type": "resource", "stack": true, "value": 15, "desc": "Circuit boards, couplers and fasteners. Workbench crafting resource."},
-  "med_reagents": {"name": "Medical Reagents", "type": "resource", "stack": true, "value": 15, "desc": "Sealed reagent vials. Medical fabrication resource."},
-  "power_cell": {"name": "Power Cell", "type": "resource", "stack": true, "value": 40, "desc": "A dense energy cell for advanced crafting."},
-
-  "focusing_lens": {"name": "Focusing Lens", "type": "upgrade", "stack": true, "value": 120, "desc": "Weapon upgrade (Lumen Edge, pistol or rifle): +1 attack.", "upgrade": {"applies_to": ["energy_blade", "pistol", "rifle"], "weapon_mods": {"attack": 1}}},
-  "edge_emitter": {"name": "Edge Emitter", "type": "upgrade", "stack": true, "value": 160, "desc": "Lumen Edge upgrade: +2 damage.", "upgrade": {"applies_to": ["energy_blade"], "weapon_mods": {"damage": 2}}},
-  "recoil_dampener": {"name": "Recoil Dampener", "type": "upgrade", "stack": true, "value": 100, "desc": "Pistol or rifle upgrade: +1 attack.", "upgrade": {"applies_to": ["pistol", "rifle"], "weapon_mods": {"attack": 1}}},
-  "balanced_grip": {"name": "Balanced Grip", "type": "upgrade", "stack": true, "value": 100, "desc": "Melee weapon upgrade: +1 attack.", "upgrade": {"applies_to": ["melee"], "weapon_mods": {"attack": 1}}},
-  "ion_coil": {"name": "Ion Coil", "type": "upgrade", "stack": true, "value": 140, "desc": "Any weapon: adds 1d4 ion damage (doubled against machines).", "upgrade": {"applies_to": ["melee", "pistol", "rifle"], "weapon_mods": {"extra": {"dice": "1d4", "dtype": "ion"}}}},
-  "weave_lining": {"name": "Weave Lining", "type": "upgrade", "stack": true, "value": 110, "desc": "Armor upgrade: +1 Defense.", "upgrade": {"applies_to": ["armor"], "mods": {"defense": 1}}},
-  "insulated_lining": {"name": "Insulated Lining", "type": "upgrade", "stack": true, "value": 110, "desc": "Armor upgrade: immunity to Shocked and +1 Fortitude.", "upgrade": {"applies_to": ["armor"], "mods": {"immune": ["shock"], "saves": {"fort": 1}}}},
-
-  "vesper_testimony": {"name": "Vesper Testimony", "type": "quest", "stack": true, "quest": true, "value": 0, "desc": "A data spike holding one engram from the archive index: Corporal Eshe Darrow's last forty minutes on Vesper Station, from inside her own head."},
-  "kinship_token": {"name": "Haldis Kinship Token", "type": "quest", "stack": true, "quest": true, "value": 0, "desc": "A pressed-amber disc stamped with your birth-village glyph. Among Haldis folk it means 'I am owed a hearing.'"},
-  "iona_keycard": {"name": "Iona's Security Keycard", "type": "quest", "stack": true, "quest": true, "value": 0, "desc": "Officer Rell's checkpoint keycard. It still opens mechanical locks that WARDEN does not control."},
-  "pump_seal": {"name": "Pump Seal Kit", "type": "quest", "stack": true, "quest": true, "value": 0, "desc": "A fabricated replacement seal for an engineering coolant pump. It installs without a Repair check."},
-  "launch_authorization": {"name": "Launch Authorization", "type": "quest", "stack": true, "quest": true, "value": 0, "desc": "Command-level release codes for the launch craft Petrel."}
+ "_comment": "Item definitions. type: weapon|armor|gear|consumable|grenade|mine|resource|upgrade|quest. slot: head|body|hands|belt|implant|wrist|weapon. Machines use the same slot keys under machine labels (Sensor Array, Chassis, Manipulators, Utility Mount, Core Module, Interface Port). quest/bound items cannot be sold or dismantled.",
+ "unarmed": {
+  "name": "Unarmed",
+  "type": "weapon",
+  "slot": "weapon",
+  "implicit": true,
+  "value": 0,
+  "desc": "Fists, elbows and bad intentions.",
+  "weapon": {
+   "category": "melee",
+   "prof": "melee",
+   "hands": 1,
+   "dice": "1d3",
+   "dtype": "kinetic",
+   "threat": 20,
+   "crit_mult": 2,
+   "range": 1.8,
+   "light": true,
+   "sound": "punch"
+  }
+ },
+ "vibro_knife": {
+  "name": "Vibro-Knife",
+  "type": "weapon",
+  "slot": "weapon",
+  "value": 60,
+  "desc": "A short oscillating blade. Light and finesse: uses DEX for attacks, and it is the best off-hand weapon.",
+  "weapon": {
+   "category": "melee",
+   "prof": "melee",
+   "hands": 1,
+   "dice": "1d4",
+   "dtype": "kinetic",
+   "threat": 19,
+   "crit_mult": 2,
+   "range": 1.8,
+   "light": true,
+   "finesse": true,
+   "sound": "blade"
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "stun_baton": {
+  "name": "Stun Baton",
+  "type": "weapon",
+  "slot": "weapon",
+  "value": 70,
+  "desc": "Security issue: a weighted baton that adds a jolt of 1d3 energy damage.",
+  "weapon": {
+   "category": "melee",
+   "prof": "melee",
+   "hands": 1,
+   "dice": "1d6",
+   "dtype": "kinetic",
+   "threat": 20,
+   "crit_mult": 2,
+   "range": 1.9,
+   "extra": {
+    "dice": "1d3",
+    "dtype": "energy"
+   },
+   "sound": "baton"
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "vibro_sword": {
+  "name": "Vibrosword",
+  "type": "weapon",
+  "slot": "weapon",
+  "value": 150,
+  "desc": "A long oscillating blade. A reliable one-handed weapon.",
+  "weapon": {
+   "category": "melee",
+   "prof": "melee",
+   "hands": 1,
+   "dice": "1d8",
+   "dtype": "kinetic",
+   "threat": 19,
+   "crit_mult": 2,
+   "range": 2.0,
+   "sound": "blade"
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 2
+  }
+ },
+ "shear_glaive": {
+  "name": "Shear Glaive",
+  "type": "weapon",
+  "slot": "weapon",
+  "value": 220,
+  "req": {
+   "attrs": {
+    "str": 13
+   }
+  },
+  "desc": "A reclaimer boarding polearm. Two-handed: 2d6, critical x3, adds 1.5x STR to damage.",
+  "weapon": {
+   "category": "melee",
+   "prof": "melee",
+   "hands": 2,
+   "dice": "2d6",
+   "dtype": "kinetic",
+   "threat": 20,
+   "crit_mult": 3,
+   "range": 2.4,
+   "sound": "heavy"
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 2
+  }
+ },
+ "breach_maul": {
+  "name": "Breach Maul",
+  "type": "weapon",
+  "slot": "weapon",
+  "value": 260,
+  "req": {
+   "attrs": {
+    "str": 14
+   }
+  },
+  "desc": "A two-handed hydraulic hammer for doors and the people behind them. 2d8 damage at -1 to attack.",
+  "weapon": {
+   "category": "melee",
+   "prof": "melee",
+   "hands": 2,
+   "dice": "2d8",
+   "dtype": "kinetic",
+   "threat": 20,
+   "crit_mult": 2,
+   "range": 2.2,
+   "attack": -1,
+   "sound": "heavy"
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 3
+  }
+ },
+ "lumen_edge": {
+  "name": "Lumen Edge",
+  "type": "weapon",
+  "slot": "weapon",
+  "value": 1200,
+  "bound": true,
+  "desc": "Your operator's blade: a filament of plasma held in shape by Resonance. It only ignites for your neural signature. 2d6 energy damage, threat 19-20, and it can deflect energy bolts with the Bolt Deflection feat. Bound to you: cannot be sold or dismantled.",
+  "weapon": {
+   "category": "melee",
+   "prof": "melee",
+   "hands": 1,
+   "dice": "2d6",
+   "dtype": "energy",
+   "threat": 19,
+   "crit_mult": 2,
+   "range": 2.0,
+   "energy_blade": true,
+   "sound": "lumen"
+  },
+  "upgrade_slots": 2
+ },
+ "shock_spanner": {
+  "name": "Shock Spanner",
+  "type": "weapon",
+  "slot": "weapon",
+  "value": 90,
+  "desc": "A maintenance tool turned into a weapon. It also deals 1d4 ion damage, which is doubled against machines.",
+  "weapon": {
+   "category": "melee",
+   "prof": "melee",
+   "hands": 1,
+   "dice": "1d6",
+   "dtype": "kinetic",
+   "threat": 20,
+   "crit_mult": 2,
+   "range": 1.9,
+   "extra": {
+    "dice": "1d4",
+    "dtype": "ion"
+   },
+   "sound": "baton"
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "holdout_pistol": {
+  "name": "Holdout Pistol",
+  "type": "weapon",
+  "slot": "weapon",
+  "value": 80,
+  "desc": "A compact sidearm: 1d6 energy, +1 attack.",
+  "weapon": {
+   "category": "pistol",
+   "prof": "pistol",
+   "hands": 1,
+   "dice": "1d6",
+   "dtype": "energy",
+   "threat": 20,
+   "crit_mult": 2,
+   "range": 12.0,
+   "attack": 1,
+   "sound": "blaster"
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "service_pistol": {
+  "name": "Service Pistol",
+  "type": "weapon",
+  "slot": "weapon",
+  "value": 140,
+  "desc": "Standard officer's sidearm: 1d8 energy.",
+  "weapon": {
+   "category": "pistol",
+   "prof": "pistol",
+   "hands": 1,
+   "dice": "1d8",
+   "dtype": "energy",
+   "threat": 20,
+   "crit_mult": 2,
+   "range": 14.0,
+   "sound": "blaster"
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 2
+  }
+ },
+ "ion_pistol": {
+  "name": "Ion Pistol",
+  "type": "weapon",
+  "slot": "weapon",
+  "value": 160,
+  "desc": "1d6 ion: doubled against machines, nearly harmless to organics.",
+  "weapon": {
+   "category": "pistol",
+   "prof": "pistol",
+   "hands": 1,
+   "dice": "1d6",
+   "dtype": "ion",
+   "threat": 20,
+   "crit_mult": 2,
+   "range": 12.0,
+   "sound": "ion"
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 2
+  }
+ },
+ "carbine": {
+  "name": "Security Carbine",
+  "type": "weapon",
+  "slot": "weapon",
+  "value": 200,
+  "desc": "Two-handed long arm: 1d8 energy, +1 attack, long range.",
+  "weapon": {
+   "category": "rifle",
+   "prof": "rifle",
+   "hands": 2,
+   "dice": "1d8",
+   "dtype": "energy",
+   "threat": 20,
+   "crit_mult": 2,
+   "range": 20.0,
+   "attack": 1,
+   "sound": "rifle"
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 2
+  }
+ },
+ "arc_rifle": {
+  "name": "Arc Rifle",
+  "type": "weapon",
+  "slot": "weapon",
+  "value": 320,
+  "req": {
+   "attrs": {
+    "dex": 12
+   }
+  },
+  "desc": "A reclaimer marksman's rifle: 2d6 energy at -1 to attack, critical x3.",
+  "weapon": {
+   "category": "rifle",
+   "prof": "rifle",
+   "hands": 2,
+   "dice": "2d6",
+   "dtype": "energy",
+   "threat": 20,
+   "crit_mult": 3,
+   "range": 18.0,
+   "attack": -1,
+   "sound": "rifle"
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 3
+  }
+ },
+ "ion_carbine": {
+  "name": "Ion Carbine",
+  "type": "weapon",
+  "slot": "weapon",
+  "value": 260,
+  "desc": "1d10 ion, built for disabling machines.",
+  "weapon": {
+   "category": "rifle",
+   "prof": "rifle",
+   "hands": 2,
+   "dice": "1d10",
+   "dtype": "ion",
+   "threat": 20,
+   "crit_mult": 2,
+   "range": 18.0,
+   "sound": "ion"
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 2
+  }
+ },
+ "drone_blaster": {
+  "name": "Drone Emitter",
+  "type": "weapon",
+  "slot": "weapon",
+  "natural": true,
+  "value": 0,
+  "desc": "Integrated WARDEN picket emitter.",
+  "weapon": {
+   "category": "pistol",
+   "prof": "natural",
+   "hands": 1,
+   "dice": "1d6",
+   "dtype": "energy",
+   "threat": 20,
+   "crit_mult": 2,
+   "range": 12.0,
+   "sound": "drone"
+  }
+ },
+ "turret_cannon": {
+  "name": "Turret Cannon",
+  "type": "weapon",
+  "slot": "weapon",
+  "natural": true,
+  "value": 0,
+  "desc": "WARDEN point-defense cannon.",
+  "weapon": {
+   "category": "rifle",
+   "prof": "natural",
+   "hands": 2,
+   "dice": "1d8",
+   "dtype": "energy",
+   "threat": 20,
+   "crit_mult": 2,
+   "range": 16.0,
+   "damage": 1,
+   "sound": "rifle"
+  }
+ },
+ "spider_mandibles": {
+  "name": "Shock Mandibles",
+  "type": "weapon",
+  "slot": "weapon",
+  "natural": true,
+  "value": 0,
+  "desc": "Electrified cutting mandibles.",
+  "weapon": {
+   "category": "melee",
+   "prof": "natural",
+   "hands": 1,
+   "dice": "1d6",
+   "dtype": "energy",
+   "threat": 20,
+   "crit_mult": 2,
+   "range": 1.8,
+   "sound": "spider"
+  }
+ },
+ "sentinel_cannon": {
+  "name": "Sentinel Cannon",
+  "type": "weapon",
+  "slot": "weapon",
+  "natural": true,
+  "value": 0,
+  "desc": "Heavy WARDEN arm cannon.",
+  "weapon": {
+   "category": "rifle",
+   "prof": "natural",
+   "hands": 2,
+   "dice": "2d6",
+   "dtype": "energy",
+   "threat": 20,
+   "crit_mult": 2,
+   "range": 14.0,
+   "sound": "heavy_blaster"
+  }
+ },
+ "travel_jacket": {
+  "name": "Travel Jacket",
+  "type": "armor",
+  "slot": "body",
+  "value": 40,
+  "desc": "Civilian layers with a padded lining. +1 Defense, max DEX bonus +8.",
+  "armor": {
+   "category": "light",
+   "defense": 1,
+   "max_dex": 8
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "padded_vest": {
+  "name": "Padded Vest",
+  "type": "armor",
+  "slot": "body",
+  "value": 90,
+  "desc": "Impact-gel vest. +2 Defense, max DEX bonus +6.",
+  "armor": {
+   "category": "light",
+   "defense": 2,
+   "max_dex": 6
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "operator_coat": {
+  "name": "Operator's Coat",
+  "type": "armor",
+  "slot": "body",
+  "value": 160,
+  "desc": "A Lattice Corps operator coat with resonant thread in the lining. +2 Defense, max DEX +6, +4 maximum energy, +1 Awareness.",
+  "armor": {
+   "category": "light",
+   "defense": 2,
+   "max_dex": 6
+  },
+  "mods": {
+   "energy_max": 4,
+   "skills": {
+    "awareness": 1
+   }
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "security_weave": {
+  "name": "Security Weave",
+  "type": "armor",
+  "slot": "body",
+  "value": 260,
+  "req": {
+   "armor_prof": "medium"
+  },
+  "desc": "Ship security medium armor. +4 Defense, max DEX +4. Requires Medium Armor Proficiency. Resonance powers cost +2 energy in medium armor.",
+  "armor": {
+   "category": "medium",
+   "defense": 4,
+   "max_dex": 4
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 2
+  }
+ },
+ "reclaimer_mesh": {
+  "name": "Reclaimer Mesh",
+  "type": "armor",
+  "slot": "body",
+  "value": 180,
+  "req": {
+   "armor_prof": "medium"
+  },
+  "desc": "Lantern Office boarding mesh, patched and repainted. +3 Defense, max DEX +5. Medium armor.",
+  "armor": {
+   "category": "medium",
+   "defense": 3,
+   "max_dex": 5
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 2
+  }
+ },
+ "breacher_plate": {
+  "name": "Breacher Plate",
+  "type": "armor",
+  "slot": "body",
+  "value": 420,
+  "req": {
+   "armor_prof": "heavy",
+   "attrs": {
+    "str": 13
+   }
+  },
+  "desc": "Heavy boarding plate. +6 Defense, max DEX +1. Requires Heavy Armor Proficiency and blocks Resonance powers.",
+  "armor": {
+   "category": "heavy",
+   "defense": 6,
+   "max_dex": 1
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 3
+  }
+ },
+ "chassis_plating": {
+  "name": "Chassis Plating",
+  "type": "armor",
+  "slot": "body",
+  "value": 200,
+  "req": {
+   "kind": "machine"
+  },
+  "desc": "Bolt-on armor plates for a synthetic frame. +3 Defense, max DEX +4. Machines only.",
+  "armor": {
+   "category": "light",
+   "defense": 3,
+   "max_dex": 4
+  },
+  "upgrade_slots": 1,
+  "dismantle": {
+   "tech_components": 2
+  }
+ },
+ "sensor_visor": {
+  "name": "Sensor Visor",
+  "type": "gear",
+  "slot": "head",
+  "value": 120,
+  "req": {
+   "kind": "organic"
+  },
+  "desc": "Heads-up threat overlay. +2 Awareness.",
+  "mods": {
+   "skills": {
+    "awareness": 2
+   }
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "respirator_mask": {
+  "name": "Respirator Mask",
+  "type": "gear",
+  "slot": "head",
+  "value": 80,
+  "req": {
+   "kind": "organic"
+  },
+  "desc": "Filters vented coolant and smoke. Immune to Coolant Exposure; +1 Fortitude.",
+  "mods": {
+   "immune": [
+    "toxin"
+   ],
+   "saves": {
+    "fort": 1
+   }
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "machine_optics": {
+  "name": "Targeting Optics",
+  "type": "gear",
+  "slot": "head",
+  "value": 150,
+  "req": {
+   "kind": "machine"
+  },
+  "desc": "Sensor-array upgrade for synthetics. +1 ranged attack, +1 Awareness.",
+  "mods": {
+   "attack_ranged": 1,
+   "skills": {
+    "awareness": 1
+   }
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "grip_gloves": {
+  "name": "Grip Gloves",
+  "type": "gear",
+  "slot": "hands",
+  "value": 90,
+  "req": {
+   "kind": "organic"
+  },
+  "desc": "Micro-textured gloves. +1 melee attack.",
+  "mods": {
+   "attack_melee": 1
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "tech_gauntlets": {
+  "name": "Tech Gauntlets",
+  "type": "gear",
+  "slot": "hands",
+  "value": 120,
+  "req": {
+   "kind": "organic"
+  },
+  "desc": "Tool-laden gauntlets. +2 Security, +1 Repair.",
+  "mods": {
+   "skills": {
+    "security": 2,
+    "repair": 1
+   }
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "machine_manipulators": {
+  "name": "Precision Manipulators",
+  "type": "gear",
+  "slot": "hands",
+  "value": 130,
+  "req": {
+   "kind": "machine"
+  },
+  "desc": "Fine manipulator heads for a synthetic. +2 Repair, +2 Security.",
+  "mods": {
+   "skills": {
+    "repair": 2,
+    "security": 2
+   }
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "stealth_field_belt": {
+  "name": "Stealth Field Belt",
+  "type": "gear",
+  "slot": "belt",
+  "value": 220,
+  "desc": "Bends light around the wearer when standing still or creeping. +4 Stealth.",
+  "mods": {
+   "skills": {
+    "stealth": 4
+   }
+  },
+  "dismantle": {
+   "tech_components": 2
+  }
+ },
+ "strength_harness": {
+  "name": "Load Harness",
+  "type": "gear",
+  "slot": "belt",
+  "value": 180,
+  "req": {
+   "kind": "organic"
+  },
+  "desc": "Servo-assisted harness. +1 STR.",
+  "mods": {
+   "attrs": {
+    "str": 1
+   }
+  },
+  "dismantle": {
+   "tech_components": 2
+  }
+ },
+ "utility_mount": {
+  "name": "Utility Mount",
+  "type": "gear",
+  "slot": "belt",
+  "value": 120,
+  "req": {
+   "kind": "machine"
+  },
+  "desc": "A synthetic's tool mount. +2 Demolitions, +1 Fortitude.",
+  "mods": {
+   "skills": {
+    "demolitions": 2
+   },
+   "saves": {
+    "fort": 1
+   }
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "reflex_implant": {
+  "name": "Reflex Implant",
+  "type": "gear",
+  "slot": "implant",
+  "value": 200,
+  "req": {
+   "implant_tier": 1,
+   "kind": "organic"
+  },
+  "desc": "Spinal accelerator. +1 DEX. Requires Implant Tolerance.",
+  "mods": {
+   "attrs": {
+    "dex": 1
+   }
+  }
+ },
+ "vital_implant": {
+  "name": "Vital Implant",
+  "type": "gear",
+  "slot": "implant",
+  "value": 200,
+  "req": {
+   "implant_tier": 1,
+   "kind": "organic"
+  },
+  "desc": "Cardiac regulator. +1 CON. Requires Implant Tolerance.",
+  "mods": {
+   "attrs": {
+    "con": 1
+   }
+  }
+ },
+ "neural_dampener": {
+  "name": "Neural Dampener",
+  "type": "gear",
+  "slot": "implant",
+  "value": 180,
+  "req": {
+   "implant_tier": 1,
+   "kind": "organic"
+  },
+  "desc": "Lattice Corps issue: blunts intrusion into your mind. +2 Will. Requires Implant Tolerance.",
+  "mods": {
+   "saves": {
+    "will": 2
+   }
+  }
+ },
+ "cortex_amp": {
+  "name": "Cortex Amplifier",
+  "type": "gear",
+  "slot": "implant",
+  "value": 380,
+  "req": {
+   "implant_tier": 2,
+   "kind": "organic"
+  },
+  "desc": "+2 INT. Requires Advanced Implant Tolerance.",
+  "mods": {
+   "attrs": {
+    "int": 2
+   }
+  }
+ },
+ "core_module": {
+  "name": "Diagnostic Core Module",
+  "type": "gear",
+  "slot": "implant",
+  "value": 220,
+  "req": {
+   "kind": "machine"
+  },
+  "desc": "Synthetic co-processor. +2 Computer Use, +1 INT.",
+  "mods": {
+   "skills": {
+    "computer_use": 2
+   },
+   "attrs": {
+    "int": 1
+   }
+  }
+ },
+ "wrist_scanner": {
+  "name": "Wrist Scanner",
+  "type": "gear",
+  "slot": "wrist",
+  "value": 140,
+  "desc": "Explosive-residue sniffer. +2 Demolitions, +1 Awareness.",
+  "mods": {
+   "skills": {
+    "demolitions": 2,
+    "awareness": 1
+   }
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "med_injector": {
+  "name": "Med Injector",
+  "type": "gear",
+  "slot": "wrist",
+  "value": 150,
+  "req": {
+   "kind": "organic"
+  },
+  "desc": "Dosing assistant. +2 Medicine.",
+  "mods": {
+   "skills": {
+    "medicine": 2
+   }
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "resonance_band": {
+  "name": "Resonance Band",
+  "type": "gear",
+  "slot": "wrist",
+  "value": 220,
+  "req": {
+   "kind": "organic"
+  },
+  "desc": "An operator's focusing band. +6 maximum energy.",
+  "mods": {
+   "energy_max": 6
+  }
+ },
+ "interface_port": {
+  "name": "Interface Port",
+  "type": "gear",
+  "slot": "wrist",
+  "value": 140,
+  "req": {
+   "kind": "machine"
+  },
+  "desc": "Hard-line data port for a synthetic. +2 Computer Use.",
+  "mods": {
+   "skills": {
+    "computer_use": 2
+   }
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "insulated_gloves": {
+  "name": "Insulated Gloves",
+  "type": "gear",
+  "slot": "hands",
+  "value": 70,
+  "req": {
+   "kind": "organic"
+  },
+  "desc": "Rated for live conduits. Immune to Shocked; +1 Repair.",
+  "mods": {
+   "immune": [
+    "shock"
+   ],
+   "skills": {
+    "repair": 1
+   }
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "medpac": {
+  "name": "Medpac",
+  "type": "consumable",
+  "stack": true,
+  "value": 30,
+  "desc": "Heals an organic ally within reach for 2d6+5, plus half the user's Medicine bonus. Takes the user's action.",
+  "use": {
+   "heal": "2d6+5",
+   "heal_kind": "organic",
+   "target": "ally",
+   "skill": "medicine"
+  },
+  "dismantle": {
+   "med_reagents": 1
+  }
+ },
+ "trauma_pack": {
+  "name": "Trauma Pack",
+  "type": "consumable",
+  "stack": true,
+  "value": 70,
+  "desc": "Military trauma kit: heals 3d6+12 (+ half the user's Medicine) and stops bleeding.",
+  "use": {
+   "heal": "3d6+12",
+   "heal_kind": "organic",
+   "target": "ally",
+   "skill": "medicine",
+   "cleanse": [
+    "bleeding"
+   ]
+  },
+  "dismantle": {
+   "med_reagents": 1
+  }
+ },
+ "repair_kit": {
+  "name": "Repair Kit",
+  "type": "consumable",
+  "stack": true,
+  "value": 30,
+  "desc": "Patches a machine ally within reach for 2d6+5, plus half the user's Repair bonus.",
+  "use": {
+   "heal": "2d6+5",
+   "heal_kind": "machine",
+   "target": "ally",
+   "skill": "repair"
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "adrenal_stim": {
+  "name": "Adrenal Stimulant",
+  "type": "consumable",
+  "stack": true,
+  "value": 40,
+  "desc": "+2 STR and +1 Fortitude for 10 rounds. Organics only.",
+  "use": {
+   "status": {
+    "id": "adrenal",
+    "duration": 30.0
+   },
+   "target": "self",
+   "kind": "organic"
+  }
+ },
+ "reflex_stim": {
+  "name": "Reflex Stimulant",
+  "type": "consumable",
+  "stack": true,
+  "value": 40,
+  "desc": "+2 DEX and +1 Defense for 10 rounds. Organics only.",
+  "use": {
+   "status": {
+    "id": "reflex_stim",
+    "duration": 30.0
+   },
+   "target": "self",
+   "kind": "organic"
+  }
+ },
+ "antitox": {
+  "name": "Antitoxin Shot",
+  "type": "consumable",
+  "stack": true,
+  "value": 20,
+  "desc": "Purges toxins and bleeding and grants immunity to both for 10 rounds.",
+  "use": {
+   "cleanse": [
+    "toxin",
+    "bleeding"
+   ],
+   "status": {
+    "id": "antitox",
+    "duration": 30.0
+   },
+   "target": "ally",
+   "kind": "organic"
+  }
+ },
+ "focus_ampoule": {
+  "name": "Focus Ampoule",
+  "type": "consumable",
+  "stack": true,
+  "value": 35,
+  "desc": "A resonant tincture: restores 12 energy.",
+  "use": {
+   "energy": 12,
+   "target": "self"
+  }
+ },
+ "shield_cell": {
+  "name": "Deflector Cell",
+  "type": "consumable",
+  "stack": true,
+  "value": 60,
+  "desc": "Activates a personal deflector that absorbs 15 kinetic/energy damage for 5 rounds.",
+  "use": {
+   "status": {
+    "id": "shield_basic",
+    "duration": 15.0
+   },
+   "target": "self"
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "heavy_shield_cell": {
+  "name": "Heavy Deflector Cell",
+  "type": "consumable",
+  "stack": true,
+  "value": 110,
+  "desc": "Absorbs 30 kinetic/energy damage for 5 rounds.",
+  "use": {
+   "status": {
+    "id": "shield_heavy",
+    "duration": 15.0
+   },
+   "target": "self"
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "frag_grenade": {
+  "name": "Frag Grenade",
+  "type": "grenade",
+  "stack": true,
+  "value": 45,
+  "desc": "3d6 kinetic in a 3 m radius (Reflex DC 15 for half). Hits friends too.",
+  "throw": {
+   "range": 12.0,
+   "radius": 3.0,
+   "dice": "3d6",
+   "dtype": "kinetic",
+   "save": "ref",
+   "dc": 15,
+   "half": true
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "ion_grenade": {
+  "name": "Ion Grenade",
+  "type": "grenade",
+  "stack": true,
+  "value": 50,
+  "desc": "3d6 ion in 3 m: doubled against machines, and a machine that fails a Fortitude save (DC 14) is stunned for 1 round.",
+  "throw": {
+   "range": 12.0,
+   "radius": 3.0,
+   "dice": "3d6",
+   "dtype": "ion",
+   "save": "fort",
+   "dc": 14,
+   "machine_status_on_fail": {
+    "id": "stunned",
+    "duration": 3.0
+   }
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "stun_grenade": {
+  "name": "Stun Grenade",
+  "type": "grenade",
+  "stack": true,
+  "value": 55,
+  "desc": "Concussive flash: organics within 3 m that fail a Fortitude save (DC 14) are stunned for 2 rounds.",
+  "throw": {
+   "range": 12.0,
+   "radius": 3.0,
+   "save": "fort",
+   "dc": 14,
+   "status_on_fail": {
+    "id": "stunned",
+    "duration": 6.0
+   },
+   "organic_only": true
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "adhesive_grenade": {
+  "name": "Adhesive Grenade",
+  "type": "grenade",
+  "stack": true,
+  "value": 50,
+  "desc": "Sticky foam: targets within 3 m that fail a Reflex save (DC 14) are immobilized for 3 rounds.",
+  "throw": {
+   "range": 12.0,
+   "radius": 3.0,
+   "save": "ref",
+   "dc": 14,
+   "status_on_fail": {
+    "id": "immobilized",
+    "duration": 9.0
+   }
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "thermal_grenade": {
+  "name": "Thermal Grenade",
+  "type": "grenade",
+  "stack": true,
+  "value": 60,
+  "desc": "2d6 thermal in 2.5 m; on a failed Reflex save (DC 14) the target also burns for 3 rounds.",
+  "throw": {
+   "range": 12.0,
+   "radius": 2.5,
+   "dice": "2d6",
+   "dtype": "thermal",
+   "save": "ref",
+   "dc": 14,
+   "status_on_fail": {
+    "id": "burning",
+    "duration": 9.0
+   }
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ },
+ "frag_mine": {
+  "name": "Frag Mine",
+  "type": "mine",
+  "stack": true,
+  "value": 70,
+  "desc": "Place at your feet. Arms after 2 s and detonates when a hostile comes within 1.5 m: 4d6 kinetic in 2.5 m (Reflex DC 16 for half).",
+  "mine": {
+   "radius": 2.5,
+   "trigger": 1.5,
+   "dice": "4d6",
+   "dtype": "kinetic",
+   "save": "ref",
+   "dc": 16,
+   "half": true,
+   "detect_dc": 14,
+   "disarm_dc": 14
+  },
+  "dismantle": {
+   "tech_components": 2
+  }
+ },
+ "stun_mine": {
+  "name": "Stun Mine",
+  "type": "mine",
+  "stack": true,
+  "value": 70,
+  "desc": "Organics within 2.5 m that fail a Fortitude save (DC 15) are stunned for 2 rounds.",
+  "mine": {
+   "radius": 2.5,
+   "trigger": 1.5,
+   "save": "fort",
+   "dc": 15,
+   "status_on_fail": {
+    "id": "stunned",
+    "duration": 6.0
+   },
+   "organic_only": true,
+   "detect_dc": 14,
+   "disarm_dc": 14
+  },
+  "dismantle": {
+   "tech_components": 2
+  }
+ },
+ "tech_components": {
+  "name": "Technical Components",
+  "type": "resource",
+  "stack": true,
+  "value": 15,
+  "desc": "Circuit boards, couplers and fasteners. Workbench crafting resource."
+ },
+ "med_reagents": {
+  "name": "Medical Reagents",
+  "type": "resource",
+  "stack": true,
+  "value": 15,
+  "desc": "Sealed reagent vials. Medical fabrication resource."
+ },
+ "power_cell": {
+  "name": "Power Cell",
+  "type": "resource",
+  "stack": true,
+  "value": 40,
+  "desc": "A dense energy cell for advanced crafting."
+ },
+ "focusing_lens": {
+  "name": "Focusing Lens",
+  "type": "upgrade",
+  "stack": true,
+  "value": 120,
+  "desc": "Weapon upgrade (Lumen Edge, pistol or rifle): +1 attack.",
+  "upgrade": {
+   "applies_to": [
+    "energy_blade",
+    "pistol",
+    "rifle"
+   ],
+   "weapon_mods": {
+    "attack": 1
+   }
+  }
+ },
+ "edge_emitter": {
+  "name": "Edge Emitter",
+  "type": "upgrade",
+  "stack": true,
+  "value": 160,
+  "desc": "Lumen Edge upgrade: +2 damage.",
+  "upgrade": {
+   "applies_to": [
+    "energy_blade"
+   ],
+   "weapon_mods": {
+    "damage": 2
+   }
+  }
+ },
+ "recoil_dampener": {
+  "name": "Recoil Dampener",
+  "type": "upgrade",
+  "stack": true,
+  "value": 100,
+  "desc": "Pistol or rifle upgrade: +1 attack.",
+  "upgrade": {
+   "applies_to": [
+    "pistol",
+    "rifle"
+   ],
+   "weapon_mods": {
+    "attack": 1
+   }
+  }
+ },
+ "balanced_grip": {
+  "name": "Balanced Grip",
+  "type": "upgrade",
+  "stack": true,
+  "value": 100,
+  "desc": "Melee weapon upgrade: +1 attack.",
+  "upgrade": {
+   "applies_to": [
+    "melee"
+   ],
+   "weapon_mods": {
+    "attack": 1
+   }
+  }
+ },
+ "ion_coil": {
+  "name": "Ion Coil",
+  "type": "upgrade",
+  "stack": true,
+  "value": 140,
+  "desc": "Any weapon: adds 1d4 ion damage (doubled against machines).",
+  "upgrade": {
+   "applies_to": [
+    "melee",
+    "pistol",
+    "rifle"
+   ],
+   "weapon_mods": {
+    "extra": {
+     "dice": "1d4",
+     "dtype": "ion"
+    }
+   }
+  }
+ },
+ "weave_lining": {
+  "name": "Weave Lining",
+  "type": "upgrade",
+  "stack": true,
+  "value": 110,
+  "desc": "Armor upgrade: +1 Defense.",
+  "upgrade": {
+   "applies_to": [
+    "armor"
+   ],
+   "mods": {
+    "defense": 1
+   }
+  }
+ },
+ "insulated_lining": {
+  "name": "Insulated Lining",
+  "type": "upgrade",
+  "stack": true,
+  "value": 110,
+  "desc": "Armor upgrade: immunity to Shocked and +1 Fortitude.",
+  "upgrade": {
+   "applies_to": [
+    "armor"
+   ],
+   "mods": {
+    "immune": [
+     "shock"
+    ],
+    "saves": {
+     "fort": 1
+    }
+   }
+  }
+ },
+ "vesper_testimony": {
+  "name": "Vesper Testimony",
+  "type": "quest",
+  "stack": true,
+  "quest": true,
+  "value": 0,
+  "desc": "A data spike holding one engram from the archive index: Corporal Eshe Darrow's last forty minutes on Vesper Station, from inside her own head."
+ },
+ "kinship_token": {
+  "name": "Haldis Kinship Token",
+  "type": "quest",
+  "stack": true,
+  "quest": true,
+  "value": 0,
+  "desc": "A pressed-amber disc stamped with your birth-village glyph. Among Haldis folk it means 'I am owed a hearing.'"
+ },
+ "iona_keycard": {
+  "name": "Iona's Security Keycard",
+  "type": "quest",
+  "stack": true,
+  "quest": true,
+  "value": 0,
+  "desc": "Officer Rell's checkpoint keycard. It still opens mechanical locks that WARDEN does not control."
+ },
+ "pump_seal": {
+  "name": "Pump Seal Kit",
+  "type": "quest",
+  "stack": true,
+  "quest": true,
+  "value": 0,
+  "desc": "A fabricated replacement seal for an engineering coolant pump. It installs without a Repair check."
+ },
+ "launch_authorization": {
+  "name": "Launch Authorization",
+  "type": "quest",
+  "stack": true,
+  "quest": true,
+  "value": 0,
+  "desc": "Command-level release codes for the launch craft Petrel."
+ },
+ "shock_mine": {
+  "name": "Shock Mine",
+  "type": "mine",
+  "stack": true,
+  "value": 50,
+  "desc": "WARDEN perimeter mine. Place at your feet; it arms after 2 s and discharges when a hostile comes within 1.5 m: 2d6 energy in 2 m (Reflex DC 13 for half).",
+  "mine": {
+   "radius": 2.0,
+   "trigger": 1.5,
+   "dice": "2d6",
+   "dtype": "energy",
+   "save": "ref",
+   "dc": 13,
+   "half": true,
+   "detect_dc": 11,
+   "disarm_dc": 13
+  },
+  "dismantle": {
+   "tech_components": 1
+  }
+ }
 }

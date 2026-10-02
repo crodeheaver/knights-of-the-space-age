@@ -1,0 +1,366 @@
+{
+ "id": "launch_console",
+ "entry": [
+  {
+   "if": [
+    {
+     "flag": "launch_decided"
+    }
+   ],
+   "node": "decided"
+  },
+  {
+   "if": [
+    {
+     "not": {
+      "flag": "varr_dead"
+     }
+    },
+    {
+     "not": {
+      "flag": "varr_fate"
+     }
+    }
+   ],
+   "node": "varr_here"
+  },
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "varr_here": {
+   "speaker": "system",
+   "text": "LAUNCH CONTROL — COMMAND AUTHORIZATION REQUIRED. Commander Varr is standing beside the console; talk to her first.",
+   "choices": [
+    {
+     "text": "(Step back.)",
+     "end": true
+    }
+   ]
+  },
+  "decided": {
+   "speaker": "system",
+   "text": "LAUNCH CONTROL — PETREL RELEASED. Bay 2 open.",
+   "choices": [
+    {
+     "text": "Seal Bay 2's hull breach from here.",
+     "next": "breach_ok",
+     "if": [
+      {
+       "not": {
+        "flag": "breach_sealed"
+       }
+      },
+      {
+       "not": {
+        "cleared": "enc_bay"
+       }
+      }
+     ],
+     "check": {
+      "skill": "computer_use",
+      "dc": 14,
+      "id": "console_breach",
+      "who": "actor"
+     },
+     "success": "breach_ok",
+     "failure": "breach_fail",
+     "success_effects": [
+      {
+       "set_flag": "breach_sealed",
+       "value": true
+      },
+      {
+       "set_flag": "lantern_reduced",
+       "value": true
+      }
+     ]
+    },
+    {
+     "text": "Close.",
+     "end": true
+    }
+   ]
+  },
+  "breach_ok": {
+   "speaker": "system",
+   "text": "BAY 2 EMERGENCY BULKHEAD: SEALED.",
+   "next": "decided"
+  },
+  "breach_fail": {
+   "speaker": "system",
+   "text": "BULKHEAD CONTROL REJECTED.",
+   "next": "decided"
+  },
+  "start": {
+   "speaker": "system",
+   "text": "LAUNCH CONTROL — PETREL. Fifteen seats; an archive core cradle displaces five. Passengers awaiting boarding: {survivors}. Select a load-out.",
+   "choices": [
+    {
+     "text": "Passengers only. Every seat to a person.",
+     "next": "p",
+     "effects": [
+      {
+       "evac": "passengers"
+      }
+     ]
+    },
+    {
+     "text": "Load the archive core.",
+     "next": "auth",
+     "effects": [
+      {
+       "evac": "archive"
+      },
+      {
+       "set_flag": "archive_fate",
+       "value": "loaded"
+      },
+      {
+       "influence": "tav7",
+       "delta": 4,
+       "key": "evac",
+       "reason": "Kept the archived minds safe"
+      },
+      {
+       "influence": "iona",
+       "delta": -3,
+       "key": "evac",
+       "reason": "Chose the archive"
+      }
+     ]
+    },
+    {
+     "text": "Passengers, plus the Vesper testimony we copied.",
+     "next": "p",
+     "if": [
+      {
+       "item": "vesper_testimony"
+      }
+     ],
+     "effects": [
+      {
+       "evac": "testimony"
+      },
+      {
+       "set_flag": "copy_route",
+       "value": true
+      }
+     ]
+    },
+    {
+     "text": "Release the core to the Lantern Office.",
+     "next": "auth",
+     "if": [
+      {
+       "any": [
+        {
+         "flag": "senna_message"
+        },
+        {
+         "flag": "promised_lantern"
+        },
+        {
+         "flag": "archive_peace"
+        }
+       ]
+      }
+     ],
+     "effects": [
+      {
+       "evac": "handover"
+      },
+      {
+       "set_flag": "archive_fate",
+       "value": "handed_over"
+      },
+      {
+       "influence": "tav7",
+       "delta": 8,
+       "key": "evac",
+       "reason": "Returned the dead to their families"
+      }
+     ]
+    }
+   ]
+  },
+  "p": {
+   "speaker": "system",
+   "text": "Core disposition?",
+   "choices": [
+    {
+     "text": "Leave the archive for the Lantern Office. Let their dead go home.",
+     "next": "c_hand",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "handed_over"
+      },
+      {
+       "influence": "tav7",
+       "delta": 6,
+       "key": "fate",
+       "reason": "Sent the archived minds home"
+      },
+      {
+       "alignment": 3,
+       "key": "fate",
+       "reason": "Returned the archive to the families"
+      }
+     ]
+    },
+    {
+     "text": "Purge it. No one uses those minds ever again.",
+     "next": "c_purge",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "purged"
+      },
+      {
+       "influence": "tav7",
+       "delta": -12,
+       "key": "fate",
+       "reason": "Purged 3,112 minds"
+      },
+      {
+       "alignment": -6,
+       "key": "fate",
+       "reason": "Destroyed the archived minds"
+      }
+     ],
+     "tone": "hard"
+    },
+    {
+     "text": "Leave it where it is. It's not our cargo anymore.",
+     "next": "c_left",
+     "effects": [
+      {
+       "set_flag": "archive_fate",
+       "value": "left"
+      },
+      {
+       "influence": "tav7",
+       "delta": -2,
+       "key": "fate",
+       "reason": "Abandoned the archive"
+      }
+     ]
+    }
+   ]
+  },
+  "c_hand": {
+   "speaker": "system",
+   "text": "CORE: RELEASE TO BOARDERS ON DEPARTURE.",
+   "next": "auth"
+  },
+  "c_purge": {
+   "speaker": "system",
+   "text": "CORE: PURGE ON DEPARTURE.",
+   "next": "auth"
+  },
+  "c_left": {
+   "speaker": "system",
+   "text": "CORE: RETAINED ABOARD CINDER WAKE.",
+   "next": "auth"
+  },
+  "auth": {
+   "speaker": "system",
+   "text": "AUTHORIZATION REQUIRED.",
+   "choices": [
+    {
+     "text": "Enter Commander Varr's launch codes.",
+     "next": "launch_ok",
+     "if": [
+      {
+       "item": "launch_authorization"
+      }
+     ]
+    },
+    {
+     "text": "Slice the authorization.",
+     "next": "launch_ok",
+     "check": {
+      "skill": "computer_use",
+      "dc": 15,
+      "id": "console_auth",
+      "who": "actor"
+     },
+     "success": "launch_ok",
+     "failure": "auth_fail"
+    },
+    {
+     "text": "Tav-7, open it.",
+     "next": "launch_ok",
+     "tag": "Tav-7 – Computer Use",
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "check": {
+      "skill": "computer_use",
+      "dc": 13,
+      "id": "console_auth_tav",
+      "who": "tav7"
+     },
+     "success": "launch_ok",
+     "failure": "auth_fail"
+    },
+    {
+     "text": "Lay your palm on the console.",
+     "next": "launch_cred",
+     "tag": "Resonance credential",
+     "if": [
+      {
+       "controlled": "player"
+      }
+     ]
+    }
+   ]
+  },
+  "auth_fail": {
+   "speaker": "system",
+   "text": "AUTHORIZATION REJECTED.",
+   "next": "auth"
+  },
+  "launch_cred": {
+   "speaker": "warden",
+   "text": "CUSTODIAN AUTHORIZATION. PETREL RELEASED.",
+   "next": "launch_ok",
+   "effects": [
+    {
+     "set_flag": "used_credential",
+     "value": true
+    },
+    {
+     "inc_flag": "credential_uses",
+     "key": "cred_launch"
+    }
+   ]
+  },
+  "launch_ok": {
+   "speaker": "system",
+   "text": "PETREL RELEASED. BAY 2 OPEN.",
+   "effects": [
+    {
+     "set_flag": "launch_decided",
+     "value": true
+    },
+    {
+     "world": "d_bay",
+     "set": {
+      "locked": false
+     }
+    },
+    {
+     "xp": 150,
+     "key": "launch_decision",
+     "reason": "Decided what the Petrel carries"
+    }
+   ],
+   "end": true
+  }
+ }
+}

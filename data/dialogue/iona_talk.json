@@ -1,0 +1,394 @@
+{
+ "id": "iona_talk",
+ "names": {
+  "iona": "Iona Rell"
+ },
+ "entry": [
+  {
+   "if": [
+    {
+     "influence": "iona",
+     "lte": 35
+    },
+    {
+     "not": {
+      "flag": "iona_low_done"
+     }
+    }
+   ],
+   "node": "low"
+  },
+  {
+   "node": "hub"
+  }
+ ],
+ "nodes": {
+  "hub": {
+   "speaker": "iona",
+   "text": "You want something, or are you checking I'm still upright?",
+   "choices": [
+    {
+     "text": "How are you holding up?",
+     "next": "holding"
+    },
+    {
+     "text": "About Ward 2...",
+     "next": "ward",
+     "if": [
+      {
+       "flag": "ward_decided"
+      },
+      {
+       "not": {
+        "flag": "iona_ward_talk"
+       }
+      }
+     ]
+    },
+    {
+     "text": "Why ship's security? You could have been anywhere.",
+     "next": "past",
+     "tag": "Trust",
+     "if": [
+      {
+       "influence": "iona",
+       "gte": 65
+      }
+     ],
+     "show_locked": "Iona doesn't trust you with that yet (influence 65+)",
+     "hide_if": [
+      {
+       "flag": "iona_past_done"
+      }
+     ]
+    },
+    {
+     "text": "You've seen me use Resonance. Do you feel anything, when I do?",
+     "next": "train",
+     "tag": "Resonance training",
+     "if": [
+      {
+       "influence": "iona",
+       "gte": 70
+      },
+      {
+       "flag": "iona_res_seen"
+      },
+      {
+       "not": {
+        "flag": "iona_trained"
+       }
+      }
+     ]
+    },
+    {
+     "text": "You've seen what I can do. Ever wonder about it?",
+     "next": "res_seen",
+     "if": [
+      {
+       "not": {
+        "flag": "iona_res_seen"
+       }
+      },
+      {
+       "any": [
+        {
+         "flag": "used_credential"
+        },
+        {
+         "flag": "custodian_revealed"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "text": "Never mind.",
+     "end": true
+    }
+   ]
+  },
+  "holding": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "influence": "iona",
+       "gte": 65
+      }
+     ],
+     "node": "hold_high"
+    },
+    {
+     "if": [
+      {
+       "influence": "iona",
+       "lte": 35
+      }
+     ],
+     "node": "hold_low"
+    },
+    {
+     "if": [],
+     "node": "hold_mid"
+    }
+   ]
+  },
+  "hold_high": {
+   "speaker": "iona",
+   "text": "Better than I should be. Working with you helps. Don't let it go to your head.",
+   "next": "hub"
+  },
+  "hold_mid": {
+   "speaker": "iona",
+   "text": "Upright. Annoyed. Mostly upright.",
+   "next": "hub"
+  },
+  "hold_low": {
+   "speaker": "iona",
+   "text": "Fine. Ask me later.",
+   "end": true
+  },
+  "ward": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "ward_choice",
+       "eq": "purged"
+      }
+     ],
+     "node": "ward_good"
+    },
+    {
+     "if": [
+      {
+       "flag": "ward_choice",
+       "eq": "rushed"
+      }
+     ],
+     "node": "ward_rush"
+    },
+    {
+     "if": [],
+     "node": "ward_bad"
+    }
+   ]
+  },
+  "ward_good": {
+   "speaker": "iona",
+   "text": "I keep replaying the moment the seal opened. Thank you. You let me be the one to undo it.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "iona_ward_talk",
+     "value": true
+    }
+   ]
+  },
+  "ward_rush": {
+   "speaker": "iona",
+   "text": "We got them out. It cost someone in triage. I'd make the same choice. I hate that I'd make the same choice.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "iona_ward_talk",
+     "value": true
+    }
+   ]
+  },
+  "ward_bad": {
+   "speaker": "iona",
+   "text": "Don't. I know why you did it. I did it first. I don't need to talk about it to keep carrying it.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "iona_ward_talk",
+     "value": true
+    }
+   ]
+  },
+  "past": {
+   "speaker": "iona",
+   "text": "Tessaly security service, ten years. A governor ordered us to clear a strike line with stun batons. I refused. They didn't fire me; they transferred me to a refugee ship and called it mercy. When Varr told me to seal Ward 2, I thought: last time I refused, someone else just did it worse. So I did it myself. That's the story.",
+   "choices": [
+    {
+     "text": "Refusing that order was right. Sealing the ward wasn't. You know the difference better than anyone.",
+     "next": "past2",
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": 3,
+       "key": "past",
+       "reason": "Respected her refusal"
+      }
+     ]
+    },
+    {
+     "text": "You did what kept the most people alive. That's the job.",
+     "next": "past2"
+    },
+    {
+     "text": "Everyone follows orders, eventually.",
+     "next": "past2",
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": -2,
+       "key": "past",
+       "reason": "Dismissed her story"
+      }
+     ],
+     "tone": "hard"
+    }
+   ]
+  },
+  "past2": {
+   "speaker": "iona",
+   "text": "Here's something I haven't told you. Varr's launch codes are split authority: command plus the senior security officer. That's me. If she won't release the Petrel, I can. And here: something they teach security on Tessaly. Fire so they keep their heads down; don't fire to kill. Covering fire. It'll keep you alive.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "iona_past_done",
+     "value": true
+    },
+    {
+     "set_flag": "iona_can_authorize",
+     "value": true
+    },
+    {
+     "grant_feat": "covering_fire",
+     "who": "iona"
+    },
+    {
+     "xp": 50,
+     "key": "iona_past",
+     "reason": "Iona trusts you with her story"
+    }
+   ]
+  },
+  "res_seen": {
+   "speaker": "iona",
+   "text": "Wonder? It scares me a little. It also... when you opened that door, I felt it. Like a pressure behind my eyes. I've never told anyone I feel things like that.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "iona_res_seen",
+     "value": true
+    }
+   ]
+  },
+  "train": {
+   "speaker": "iona",
+   "text": "Every time. Like hearing music through a wall. Are you saying I could learn it?",
+   "choices": [
+    {
+     "text": "Lattice screening missed people all the time. Close your eyes. Find the pressure. Breathe into it.",
+     "next": "train_ok"
+    },
+    {
+     "text": "Not now. It's dangerous to learn in a crisis.",
+     "next": "hub"
+    }
+   ]
+  },
+  "train_ok": {
+   "speaker": "narrator",
+   "text": "You talk her through the first exercise the Lattice ever taught you: find the hum, don't fight it, follow it. Iona's breath catches. A faint warmth gathers around her hands, and the cut on her knuckle closes as you watch.",
+   "next": "train2",
+   "effects": [
+    {
+     "set_flag": "iona_trained",
+     "value": true
+    },
+    {
+     "grant_feat": "resonance_sensitive",
+     "who": "iona"
+    },
+    {
+     "grant_power": "mend",
+     "who": "iona"
+    },
+    {
+     "grant_power": "echo_sense",
+     "who": "iona"
+    },
+    {
+     "influence": "iona",
+     "delta": 5,
+     "key": "train",
+     "reason": "Taught her Resonance"
+    },
+    {
+     "xp": 100,
+     "key": "iona_train",
+     "reason": "Awakened Iona's Resonance"
+    }
+   ]
+  },
+  "train2": {
+   "speaker": "iona",
+   "text": "...That was me. That was actually me. I'm going to need a minute. And then I'm going to need you to teach me everything.",
+   "next": "hub"
+  },
+  "low": {
+   "speaker": "iona",
+   "text": "We need to talk. I don't trust your judgment. I've watched you make calls I'd file a report on. Give me a reason to keep following you.",
+   "choices": [
+    {
+     "text": "You're right to push back. I've made calls I'm not proud of. Keep pushing.",
+     "next": "low_ok",
+     "tag": "Persuasion",
+     "check": {
+      "skill": "persuasion",
+      "dc": 14,
+      "id": "iona_low"
+     },
+     "success": "low_ok",
+     "failure": "low_fail"
+    },
+    {
+     "text": "Because I'm the one getting people off this ship.",
+     "next": "low_fail"
+    },
+    {
+     "text": "Follow me or don't. Your choice.",
+     "next": "low_fail",
+     "tone": "hard"
+    }
+   ]
+  },
+  "low_ok": {
+   "speaker": "iona",
+   "text": "...All right. I'll keep pushing. You keep listening.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "iona_low_done",
+     "value": true
+    },
+    {
+     "influence": "iona",
+     "delta": 8,
+     "key": "low_talk",
+     "reason": "Heard her objections"
+    }
+   ]
+  },
+  "low_fail": {
+   "speaker": "iona",
+   "text": "Then I'll stay as far as the bay, because the passengers need me. After that, we're done.",
+   "effects": [
+    {
+     "set_flag": "iona_low_done",
+     "value": true
+    },
+    {
+     "set_flag": "iona_distrust",
+     "value": true
+    }
+   ],
+   "end": true
+  }
+ }
+}

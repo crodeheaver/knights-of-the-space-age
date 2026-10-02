@@ -9,7 +9,8 @@ const KNOWN := ["set_flag", "value", "inc_flag", "by", "alignment", "key", "reas
 	"give_item", "count", "take_item", "credits", "quest", "stage", "state", "objective", "join_party", "leave_party",
 	"start_encounter", "resolve_encounter", "resolution", "end_dialogue", "heal_party", "damage_party", "dtype", "world", "set", "event", "data",
 	"codex", "tutorial", "notify", "grant_feat", "grant_power", "who", "spend_energy", "survivors", "open", "minigame",
-	"cinematic", "status", "duration", "teleport", "npc", "npc_state", "remove_npc", "autosave", "combat_hostile", "faction", "_note", "sound"]
+	"cinematic", "status", "duration", "teleport", "npc", "npc_state", "remove_npc", "autosave", "combat_hostile", "faction", "_note", "sound",
+	"start_dialogue", "enemy", "area_damage", "radius", "dice", "reveal_area", "evac"]
 
 
 static func apply_all(effects: Variant, st: GameState, ctx: Dictionary = {}) -> Array[String]:
@@ -138,9 +139,34 @@ static func apply_one(e: Dictionary, st: GameState, ctx: Dictionary) -> Array[St
 		Events.post("world_effect", {"type": "autosave", "label": String(e["autosave"])})
 	if e.has("sound"):
 		Events.post("world_effect", {"type": "sound", "id": String(e["sound"])})
+	if e.has("start_dialogue"):
+		Events.post("world_effect", {"type": "dialogue", "id": String(e["start_dialogue"])})
+	if e.has("enemy"):
+		Events.post("world_effect", {"type": "enemy", "id": String(e["enemy"]), "set": e.get("set", {})})
+	if e.has("area_damage"):
+		Events.post("world_effect", {"type": "area_damage", "at": e["area_damage"], "radius": float(e.get("radius", 3.0)), "dice": String(e.get("dice", "2d6")),
+			"dtype": String(e.get("dtype", "kinetic")), "status": String(e.get("status", "")), "duration": float(e.get("duration", 3.0)), "faction": String(e.get("faction", ""))})
+	if e.has("reveal_area"):
+		Events.post("world_effect", {"type": "reveal_area", "areas": e["reveal_area"]})
+	if e.has("evac"):
+		evac(st, String(e["evac"]))
+		log.append("Load-out: %s" % String(e["evac"]))
 	if e.has("end_dialogue"):
 		Events.post("world_effect", {"type": "end_dialogue"})
 	return log
+
+
+## Computes who fits aboard the Petrel for an evacuation choice. Seats: 15;
+## the archive cradle displaces 5; the protagonist and companions take theirs.
+static func evac(st: GameState, choice: String) -> void:
+	var seats := 15 - st.roster.size()
+	if choice == "archive":
+		seats -= 5
+	var surv := st.survivors()
+	var aboard := mini(surv, seats)
+	st.set_flag("evac_choice", choice)
+	st.set_flag("evac_aboard", aboard)
+	st.set_flag("evac_left", surv - aboard)
 
 
 static func unknown_keys(e: Variant) -> Array[String]:

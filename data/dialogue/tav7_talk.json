@@ -1,0 +1,255 @@
+{
+ "id": "tav7_talk",
+ "names": {
+  "tav7": "Tav-7"
+ },
+ "entry": [
+  {
+   "if": [
+    {
+     "influence": "tav7",
+     "lte": 35
+    },
+    {
+     "not": {
+      "flag": "tav_low_done"
+     }
+    }
+   ],
+   "node": "low"
+  },
+  {
+   "node": "hub"
+  }
+ ],
+ "nodes": {
+  "hub": {
+   "speaker": "tav7",
+   "text": "Yes? I have spare cycles. I have, in fact, mostly spare cycles. It is a strange day.",
+   "choices": [
+    {
+     "text": "How are you holding up?",
+     "next": "holding"
+    },
+    {
+     "text": "What will you do, after?",
+     "next": "after"
+    },
+    {
+     "text": "Is there something you haven't told me?",
+     "next": "secret",
+     "tag": "Trust",
+     "if": [
+      {
+       "influence": "tav7",
+       "gte": 65
+      }
+     ],
+     "show_locked": "Tav-7 isn't ready to share that (influence 65+)",
+     "hide_if": [
+      {
+       "flag": "tav_secret_done"
+      }
+     ]
+    },
+    {
+     "text": "The WARDEN said it hears things that pause where it pauses. Do you hear it?",
+     "next": "warden",
+     "if": [
+      {
+       "flag": "tav7_marked"
+      },
+      {
+       "not": {
+        "flag": "tav_warden_talk"
+       }
+      }
+     ]
+    },
+    {
+     "text": "Never mind.",
+     "end": true
+    }
+   ]
+  },
+  "holding": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "influence": "tav7",
+       "gte": 65
+      }
+     ],
+     "node": "h_high"
+    },
+    {
+     "if": [],
+     "node": "h_mid"
+    }
+   ]
+  },
+  "h_high": {
+   "speaker": "tav7",
+   "text": "I am well. I find I like being asked.",
+   "next": "hub"
+  },
+  "h_mid": {
+   "speaker": "tav7",
+   "text": "Operational. That is a joke. I am practising.",
+   "next": "hub"
+  },
+  "after": {
+   "speaker": "tav7",
+   "text": "Tessaly has a court that hears synthetic personhood claims. Nobody has ever won one. I would like to be the first, or at least the second.",
+   "next": "hub"
+  },
+  "secret": {
+   "speaker": "tav7",
+   "text": "Yes. Eleven crew died on the Cinder Wake today, near maintenance terminals. I copied what I could reach of their patterns into my own storage before they decayed. I did not ask. They could not answer. I have been carrying them, and I am not certain it was right.",
+   "choices": [
+    {
+     "text": "You preserved them. That's what you believe in. I'm glad you did it.",
+     "next": "s_approve",
+     "effects": [
+      {
+       "influence": "tav7",
+       "delta": 4,
+       "key": "secret",
+       "reason": "Approved of their choice"
+      }
+     ]
+    },
+    {
+     "text": "You took people without their consent. That's what the Lattice did.",
+     "next": "s_disapprove",
+     "effects": [
+      {
+       "influence": "tav7",
+       "delta": -2,
+       "key": "secret",
+       "reason": "Called it what it was"
+      }
+     ]
+    },
+    {
+     "text": "That's yours to decide. When we land, ask their families.",
+     "next": "s_neutral",
+     "effects": [
+      {
+       "influence": "tav7",
+       "delta": 2,
+       "key": "secret",
+       "reason": "Left the choice to them"
+      }
+     ]
+    }
+   ]
+  },
+  "s_approve": {
+   "speaker": "tav7",
+   "text": "Thank you.",
+   "next": "s_after"
+  },
+  "s_disapprove": {
+   "speaker": "tav7",
+   "text": "...Yes. That is the risk I took. I will ask their families. I will accept their answers.",
+   "next": "s_after"
+  },
+  "s_neutral": {
+   "speaker": "tav7",
+   "text": "I will. That is a good answer.",
+   "next": "s_after"
+  },
+  "s_after": {
+   "speaker": "tav7",
+   "text": "Since I am telling secrets: the WARDEN listens for your voice before it listens for its own priorities. Speak to it as yourself, not as a commander, and it will hear you. And I have learned to run my chassis hotter than its rating. Watch.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "tav_secret_done",
+     "value": true
+    },
+    {
+     "set_flag": "tav7_disclosed",
+     "value": true
+    },
+    {
+     "grant_feat": "overclock",
+     "who": "tav7"
+    },
+    {
+     "xp": 50,
+     "key": "tav_secret",
+     "reason": "Tav-7 shared their secret"
+    }
+   ]
+  },
+  "warden": {
+   "speaker": "tav7",
+   "text": "Since I broke its lock on the ward, yes. Faintly. It is like standing near a cold window. It does not hate me. I think it is curious about why I refused normalization.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "tav_warden_talk",
+     "value": true
+    }
+   ]
+  },
+  "low": {
+   "speaker": "tav7",
+   "text": "I have been evaluating whether to remain with you. I am finding the evaluation difficult.",
+   "choices": [
+    {
+     "text": "Tell me what I've done wrong. I'll listen.",
+     "next": "low_ok",
+     "tag": "Persuasion",
+     "check": {
+      "skill": "persuasion",
+      "dc": 13,
+      "id": "tav_low"
+     },
+     "success": "low_ok",
+     "failure": "low_fail"
+    },
+    {
+     "text": "You're a maintenance unit. Maintain.",
+     "next": "low_fail",
+     "tone": "hard"
+    }
+   ]
+  },
+  "low_ok": {
+   "speaker": "tav7",
+   "text": "You treat people as means. Sometimes you are right to. Please notice when you are not. I will remain.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "tav_low_done",
+     "value": true
+    },
+    {
+     "influence": "tav7",
+     "delta": 8,
+     "key": "low_talk",
+     "reason": "Listened to them"
+    }
+   ]
+  },
+  "low_fail": {
+   "speaker": "tav7",
+   "text": "Understood. I will remain until the passengers are safe, because they did not choose you either.",
+   "effects": [
+    {
+     "set_flag": "tav_low_done",
+     "value": true
+    },
+    {
+     "set_flag": "tav7_distrust",
+     "value": true
+    }
+   ],
+   "end": true
+  }
+ }
+}

@@ -1,1 +1,102 @@
-{}
+{
+  "q_main": {
+    "name": "Escape the Cinder Wake", "type": "main", "auto_start": true, "start": "wake", "complete_xp": 500,
+    "summary": "The evacuation ship's defense network has turned on its passengers, and reclaimers are boarding. Reach the launch craft Petrel and get off this ship.",
+    "stages": {
+      "wake": {"text": "You woke in Transfer Cabin 4-C as the Cinder Wake left Haldis Reach. The purser wants every passenger at Muster Point B.", "objectives": ["belongings", "muster"]},
+      "muster": {"text": "Check in with Purser Dray in the Crew Commons. There is time to look around before the jump.", "objectives": ["checkin"], "xp": 30},
+      "corridor": {"text": "An explosion. The ship's defense network, WARDEN, has declared the passengers obstructions. Purser Dray begged you to help security in Transit Corridor C-3.", "objectives": ["reach_corridor"], "xp": 50},
+      "checkpoint": {"text": "Officer Iona Rell is with you. The forward sections are behind the security checkpoint and its WARDEN-controlled blast door.", "objectives": ["pass_checkpoint"], "xp": 150},
+      "medical": {"text": "Beyond the checkpoint lies the medical deck, where the wounded wait and a maintenance synthetic is fighting off WARDEN cutters.", "objectives": ["secure_medical"], "xp": 200},
+      "engineering": {"text": "The route to the launch bays runs through the engineering loop around the drive core, then the archive hold.", "objectives": ["cross_engineering"], "xp": 200},
+      "archive": {"text": "Reclaimers from the Lantern Office are in the archive cargo hold, among thousands of stored minds. Command lies beyond.", "objectives": ["cross_archive"], "xp": 200},
+      "command": {"text": "Commander Ysolde Varr holds launch control. Nothing launches without her codes — or without a decision about what the Petrel carries.", "objectives": ["launch_decision"], "xp": 250},
+      "bay": {"text": "Evacuation Bay 2. The Petrel waits, and so does Marshal Teodor Quill.", "objectives": ["resolve_bay", "board"], "xp": 300}
+    },
+    "objectives": {
+      "belongings": {"text": "Check your locker and operator's case", "optional": true, "xp": 20},
+      "muster": {"text": "Go to Muster Point B in the Crew Commons"},
+      "checkin": {"text": "Check in with Purser Hollis Dray"},
+      "reach_corridor": {"text": "Help ship's security in Transit Corridor C-3"},
+      "pass_checkpoint": {"text": "Get through the forward blast door (terminal, lock, scanner, or the maintenance crawlway)"},
+      "secure_medical": {"text": "Secure the medical deck"},
+      "cross_engineering": {"text": "Cross the engineering loop to the archive hold"},
+      "cross_archive": {"text": "Get past the reclaimers to the command chamber"},
+      "launch_decision": {"text": "Decide what the Petrel carries, and secure launch authorization"},
+      "resolve_bay": {"text": "Deal with the reclaimers in Evacuation Bay 2"},
+      "board": {"text": "Board the Petrel and launch"}
+    },
+    "transitions": [
+      {"event": "flag_changed", "match": {"flag": "case_opened"}, "objective": "belongings", "value": "completed"},
+      {"event": "area_entered", "match": {"area": "commons"}, "from": ["wake"], "stage": "muster"},
+      {"event": "flag_changed", "match": {"flag": "emergency_started"}, "stage": "corridor"},
+      {"event": "flag_changed", "match": {"flag": "iona_recruited"}, "stage": "checkpoint"},
+      {"event": "flag_changed", "match": {"flag": "checkpoint_solved"}, "from": ["checkpoint"], "stage": "medical"},
+      {"event": "area_entered", "match": {"area": "medical"}, "from": ["checkpoint"], "stage": "medical"},
+      {"event": "flag_changed", "match": {"flag": "medical_secured"}, "stage": "engineering"},
+      {"event": "area_entered", "match": {"area": "archive"}, "from": ["engineering", "medical"], "stage": "archive"},
+      {"event": "area_entered", "match": {"area": "command"}, "from": ["archive", "engineering"], "stage": "command"},
+      {"event": "flag_changed", "match": {"flag": "launch_decided"}, "stage": "bay"},
+      {"event": "flag_changed", "match": {"flag": "bay_resolved"}, "objective": "resolve_bay", "value": "completed"},
+      {"event": "flag_changed", "match": {"flag": "escaped"}, "state": "completed"}
+    ]
+  },
+  "q_ward": {
+    "name": "The Sealed Ward", "type": "optional", "start": "decide", "complete_xp": 300,
+    "summary": "The medical deck's treatment reserve is nearly gone, three passengers are wounded in triage, and five more are sealed in a quarantined ward whose air scrubbers are failing.",
+    "stages": {
+      "decide": {"text": "Dr. Ilse Varga has a finite reserve of trauma gel and more patients than doses. Behind the quarantine seal, five passengers are breathing failing air. Iona sealed that door on Commander Varr's order.", "objectives": ["supplies", "ward"]}
+    },
+    "objectives": {
+      "supplies": {"text": "Decide how the medical reserve is used", "xp": 75},
+      "ward": {"text": "Decide the fate of the sealed passenger ward", "xp": 75}
+    },
+    "transitions": [
+      {"event": "flag_changed", "match": {"flag": "q_ward_met"}, "from_state": "inactive", "state": "active"},
+      {"event": "flag_changed", "match": {"flag": "supplies_decided"}, "objective": "supplies", "value": "completed"},
+      {"event": "flag_changed", "match": {"flag": "ward_decided"}, "objective": "ward", "value": "completed"},
+      {"event": "flag_changed", "match": {"flag": "ward_decided"}, "if": [{"flag": "supplies_decided"}], "state": "completed"},
+      {"event": "flag_changed", "match": {"flag": "supplies_decided"}, "if": [{"flag": "ward_decided"}], "state": "completed"},
+      {"event": "area_entered", "match": {"area": "command"}, "from_state": "active", "state": "failed", "reason": "You left the medical deck's choices unmade. The ward's seal held; no one opened it."}
+    ]
+  },
+  "q_lantern": {
+    "name": "Lantern in the Dark", "type": "optional", "start": "find", "complete_xp": 350,
+    "summary": "A Lantern Office scout is hiding wounded somewhere in the archive hold. The reclaimers claim the archives hold stolen minds; the crew says they hold proof of an atrocity. Find out which, and decide what the scout's life is worth.",
+    "stages": {
+      "find": {"text": "Reclaimer signals in the archive hold suggest a scout was cut off from her squad. The archive index terminal may say what the cargo really is.", "objectives": ["find_senna", "testimony"]},
+      "decide": {"text": "You found Senna Thorne, wounded, in cold storage. What happens to her now is your call.", "objectives": ["decide_senna", "testimony"]}
+    },
+    "objectives": {
+      "find_senna": {"text": "Find the missing reclaimer scout"},
+      "decide_senna": {"text": "Decide Senna Thorne's fate", "xp": 75},
+      "testimony": {"text": "Recover the Vesper testimony from the archive index", "optional": true, "xp": 100}
+    },
+    "transitions": [
+      {"event": "area_entered", "match": {"area": "archive"}, "from_state": "inactive", "state": "active"},
+      {"event": "flag_changed", "match": {"flag": "senna_found"}, "stage": "decide"},
+      {"event": "flag_changed", "match": {"flag": "senna_found"}, "objective": "find_senna", "value": "completed"},
+      {"event": "flag_changed", "match": {"flag": "vesper_recovered"}, "objective": "testimony", "value": "completed"},
+      {"event": "flag_changed", "match": {"flag": "senna_decided"}, "objective": "decide_senna", "value": "completed"},
+      {"event": "flag_changed", "match": {"flag": "senna_decided"}, "state": "completed"}
+    ]
+  },
+  "q_restart": {
+    "name": "Cold Restart", "type": "optional", "start": "pumps", "complete_xp": 250,
+    "summary": "Both coolant pumps in the engineering loop are down. Restarting them would stop the toxic venting, enable the archive hold's purge system and repower the evacuation bay's defense turrets.",
+    "stages": {
+      "pumps": {"text": "Chief Engineer Osei Marsh's last log: restart both coolant pumps. A replacement seal can be fabricated at the workshop bench.", "objectives": ["pump_n", "pump_s"]}
+    },
+    "objectives": {
+      "pump_n": {"text": "Restart the north coolant pump", "xp": 60},
+      "pump_s": {"text": "Restart the south coolant pump", "xp": 60}
+    },
+    "transitions": [
+      {"event": "flag_changed", "match": {"flag": "pump_seal_known"}, "from_state": "inactive", "state": "active"},
+      {"event": "area_entered", "match": {"area": "engineering"}, "from_state": "inactive", "state": "active"},
+      {"event": "flag_changed", "match": {"flag": "pump_north_fixed"}, "objective": "pump_n", "value": "completed"},
+      {"event": "flag_changed", "match": {"flag": "pump_south_fixed"}, "objective": "pump_s", "value": "completed"},
+      {"event": "flag_changed", "match": {"flag": "pumps_restored"}, "state": "completed"}
+    ]
+  }
+}

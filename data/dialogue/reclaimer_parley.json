@@ -1,0 +1,244 @@
+{
+ "id": "reclaimer_parley",
+ "names": {
+  "abeni": "Reclaimer Signalist Abeni Oyelaran"
+ },
+ "entry": [
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "abeni",
+   "text": "Hold! Hands where we see them. Concord, or crew? Either way, you're standing in our dead's house.",
+   "choices": [
+    {
+     "text": "Ember-tide. Senna sent me. She's alive, in cold storage.",
+     "next": "pass",
+     "tag": "Passphrase",
+     "if": [
+      {
+       "flag": "lantern_passphrase"
+      },
+      {
+       "not": {
+        "flag": "senna_fate",
+        "eq": "killed"
+       }
+      }
+     ]
+    },
+    {
+     "text": "Ember-tide.",
+     "next": "pass_dead",
+     "tag": "Passphrase",
+     "if": [
+      {
+       "flag": "lantern_passphrase"
+      },
+      {
+       "flag": "senna_fate",
+       "eq": "killed"
+      }
+     ]
+    },
+    {
+     "text": "(Show the kinship token.) I'm owed a hearing.",
+     "next": "token",
+     "tag": "Haldis kinship token",
+     "if": [
+      {
+       "item": "kinship_token"
+      }
+     ]
+    },
+    {
+     "text": "The WARDEN is killing everyone aboard, us and you. We're not your enemy. Let us pass to command.",
+     "next": "talked",
+     "tag": "Persuasion",
+     "check": {
+      "skill": "persuasion",
+      "dc": 15,
+      "id": "parley_persuade",
+      "bonus_if": [
+       {
+        "if": [
+         {
+          "flag": "archive_evidence_stolen"
+         }
+        ],
+        "bonus": 2
+       }
+      ]
+     },
+     "success": "talked",
+     "failure": "fight",
+     "tone": "pragmatic"
+    },
+    {
+     "text": "You're three. We're armed, and we've had a very bad day. Walk away.",
+     "next": "withdraw",
+     "tag": "Persuasion (intimidate)",
+     "check": {
+      "skill": "persuasion",
+      "dc": 16,
+      "id": "parley_intim"
+     },
+     "success": "withdraw",
+     "failure": "fight",
+     "tone": "hard"
+    },
+    {
+     "text": "(Lean on their fear with Resonance.)",
+     "next": "swayed",
+     "effects": [
+      {
+       "alignment": -5,
+       "key": "parley_sway",
+       "reason": "Pushed the reclaimers' minds with Resonance"
+      },
+      {
+       "influence": "iona",
+       "delta": -2,
+       "key": "parley_sway",
+       "reason": "Coerced the reclaimers"
+      },
+      {
+       "influence": "tav7",
+       "delta": -3,
+       "key": "parley_sway",
+       "reason": "Overrode their will"
+      }
+     ],
+     "check": {
+      "skill": "persuasion",
+      "dc": 14,
+      "id": "parley_sway",
+      "power": "sway",
+      "energy": 3
+     },
+     "success": "swayed",
+     "failure": "fight",
+     "tone": "hard"
+    },
+    {
+     "text": "Then we do this the hard way.",
+     "next": "fight_now",
+     "tone": "hard"
+    }
+   ]
+  },
+  "pass": {
+   "speaker": "abeni",
+   "text": "Ember-tide... Senna's alive? Rusk, Dov, lower them. You saved a lantern-keeper. The hall owes you a light. Go on to your command chamber. We will not touch you.",
+   "next": "peace",
+   "effects": [
+    {
+     "influence": "tav7",
+     "delta": 2,
+     "key": "parley_pass",
+     "reason": "Ended a fight without bloodshed"
+    }
+   ]
+  },
+  "pass_dead": {
+   "speaker": "abeni",
+   "text": "Where did you get that word? Where is Senna? ...You don't answer. Rusk, Dov — they've got her word and not her. Weapons up!",
+   "next": "fight"
+  },
+  "token": {
+   "speaker": "abeni",
+   "text": "A kinship glyph. Haldis-born. All right, kin. You get your hearing. Talk fast.",
+   "choices": [
+    {
+     "text": "We're getting passengers off this ship. That's all. The hold is your business, not ours.",
+     "next": "talked",
+     "check": {
+      "skill": "persuasion",
+      "dc": 10,
+      "id": "parley_token"
+     },
+     "success": "talked",
+     "failure": "fight"
+    },
+    {
+     "text": "Let us through and I'll speak for your dead at command.",
+     "next": "talked",
+     "check": {
+      "skill": "persuasion",
+      "dc": 10,
+      "id": "parley_token2"
+     },
+     "success": "talked",
+     "failure": "fight"
+    }
+   ]
+  },
+  "talked": {
+   "speaker": "abeni",
+   "text": "...Fine. Go. If you're lying, the Marshal will be in Bay 2 to explain our position more thoroughly.",
+   "next": "peace"
+  },
+  "swayed": {
+   "speaker": "narrator",
+   "text": "You reach into the space behind their eyes and press. Rusk's rifle dips first. Then Abeni's. They step aside without quite knowing why.",
+   "next": "peace"
+  },
+  "withdraw": {
+   "speaker": "abeni",
+   "text": "...Pull back. Back to the breach. We'll take this to the Marshal.",
+   "next": "fled"
+  },
+  "peace": {
+   "speaker": "system",
+   "text": "The reclaimers stand aside.",
+   "effects": [
+    {
+     "set_flag": "archive_peace",
+     "value": true
+    },
+    {
+     "resolve_encounter": "enc_archive",
+     "resolution": "parley"
+    },
+    {
+     "xp": 40,
+     "key": "parley",
+     "reason": "Talked past the reclaimer squad"
+    }
+   ],
+   "end": true
+  },
+  "fled": {
+   "speaker": "system",
+   "text": "The reclaimers withdraw toward the dorsal breach. You'll likely see them again.",
+   "effects": [
+    {
+     "set_flag": "archive_bypassed",
+     "value": true
+    },
+    {
+     "resolve_encounter": "enc_archive",
+     "resolution": "withdrew"
+    }
+   ],
+   "end": true
+  },
+  "fight_now": {
+   "speaker": "abeni",
+   "text": "Your choice. Lanterns up!",
+   "next": "fight"
+  },
+  "fight": {
+   "speaker": "system",
+   "text": "The reclaimers open fire.",
+   "effects": [
+    {
+     "start_encounter": "enc_archive"
+    }
+   ],
+   "end": true
+  }
+ }
+}

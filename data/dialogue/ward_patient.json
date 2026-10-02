@@ -1,0 +1,47 @@
+{
+ "id": "ward_patient",
+ "entry": [
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "ward_choice",
+       "eq": "rushed"
+      }
+     ],
+     "node": "rushed"
+    },
+    {
+     "if": [],
+     "node": "ok"
+    }
+   ]
+  },
+  "ok": {
+   "speaker": "narrator",
+   "text": "The ward patient grips your arm. \"Pell said someone was talking on the intercom. Was that you? Thank you. We'll follow the doctor to the bays.\"",
+   "choices": [
+    {
+     "text": "Stay close to Dr. Varga.",
+     "end": true
+    }
+   ]
+  },
+  "rushed": {
+   "speaker": "narrator",
+   "text": "The patient coughs, eyes streaming from the coolant still hanging in the air. \"We're out. We're out. Thank you.\"",
+   "choices": [
+    {
+     "text": "Keep moving. The air's better forward.",
+     "end": true
+    }
+   ]
+  }
+ }
+}

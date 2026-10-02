@@ -1,0 +1,648 @@
+{
+ "id": "ward_intercom",
+ "names": {
+  "pell": "Pell Okafor (intercom)"
+ },
+ "entry": [
+  {
+   "if": [
+    {
+     "flag": "ward_decided"
+    },
+    {
+     "flag": "ward_choice",
+     "eq": "sealed"
+    }
+   ],
+   "node": "after_sealed"
+  },
+  {
+   "if": [
+    {
+     "flag": "ward_decided"
+    }
+   ],
+   "node": "after_open"
+  },
+  {
+   "if": [
+    {
+     "flag": "pell_met"
+    }
+   ],
+   "node": "again"
+  },
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "pell",
+   "text": "Hello? Is someone there? Please — it's getting hard to breathe. There are five of us in here. Ruth's stopped talking. Please.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "pell_met",
+     "value": true
+    },
+    {
+     "set_flag": "q_ward_met",
+     "value": true
+    }
+   ]
+  },
+  "again": {
+   "speaker": "pell",
+   "text": "You came back. The air's worse. Please tell me you came back to open the door.",
+   "next": "hub"
+  },
+  "hub": {
+   "speaker": "pell",
+   "text": "What's happening out there?",
+   "choices": [
+    {
+     "text": "Why was the ward sealed?",
+     "next": "why"
+    },
+    {
+     "text": "The vapour's purged. Hang on, we're opening the seal.",
+     "next": "how_purged",
+     "if": [
+      {
+       "flag": "ward_purged"
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "We're opening it now. Cover your mouths. It's going to get worse before it gets better.",
+     "next": "how_rush",
+     "if": [
+      {
+       "not": {
+        "flag": "ward_purged"
+       }
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "I'm sorry. The seal has to hold until this deck is safe. Opening it risks everyone in triage.",
+     "next": "seal",
+     "tone": "pragmatic"
+    },
+    {
+     "text": "Help is coming. Sit tight.",
+     "next": "lie",
+     "tag": "Lie",
+     "tone": "self-interested"
+    },
+    {
+     "text": "I'll be back.",
+     "end": true
+    }
+   ]
+  },
+  "why": {
+   "speaker": "pell",
+   "text": "A pipe burst. White fog. The security officer sealed the door from outside. She cried. I saw her through the glass. Then the lights went red.",
+   "next": "why_r"
+  },
+  "why_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "node": "why_iona"
+    },
+    {
+     "if": [],
+     "node": "hub"
+    }
+   ]
+  },
+  "why_iona": {
+   "speaker": "iona",
+   "text": "...It was me, Pell. I'm here. I'm sorry.",
+   "next": "hub",
+   "effects": [
+    {
+     "influence": "iona",
+     "delta": 1,
+     "key": "ward_admit",
+     "reason": "Let her face what she did"
+    }
+   ]
+  },
+  "how_purged": {
+   "speaker": "narrator",
+   "text": "The purge has cleared the ward's air. All that's left is the quarantine seal: a command lock.",
+   "next": "unseal"
+  },
+  "how_rush": {
+   "speaker": "narrator",
+   "text": "Opening the seal now will release the ward's coolant vapour into the medical deck, but the five inside will live.",
+   "next": "unseal"
+  },
+  "unseal": {
+   "speaker": "narrator",
+   "text": "How do you break the quarantine seal?",
+   "choices": [
+    {
+     "text": "Iona. You sealed it. You can unseal it.",
+     "next": "open_iona",
+     "tag": "Iona",
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": 3,
+       "key": "ward_iona_opens",
+       "reason": "Let her undo her own order"
+      }
+     ]
+    },
+    {
+     "text": "Override the command lock from the intercom panel.",
+     "next": "open_tech",
+     "check": {
+      "skill": "computer_use",
+      "dc": 14,
+      "id": "ward_override",
+      "who": "actor"
+     },
+     "success": "open_tech",
+     "failure": "tech_fail"
+    },
+    {
+     "text": "Lay your palm on the panel. The ship answers to you.",
+     "next": "open_cred",
+     "tag": "Resonance credential",
+     "if": [
+      {
+       "controlled": "player"
+      }
+     ]
+    },
+    {
+     "text": "Tav-7, can you break it?",
+     "next": "tav_offer",
+     "tag": "Tav-7",
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ]
+    },
+    {
+     "text": "Not yet.",
+     "next": "hub"
+    }
+   ]
+  },
+  "tech_fail": {
+   "speaker": "system",
+   "text": "COMMAND LOCK: ACCESS DENIED. The panel locks this console out. Another way, then.",
+   "next": "unseal_retry"
+  },
+  "unseal_retry": {
+   "speaker": "narrator",
+   "text": "The override is locked out from this panel, but the seal can still be broken another way.",
+   "choices": [
+    {
+     "text": "Iona, you sealed it. Unseal it.",
+     "next": "open_iona",
+     "tag": "Iona",
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ]
+    },
+    {
+     "text": "Use the credential.",
+     "next": "open_cred",
+     "tag": "Resonance credential",
+     "if": [
+      {
+       "controlled": "player"
+      }
+     ]
+    },
+    {
+     "text": "Tav-7?",
+     "next": "tav_offer",
+     "tag": "Tav-7",
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ]
+    },
+    {
+     "text": "Step back.",
+     "next": "hub"
+    }
+   ]
+  },
+  "tav_offer": {
+   "speaker": "tav7",
+   "text": "I can break the WARDEN's lock on the seal from inside the lattice. It will see me do it. It may decide I am an obstruction worth correcting. I am willing.",
+   "choices": [
+    {
+     "text": "Do it.",
+     "next": "open_tav",
+     "effects": [
+      {
+       "set_flag": "tav7_marked",
+       "value": true
+      },
+      {
+       "influence": "tav7",
+       "delta": 4,
+       "key": "ward_tav_risk",
+       "reason": "Trusted their choice to take the risk"
+      }
+     ]
+    },
+    {
+     "text": "No. I'm not risking you. We'll find another way.",
+     "next": "unseal",
+     "effects": [
+      {
+       "influence": "tav7",
+       "delta": 1,
+       "key": "ward_tav_protect",
+       "reason": "Refused to let them gamble themself"
+      }
+     ]
+    }
+   ]
+  },
+  "open_iona": {
+   "speaker": "iona",
+   "text": "Rell, Iona. Security authorization four-four-nine. Releasing quarantine seal, Ward 2. On my authority.",
+   "next": "opened"
+  },
+  "open_tech": {
+   "speaker": "system",
+   "text": "COMMAND LOCK: OVERRIDE ACCEPTED. QUARANTINE RELEASED.",
+   "next": "opened"
+  },
+  "open_cred": {
+   "speaker": "warden",
+   "text": "CUSTODIAN DIRECTIVE ACKNOWLEDGED. WARD 2 QUARANTINE RELEASED. NOTE: OBSTRUCTIONS RELEASED INTO CORRIDOR.",
+   "next": "opened",
+   "effects": [
+    {
+     "set_flag": "used_credential",
+     "value": true
+    },
+    {
+     "set_flag": "warden_tracking",
+     "value": true
+    },
+    {
+     "inc_flag": "credential_uses",
+     "key": "cred_ward"
+    },
+    {
+     "codex": "cx_credential"
+    }
+   ]
+  },
+  "open_tav": {
+   "speaker": "tav7",
+   "text": "Inside now. It is cold in the lattice. It is... noticing me. There. The seal is open, and I am still myself. I think.",
+   "next": "opened"
+  },
+  "opened": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "ward_purged"
+      }
+     ],
+     "node": "opened_clean"
+    },
+    {
+     "if": [],
+     "node": "opened_rushed"
+    }
+   ]
+  },
+  "opened_clean": {
+   "speaker": "narrator",
+   "text": "The seal hisses open onto clean air. Five people stumble out into the medical deck, coughing and crying and alive.",
+   "next": "end_node",
+   "effects": [
+    {
+     "world": "d_ward",
+     "set": {
+      "locked": false,
+      "open": true
+     }
+    },
+    {
+     "set_flag": "ward_open",
+     "value": true
+    },
+    {
+     "set_flag": "ward_choice",
+     "value": "purged"
+    },
+    {
+     "set_flag": "ward_decided",
+     "value": true
+    },
+    {
+     "survivors": 5,
+     "key": "ward"
+    },
+    {
+     "alignment": 10,
+     "key": "ward",
+     "reason": "Opened the sealed ward safely"
+    },
+    {
+     "influence": "iona",
+     "delta": 8,
+     "key": "ward",
+     "reason": "Gave her the chance to undo it"
+    },
+    {
+     "influence": "tav7",
+     "delta": 6,
+     "key": "ward",
+     "reason": "Five patterns preserved"
+    },
+    {
+     "npc": "pell",
+     "set": {
+      "spawn": true
+     }
+    },
+    {
+     "npc": "ward_a",
+     "set": {
+      "spawn": true
+     }
+    },
+    {
+     "npc": "ward_b",
+     "set": {
+      "spawn": true
+     }
+    },
+    {
+     "npc": "ward_c",
+     "set": {
+      "spawn": true
+     }
+    },
+    {
+     "npc": "ward_d",
+     "set": {
+      "spawn": true
+     }
+    },
+    {
+     "xp": 80,
+     "key": "ward_open",
+     "reason": "Rescued the sealed ward"
+    }
+   ]
+  },
+  "opened_rushed": {
+   "speaker": "narrator",
+   "text": "The seal opens on a white wall of coolant fog. It rolls out across the deck, and five people stagger through it. In triage, Dr. Varga swears and throws her coat over a patient's face. Not everyone there can take it.",
+   "next": "end_node",
+   "effects": [
+    {
+     "world": "d_ward",
+     "set": {
+      "locked": false,
+      "open": true
+     }
+    },
+    {
+     "set_flag": "ward_open",
+     "value": true
+    },
+    {
+     "set_flag": "ward_choice",
+     "value": "rushed"
+    },
+    {
+     "set_flag": "ward_decided",
+     "value": true
+    },
+    {
+     "survivors": 4,
+     "key": "ward"
+    },
+    {
+     "status": "toxin",
+     "duration": 9.0,
+     "who": "party"
+    },
+    {
+     "alignment": 4,
+     "key": "ward",
+     "reason": "Opened the sealed ward without purging it"
+    },
+    {
+     "influence": "iona",
+     "delta": 4,
+     "key": "ward",
+     "reason": "Opened the ward"
+    },
+    {
+     "influence": "tav7",
+     "delta": 2,
+     "key": "ward",
+     "reason": "Rescued the ward at a cost"
+    },
+    {
+     "npc": "pell",
+     "set": {
+      "spawn": true
+     }
+    },
+    {
+     "npc": "ward_a",
+     "set": {
+      "spawn": true
+     }
+    },
+    {
+     "npc": "ward_b",
+     "set": {
+      "spawn": true
+     }
+    },
+    {
+     "npc": "ward_c",
+     "set": {
+      "spawn": true
+     }
+    },
+    {
+     "npc": "ward_d",
+     "set": {
+      "spawn": true
+     }
+    },
+    {
+     "xp": 80,
+     "key": "ward_open",
+     "reason": "Rescued the sealed ward"
+    }
+   ]
+  },
+  "seal": {
+   "speaker": "pell",
+   "text": "Until it's safe. Right. We'll... we'll wait. Will someone come?",
+   "next": "seal_r",
+   "effects": [
+    {
+     "set_flag": "ward_choice",
+     "value": "sealed"
+    },
+    {
+     "set_flag": "ward_decided",
+     "value": true
+    },
+    {
+     "alignment": -3,
+     "key": "ward",
+     "reason": "Kept the ward sealed"
+    },
+    {
+     "influence": "iona",
+     "delta": -6,
+     "key": "ward",
+     "reason": "Left the ward sealed a second time"
+    },
+    {
+     "influence": "tav7",
+     "delta": -8,
+     "key": "ward",
+     "reason": "Left five patterns in a box"
+    }
+   ]
+  },
+  "seal_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "node": "seal_iona"
+    },
+    {
+     "if": [],
+     "node": "end_node"
+    }
+   ]
+  },
+  "seal_iona": {
+   "speaker": "iona",
+   "text": "Twice. I'll carry it twice, then.",
+   "next": "end_node"
+  },
+  "lie": {
+   "speaker": "pell",
+   "text": "Help's coming. Okay. Okay, everyone, help is coming.",
+   "next": "lie_r",
+   "effects": [
+    {
+     "set_flag": "ward_choice",
+     "value": "sealed"
+    },
+    {
+     "set_flag": "ward_lied",
+     "value": true
+    },
+    {
+     "set_flag": "ward_decided",
+     "value": true
+    },
+    {
+     "alignment": -8,
+     "key": "ward",
+     "reason": "Lied to the people in the sealed ward"
+    },
+    {
+     "influence": "iona",
+     "delta": -8,
+     "key": "ward",
+     "reason": "Lied to the sealed ward"
+    },
+    {
+     "influence": "tav7",
+     "delta": -10,
+     "key": "ward",
+     "reason": "Lied to the dying"
+    }
+   ]
+  },
+  "lie_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "node": "lie_tav"
+    },
+    {
+     "if": [],
+     "node": "end_node"
+    }
+   ]
+  },
+  "lie_tav": {
+   "speaker": "tav7",
+   "text": "That was not true. I want you to know that I heard it.",
+   "next": "end_node"
+  },
+  "end_node": {
+   "speaker": "system",
+   "text": "The ward's fate is decided.",
+   "end": true
+  },
+  "after_sealed": {
+   "speaker": "pell",
+   "text": "...Hello? Is someone coming?",
+   "choices": [
+    {
+     "text": "(Step away from the intercom.)",
+     "end": true
+    }
+   ]
+  },
+  "after_open": {
+   "speaker": "system",
+   "text": "Ward 2 stands open and empty.",
+   "choices": [
+    {
+     "text": "(Leave.)",
+     "end": true
+    }
+   ]
+  }
+ }
+}

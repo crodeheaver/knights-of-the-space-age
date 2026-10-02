@@ -1,0 +1,209 @@
+{
+ "id": "engineering_terminal",
+ "entry": [
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "system",
+   "text": "ENGINEERING GRID — DRIVE CORE RING. Guest session. Coolant pressure: CRITICAL. Deck grid: FAULT (south arc).",
+   "choices": [
+    {
+     "text": "Download the deck schematic.",
+     "next": "schem",
+     "if": [
+      {
+       "not": {
+        "flag": "eng_schematic"
+       }
+      }
+     ]
+    },
+    {
+     "text": "Read the WARDEN system architecture file.",
+     "next": "spec"
+    },
+    {
+     "text": "Check coolant pump status.",
+     "next": "pumps"
+    },
+    {
+     "text": "Isolate the faulty deck plate grid.",
+     "next": "plates_ok",
+     "if": [
+      {
+       "not": {
+        "flag": "plates_disabled"
+       }
+      }
+     ],
+     "check": {
+      "skill": "computer_use",
+      "dc": 13,
+      "id": "eng_plates",
+      "who": "actor"
+     },
+     "success": "plates_ok",
+     "failure": "plates_fail",
+     "success_effects": [
+      {
+       "set_flag": "plates_disabled",
+       "value": true
+      },
+      {
+       "xp": 40,
+       "key": "plates",
+       "reason": "Isolated the live deck plates"
+      }
+     ]
+    },
+    {
+     "text": "Overload the deck plating under the WARDEN Sentinel's post.",
+     "next": "overload_ok",
+     "if": [
+      {
+       "not": {
+        "cleared": "enc_engineering"
+       }
+      },
+      {
+       "not": {
+        "flag": "eng_overloaded"
+       }
+      }
+     ],
+     "check": {
+      "skill": "computer_use",
+      "dc": 16,
+      "id": "eng_overload",
+      "who": "actor"
+     },
+     "success": "overload_ok",
+     "failure": "overload_fail",
+     "success_effects": [
+      {
+       "set_flag": "eng_overloaded",
+       "value": true
+      },
+      {
+       "area_damage": [
+        108.0,
+        8.0
+       ],
+       "radius": 7.0,
+       "dice": "2d6",
+       "dtype": "energy",
+       "status": "stunned",
+       "duration": 6.0,
+       "faction": "warden"
+      },
+      {
+       "start_encounter": "enc_engineering"
+      },
+      {
+       "xp": 30,
+       "key": "eng_overload",
+       "reason": "Turned the deck grid on the Sentinel"
+      }
+     ],
+     "failure_effects": [
+      {
+       "start_encounter": "enc_engineering"
+      }
+     ]
+    },
+    {
+     "text": "Log off.",
+     "end": true
+    }
+   ]
+  },
+  "schem": {
+   "speaker": "system",
+   "text": "Schematic downloaded: engineering ring, workshop, maintenance duct to the archive hold.",
+   "next": "start",
+   "effects": [
+    {
+     "set_flag": "eng_schematic",
+     "value": true
+    },
+    {
+     "reveal_area": [
+      "engineering",
+      "workshop",
+      "duct"
+     ]
+    },
+    {
+     "xp": 15,
+     "key": "eng_schem",
+     "reason": "Downloaded the engineering schematic"
+    }
+   ]
+  },
+  "spec": {
+   "speaker": "system",
+   "text": "WARDEN: integrated defense lattice. Cognitive root: CUSTODIAN TEMPLATE (classified).",
+   "next": "spec_r",
+   "effects": [
+    {
+     "codex": "cx_warden_spec"
+    }
+   ]
+  },
+  "spec_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "node": "spec_tav"
+    },
+    {
+     "if": [],
+     "node": "start"
+    }
+   ]
+  },
+  "spec_tav": {
+   "speaker": "tav7",
+   "text": "Its root is a person's pattern. A human operator's judgment, grown into a defense network. That would explain why its voice feels like someone and not something.",
+   "next": "start"
+  },
+  "pumps": {
+   "speaker": "system",
+   "text": "NORTH PUMP: SEAL FAILURE. SOUTH PUMP: SEAL FAILURE. Seal template SL-4 is loaded at the workshop bench (fabricate: 2 technical components).",
+   "next": "start",
+   "effects": [
+    {
+     "set_flag": "pump_seal_known",
+     "value": true
+    }
+   ]
+  },
+  "plates_ok": {
+   "speaker": "system",
+   "text": "SOUTH ARC GRID: ISOLATED. The sparking along the deck dies away.",
+   "next": "start"
+  },
+  "plates_fail": {
+   "speaker": "system",
+   "text": "GRID CONTROL REJECTED. The plates are still live; the junction box in the south arc can isolate them by hand.",
+   "next": "start"
+  },
+  "overload_ok": {
+   "speaker": "system",
+   "text": "EAST ARC DECK: POWER SURGE. Somewhere around the curve of the ring, metal screams and something heavy falls over.",
+   "end": true
+  },
+  "overload_fail": {
+   "speaker": "system",
+   "text": "SURGE ABORTED. WARDEN SENTINEL ALERTED.",
+   "end": true
+  }
+ }
+}

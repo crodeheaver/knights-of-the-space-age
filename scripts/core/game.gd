@@ -118,6 +118,10 @@ func fmt(text: String) -> String:
 		t = t.replace("{class}", String(DB.klass(p.class_id).get("name", p.class_id)))
 		t = t.replace("{background}", String(DB.backgrounds.get(p.background, {}).get("name", "")))
 	t = t.replace("{survivors}", str(state.survivors() if state != null else 0))
+	if state != null and t.find("{evac") >= 0:
+		var left := int(state.flags.get("evac_left", 0))
+		t = t.replace("{evac_left}", str(left)).replace("{evac_aboard}", str(int(state.flags.get("evac_aboard", 0))))
+		t = t.replace("{evac_left_text}", ("%d passenger%s who won't fit" % [left, "" if left == 1 else "s"]) if left > 0 else "no one behind")
 	return t
 
 

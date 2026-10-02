@@ -1,0 +1,230 @@
+{
+ "id": "iona_meet",
+ "entry": [
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "iona",
+   "text": "Pickets down. You fight like Lattice: you watch the room before you watch the target. Officer Iona Rell, ship's security. Who are you?",
+   "choices": [
+    {
+     "text": "{name}. Former operator. Right now, a passenger.",
+     "next": "who_plain"
+    },
+    {
+     "text": "Lattice Corps, operator first class. Discharged.",
+     "next": "who_vet",
+     "tag": "Veteran",
+     "if": [
+      {
+       "background": "veteran"
+      }
+     ],
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": 2,
+       "key": "meet_vet",
+       "reason": "Gave her a straight service record"
+      }
+     ]
+    },
+    {
+     "text": "Does it matter? You're alive.",
+     "next": "who_hard",
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": -1,
+       "key": "meet_dodge",
+       "reason": "Dodged her question"
+      }
+     ],
+     "tone": "hard"
+    }
+   ]
+  },
+  "who_plain": {
+   "speaker": "iona",
+   "text": "A passenger with a Lumen Edge. All right, passenger. Here's the situation.",
+   "next": "situation"
+  },
+  "who_vet": {
+   "speaker": "iona",
+   "text": "First class. Then you know how a lattice goes wrong. Here's the situation.",
+   "next": "situation"
+  },
+  "who_hard": {
+   "speaker": "iona",
+   "text": "It matters to my report, if anyone ever reads it. Fine. Here's the situation.",
+   "next": "situation"
+  },
+  "situation": {
+   "speaker": "iona",
+   "text": "The WARDEN went to Archive Protection twenty minutes ago. The commander set its priorities before we left orbit: archive first, command second, crew third. Passengers didn't make the list. Lantern reclaimers cut in through the dorsal hull over the hold. Launch craft Petrel is in Bay 2, all the way forward: checkpoint, medical, engineering, archive hold, command, bay.",
+   "choices": [
+    {
+     "text": "Then we go forward and we bring everyone we can on the way.",
+     "next": "r_comp",
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": 5,
+       "key": "meet_everyone",
+       "reason": "Wants to bring everyone"
+      },
+      {
+       "alignment": 3,
+       "key": "meet_everyone",
+       "reason": "Resolved to save everyone they can"
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "We move fast. We can't stop for every door.",
+     "next": "r_prag",
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": 1,
+       "key": "meet_fast",
+       "reason": "Kept a clear head"
+      }
+     ],
+     "tone": "pragmatic"
+    },
+    {
+     "text": "I'm getting on that craft. You can come with me.",
+     "next": "r_self",
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": -3,
+       "key": "meet_self",
+       "reason": "Only thinking of themself"
+      }
+     ],
+     "tone": "self-interested"
+    },
+    {
+     "text": "Why would anyone set a ship to guard cargo over people?",
+     "next": "r_skep",
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": 2,
+       "key": "meet_why",
+       "reason": "Questioned the commander's priorities"
+      }
+     ],
+     "tone": "skeptical"
+    },
+    {
+     "text": "Follow my lead and we both live.",
+     "next": "r_hard",
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": -2,
+       "key": "meet_orders",
+       "reason": "Tried to give her orders"
+      }
+     ],
+     "tone": "hard"
+    }
+   ]
+  },
+  "r_comp": {
+   "speaker": "iona",
+   "text": "Everyone we can. That's the job, isn't it. That's the only version of the job I can live with.",
+   "next": "medpac"
+  },
+  "r_prag": {
+   "speaker": "iona",
+   "text": "Fast saves people too. Fine. But I'll stop for the ones who can't run.",
+   "next": "medpac"
+  },
+  "r_self": {
+   "speaker": "iona",
+   "text": "Generous. I'm not leaving my post just to buy you a seat, but our routes match. For now.",
+   "next": "medpac"
+  },
+  "r_hard": {
+   "speaker": "iona",
+   "text": "I don't take orders from passengers. I'll take good ideas. You've had one so far: shooting the drones.",
+   "next": "medpac"
+  },
+  "r_skep": {
+   "speaker": "iona",
+   "text": "Because the commander says what's in that hold matters more than all of us. Maybe it does. She also had me seal the passenger ward on the medical deck two hours ago, with five people inside. I did it. I'm telling you because you're going to see that door.",
+   "next": "medpac",
+   "effects": [
+    {
+     "set_flag": "iona_told_ward",
+     "value": true
+    }
+   ]
+  },
+  "medpac": {
+   "speaker": "iona",
+   "text": "Here. Field medpac. Use it, don't hoard it. It takes a moment to apply, so you can't slap three on in one breath, and nobody can. And take my keycard. The armory locker at the checkpoint is mechanical; the WARDEN can't lock that one.",
+   "choices": [
+    {
+     "text": "Thanks, Iona. Let's move.",
+     "next": "end_node"
+    },
+    {
+     "text": "You're trusting a stranger with your keycard?",
+     "next": "trust"
+    }
+   ],
+   "effects": [
+    {
+     "give_item": "medpac",
+     "count": 1,
+     "key": "iona_medpac"
+    },
+    {
+     "give_item": "iona_keycard",
+     "count": 1,
+     "key": "iona_keycard"
+    },
+    {
+     "tutorial": "healing"
+    },
+    {
+     "tutorial": "queue"
+    }
+   ]
+  },
+  "trust": {
+   "speaker": "iona",
+   "text": "I'm trusting the stranger who just saved my life. Don't make me revise that.",
+   "next": "end_node",
+   "effects": [
+    {
+     "influence": "iona",
+     "delta": 1,
+     "key": "meet_trust",
+     "reason": "Asked why she trusted them"
+    }
+   ]
+  },
+  "end_node": {
+   "speaker": "iona",
+   "text": "Checkpoint's through that door. WARDEN put a turret and pickets on it. I'd rather not walk into its guns, if you have a better idea.",
+   "effects": [
+    {
+     "xp": 100,
+     "key": "iona_meet",
+     "reason": "Joined forces with Iona Rell"
+    }
+   ],
+   "end": true
+  }
+ }
+}

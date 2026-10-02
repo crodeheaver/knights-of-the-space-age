@@ -1,0 +1,222 @@
+{
+ "id": "launch",
+ "entry": [
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "narrator",
+   "text": "The Petrel's ramp closes behind the last passenger. Brann Ketterick drops into the pilot's seat, cracks his knuckles and says, 'Contract pilot, temporarily re-employed.' The docking clamps let go.",
+   "next": "pursuit",
+   "effects": [
+    {
+     "set_flag": "boarded",
+     "value": true
+    }
+   ]
+  },
+  "pursuit": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "warden_neutralized"
+      }
+     ],
+     "node": "clear"
+    },
+    {
+     "if": [],
+     "node": "turret"
+    }
+   ]
+  },
+  "clear": {
+   "speaker": "narrator",
+   "text": "No interceptors launch. The Cinder Wake's turrets track you out of the bay and then, deliberately, look away.",
+   "choices": [
+    {
+     "text": "(Watch the ship fall away.)",
+     "next": "out"
+    },
+    {
+     "text": "(Run the dorsal turret drill anyway — practice for what comes next.)",
+     "next": "out",
+     "effects": [
+      {
+       "minigame": "turret_practice"
+      }
+     ]
+    }
+   ]
+  },
+  "turret": {
+   "speaker": "narrator",
+   "text": "Two WARDEN interceptor drones peel off the Cinder Wake's dorsal rack and come after you. The Petrel's dorsal turret is crewed by whoever climbs into it.",
+   "choices": [
+    {
+     "text": "Take the dorsal turret yourself.",
+     "next": "player_turret",
+     "effects": [
+      {
+       "minigame": "turret"
+      }
+     ],
+     "end": true
+    },
+    {
+     "text": "Iona, take the turret.",
+     "next": "iona_turret",
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "check": {
+      "skill": "awareness",
+      "dc": 10,
+      "id": "turret_iona",
+      "who": "iona",
+      "bonus": 4
+     },
+     "success": "iona_turret",
+     "failure": "iona_turret_hit"
+    },
+    {
+     "text": "Tav-7, plot an evasive burn through the debris.",
+     "next": "tav_burn",
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "check": {
+      "skill": "computer_use",
+      "dc": 12,
+      "id": "turret_tav",
+      "who": "tav7"
+     },
+     "success": "tav_burn",
+     "failure": "tav_burn_hit"
+    },
+    {
+     "text": "Brann, full burn. Don't stop to shoot.",
+     "next": "burn"
+    }
+   ]
+  },
+  "player_turret": {
+   "speaker": "system",
+   "text": "...",
+   "end": true
+  },
+  "iona_turret": {
+   "speaker": "iona",
+   "text": "Two contacts. Two hits. You can breathe now.",
+   "next": "out",
+   "effects": [
+    {
+     "set_flag": "turret_result",
+     "value": "iona"
+    },
+    {
+     "xp": 40,
+     "key": "turret",
+     "reason": "Escaped the interceptors"
+    }
+   ]
+  },
+  "iona_turret_hit": {
+   "speaker": "iona",
+   "text": "Got one. The other clipped the dorsal plating before I got it. We're fine. Mostly fine.",
+   "next": "out",
+   "effects": [
+    {
+     "set_flag": "turret_result",
+     "value": "iona_damaged"
+    },
+    {
+     "set_flag": "petrel_damaged",
+     "value": true
+    },
+    {
+     "xp": 40,
+     "key": "turret",
+     "reason": "Escaped the interceptors"
+    }
+   ]
+  },
+  "tav_burn": {
+   "speaker": "tav7",
+   "text": "Through the debris field, around the Lantern pickets, and the interceptors have lost us. I enjoyed that more than I should have.",
+   "next": "out",
+   "effects": [
+    {
+     "set_flag": "turret_result",
+     "value": "evaded"
+    },
+    {
+     "xp": 40,
+     "key": "turret",
+     "reason": "Escaped the interceptors"
+    }
+   ]
+  },
+  "tav_burn_hit": {
+   "speaker": "tav7",
+   "text": "Mostly through the debris field. The hull will tell you about the parts that were not.",
+   "next": "out",
+   "effects": [
+    {
+     "set_flag": "turret_result",
+     "value": "evaded_damaged"
+    },
+    {
+     "set_flag": "petrel_damaged",
+     "value": true
+    },
+    {
+     "xp": 40,
+     "key": "turret",
+     "reason": "Escaped the interceptors"
+    }
+   ]
+  },
+  "burn": {
+   "speaker": "narrator",
+   "text": "Brann burns hard. One interceptor rakes the Petrel's flank before the range opens; the hull shudders and holds.",
+   "next": "out",
+   "effects": [
+    {
+     "set_flag": "turret_result",
+     "value": "burned"
+    },
+    {
+     "set_flag": "petrel_damaged",
+     "value": true
+    },
+    {
+     "xp": 30,
+     "key": "turret",
+     "reason": "Outran the interceptors"
+    }
+   ]
+  },
+  "out": {
+   "speaker": "narrator",
+   "text": "The Cinder Wake shrinks behind you, a dark seed against Haldis's amber disc.",
+   "effects": [
+    {
+     "set_flag": "escaped",
+     "value": true
+    },
+    {
+     "start_dialogue": "ending_exchange"
+    }
+   ],
+   "end": true
+  }
+ }
+}

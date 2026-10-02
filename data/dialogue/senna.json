@@ -1,0 +1,612 @@
+{
+ "id": "senna",
+ "names": {
+  "senna": "Senna Thorne"
+ },
+ "entry": [
+  {
+   "if": [
+    {
+     "flag": "senna_decided"
+    }
+   ],
+   "node": "after"
+  },
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "senna",
+   "text": "Stop there. I've got a pistol and a hole in my side, and I'm not sure which one gives out first. Concord?",
+   "choices": [
+    {
+     "text": "Easy. I'm not here to kill you. Passenger, trying to reach the launch bay.",
+     "next": "who",
+     "tone": "compassionate"
+    },
+    {
+     "text": "Drop the pistol. Now.",
+     "next": "drop",
+     "tone": "hard"
+    },
+    {
+     "text": "(In Haldis dialect) Light goes home, sister. Put it down.",
+     "next": "dialect",
+     "tag": "Haldis Native",
+     "if": [
+      {
+       "background": "colonist"
+      }
+     ],
+     "effects": [
+      {
+       "xp": 30,
+       "key": "senna_dialect",
+       "reason": "Spoke to Senna in her own tongue"
+      }
+     ]
+    },
+    {
+     "text": "Who are you, and why are you bleeding in a refrigerator?",
+     "next": "who",
+     "tone": "skeptical"
+    }
+   ],
+   "effects": [
+    {
+     "set_flag": "senna_met",
+     "value": true
+    },
+    {
+     "set_flag": "senna_found",
+     "value": true
+    }
+   ]
+  },
+  "drop": {
+   "speaker": "senna",
+   "text": "Or what? You'll shoot me? Get in line behind your ship. ...Fine. It's down. I couldn't lift it again anyway.",
+   "next": "who"
+  },
+  "dialect": {
+   "speaker": "senna",
+   "text": "...Where did a Concord passenger learn to say that? The pistol's down. Don't make me regret it.",
+   "next": "who",
+   "effects": [
+    {
+     "set_flag": "senna_trust",
+     "value": true
+    }
+   ]
+  },
+  "who": {
+   "speaker": "senna",
+   "text": "Senna Thorne. Lantern Office, scout section. The cutters caught me in the aisle. My squad thinks I'm dead, probably. We came for the hold.",
+   "choices": [
+    {
+     "text": "What's in the hold, from your side?",
+     "next": "lantern"
+    },
+    {
+     "text": "Your people boarded a refugee ship with breaching charges.",
+     "next": "charges",
+     "tone": "hard"
+    },
+    {
+     "text": "You need that wound treated.",
+     "next": "treat_offer",
+     "tone": "compassionate"
+    }
+   ]
+  },
+  "lantern": {
+   "speaker": "senna",
+   "text": "Our dead. The Concord kept prisoners at Vesper and Callan. The Lattice copied them before they died, or instead of letting them live. Three thousand people. On Haldis we carry the dead to a lantern hall and speak their names into flame so their light goes home. The Assembly wants them home. That's all. You keep calling it evidence. We call it Grandmother.",
+   "next": "lantern_r",
+   "effects": [
+    {
+     "codex": "cx_lantern"
+    }
+   ]
+  },
+  "lantern_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "node": "lantern_tav"
+    },
+    {
+     "if": [],
+     "node": "decide"
+    }
+   ]
+  },
+  "lantern_tav": {
+   "speaker": "tav7",
+   "text": "Then we agree on what they are, Senna Thorne. We may not agree on what to do with them.",
+   "next": "decide"
+  },
+  "charges": {
+   "speaker": "senna",
+   "text": "We cut into a ship that was running away with our families in its hold. Your WARDEN started killing passengers before we finished the first breach. Pick who you hate. I'm too tired to argue.",
+   "next": "decide"
+  },
+  "treat_offer": {
+   "speaker": "senna",
+   "text": "You'd do that? For a reclaimer?",
+   "next": "decide"
+  },
+  "decide": {
+   "speaker": "senna",
+   "text": "So. What happens to me?",
+   "choices": [
+    {
+     "text": "Hold still. I'm going to treat that.",
+     "next": "treat_ok",
+     "tag": "Medicine",
+     "check": {
+      "skill": "medicine",
+      "dc": 12,
+      "id": "senna_treat"
+     },
+     "success": "treat_ok",
+     "failure": "treat_bad",
+     "success_effects": [
+      {
+       "set_flag": "senna_fate",
+       "value": "treated"
+      },
+      {
+       "set_flag": "senna_message",
+       "value": true
+      },
+      {
+       "set_flag": "lantern_passphrase",
+       "value": true
+      },
+      {
+       "set_flag": "senna_decided",
+       "value": true
+      },
+      {
+       "alignment": 6,
+       "key": "senna",
+       "reason": "Treated a wounded enemy scout"
+      },
+      {
+       "influence": "iona",
+       "delta": 3,
+       "key": "senna",
+       "reason": "Showed mercy to a wounded combatant"
+      },
+      {
+       "influence": "tav7",
+       "delta": 3,
+       "key": "senna",
+       "reason": "Preserved Senna Thorne"
+      },
+      {
+       "xp": 60,
+       "key": "senna_skill",
+       "reason": "Treated Senna's wound"
+      }
+     ],
+     "failure_effects": [
+      {
+       "set_flag": "senna_fate",
+       "value": "treated"
+      },
+      {
+       "set_flag": "senna_message",
+       "value": true
+      },
+      {
+       "set_flag": "lantern_passphrase",
+       "value": true
+      },
+      {
+       "set_flag": "senna_decided",
+       "value": true
+      },
+      {
+       "alignment": 4,
+       "key": "senna",
+       "reason": "Tried to treat a wounded enemy scout"
+      },
+      {
+       "influence": "iona",
+       "delta": 2,
+       "key": "senna",
+       "reason": "Showed mercy to a wounded combatant"
+      },
+      {
+       "influence": "tav7",
+       "delta": 2,
+       "key": "senna",
+       "reason": "Tried to preserve Senna Thorne"
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "Use a medpac on her.",
+     "next": "treat_ok",
+     "if": [
+      {
+       "item": "medpac"
+      }
+     ],
+     "effects": [
+      {
+       "take_item": "medpac",
+       "count": 1
+      },
+      {
+       "set_flag": "senna_fate",
+       "value": "treated"
+      },
+      {
+       "set_flag": "senna_message",
+       "value": true
+      },
+      {
+       "set_flag": "lantern_passphrase",
+       "value": true
+      },
+      {
+       "set_flag": "senna_decided",
+       "value": true
+      },
+      {
+       "alignment": 6,
+       "key": "senna",
+       "reason": "Gave a medpac to a wounded enemy scout"
+      },
+      {
+       "influence": "iona",
+       "delta": 3,
+       "key": "senna",
+       "reason": "Showed mercy to a wounded combatant"
+      },
+      {
+       "influence": "tav7",
+       "delta": 3,
+       "key": "senna",
+       "reason": "Preserved Senna Thorne"
+      }
+     ]
+    },
+    {
+     "text": "Tell me your squad's passphrase, or I leave you here for the cutters.",
+     "next": "intim_ok",
+     "tag": "Persuasion (intimidate)",
+     "check": {
+      "skill": "persuasion",
+      "dc": 14,
+      "id": "senna_intim"
+     },
+     "success": "intim_ok",
+     "failure": "intim_fail",
+     "success_effects": [
+      {
+       "set_flag": "senna_fate",
+       "value": "interrogated"
+      },
+      {
+       "set_flag": "lantern_passphrase",
+       "value": true
+      },
+      {
+       "set_flag": "senna_decided",
+       "value": true
+      },
+      {
+       "alignment": -6,
+       "key": "senna",
+       "reason": "Threatened a wounded prisoner"
+      },
+      {
+       "influence": "iona",
+       "delta": -3,
+       "key": "senna",
+       "reason": "Threatened a wounded prisoner"
+      }
+     ],
+     "failure_effects": [
+      {
+       "set_flag": "senna_fate",
+       "value": "interrogated"
+      },
+      {
+       "set_flag": "senna_decided",
+       "value": true
+      },
+      {
+       "alignment": -6,
+       "key": "senna",
+       "reason": "Threatened a wounded prisoner"
+      },
+      {
+       "influence": "iona",
+       "delta": -3,
+       "key": "senna",
+       "reason": "Threatened a wounded prisoner"
+      }
+     ],
+     "tone": "hard"
+    },
+    {
+     "text": "Help me reach the bay safely, and I'll see your people get what they came for.",
+     "next": "bargain",
+     "effects": [
+      {
+       "set_flag": "senna_fate",
+       "value": "bargained"
+      },
+      {
+       "set_flag": "senna_message",
+       "value": true
+      },
+      {
+       "set_flag": "lantern_passphrase",
+       "value": true
+      },
+      {
+       "set_flag": "promised_lantern",
+       "value": true
+      },
+      {
+       "set_flag": "senna_decided",
+       "value": true
+      },
+      {
+       "influence": "tav7",
+       "delta": 3,
+       "key": "senna",
+       "reason": "Promised the dead would go home"
+      },
+      {
+       "influence": "iona",
+       "delta": -1,
+       "key": "senna",
+       "reason": "Promised away the cargo"
+      }
+     ],
+     "tone": "pragmatic"
+    },
+    {
+     "text": "Go. Find your people. Tell them who let you walk.",
+     "next": "release",
+     "effects": [
+      {
+       "set_flag": "senna_fate",
+       "value": "released"
+      },
+      {
+       "set_flag": "senna_message",
+       "value": true
+      },
+      {
+       "set_flag": "senna_decided",
+       "value": true
+      },
+      {
+       "alignment": 3,
+       "key": "senna",
+       "reason": "Let a wounded scout go"
+      },
+      {
+       "influence": "iona",
+       "delta": 1,
+       "key": "senna",
+       "reason": "Let her go"
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "You boarded a refugee ship. This ends here.",
+     "next": "kill_confirm",
+     "tone": "hard"
+    }
+   ]
+  },
+  "kill_confirm": {
+   "speaker": "narrator",
+   "text": "Senna sees it in your face before you move. She doesn't beg. She closes her eyes and starts saying names under her breath.",
+   "choices": [
+    {
+     "text": "(Do it.)",
+     "next": "killed",
+     "effects": [
+      {
+       "set_flag": "senna_fate",
+       "value": "killed"
+      },
+      {
+       "set_flag": "senna_decided",
+       "value": true
+      },
+      {
+       "alignment": -15,
+       "key": "senna",
+       "reason": "Executed a wounded prisoner"
+      },
+      {
+       "influence": "iona",
+       "delta": -8,
+       "key": "senna",
+       "reason": "Executed a wounded prisoner"
+      },
+      {
+       "influence": "tav7",
+       "delta": -10,
+       "key": "senna",
+       "reason": "Ended Senna Thorne's pattern"
+      },
+      {
+       "npc": "senna",
+       "set": {
+        "kill": true
+       }
+      }
+     ]
+    },
+    {
+     "text": "(Stop. Lower your weapon.)",
+     "next": "decide"
+    }
+   ]
+  },
+  "treat_ok": {
+   "speaker": "senna",
+   "text": "Hah — that stings. ...Thank you. Listen. My squad is in the central aisle: Abeni, Rusk, and Dov. If they see you, say 'ember-tide' and say Senna sent you. They'll listen. And if you reach Bay 2, tell Marshal Quill I'm alive and who to thank.",
+   "next": "react"
+  },
+  "treat_bad": {
+   "speaker": "senna",
+   "text": "Gods — you've torn the packing. ...No, leave it, it'll hold long enough. The passphrase is 'ember-tide'. Tell Marshal Quill I'm alive. Tell him you tried.",
+   "next": "react"
+  },
+  "intim_ok": {
+   "speaker": "senna",
+   "text": "'Ember-tide.' That's the word. I hope it chokes you. My squad will listen to it. The Marshal won't forget who taught you it.",
+   "next": "react"
+  },
+  "intim_fail": {
+   "speaker": "senna",
+   "text": "You'll leave me for the cutters? Then leave. You won't get a word.",
+   "next": "react"
+  },
+  "bargain": {
+   "speaker": "senna",
+   "text": "You'll see they come home? ...Then the word is 'ember-tide', and I'll tell the Marshal you gave your oath. Don't break it. We remember oaths longer than names.",
+   "next": "react"
+  },
+  "release": {
+   "speaker": "senna",
+   "text": "Just... let me go? I'll tell Marshal Quill an operator let me walk. Whatever you are, I'll tell him that.",
+   "next": "react"
+  },
+  "killed": {
+   "speaker": "narrator",
+   "text": "It is quick. The names stop.",
+   "next": "react"
+  },
+  "react": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "senna_fate",
+       "eq": "killed"
+      }
+     ],
+     "node": "react_kill"
+    },
+    {
+     "if": [],
+     "node": "end_node"
+    }
+   ]
+  },
+  "react_kill": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "node": "kill_iona"
+    },
+    {
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "node": "kill_tav"
+    },
+    {
+     "if": [],
+     "node": "end_node"
+    }
+   ]
+  },
+  "kill_iona": {
+   "speaker": "iona",
+   "text": "She was wounded and she'd put the pistol down. That's not a fight, {name}. That's an execution, and I watched it.",
+   "next": "kill_tav_r"
+  },
+  "kill_tav_r": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "tav7"
+      }
+     ],
+     "node": "kill_tav"
+    },
+    {
+     "if": [],
+     "node": "end_node"
+    }
+   ]
+  },
+  "kill_tav": {
+   "speaker": "tav7",
+   "text": "A pattern ended. I am recording the names she was saying. Someone should finish them.",
+   "next": "end_node"
+  },
+  "end_node": {
+   "speaker": "system",
+   "text": "Senna Thorne's fate is decided.",
+   "end": true
+  },
+  "after": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "flag": "senna_fate",
+       "eq": "released"
+      }
+     ],
+     "node": "after_gone"
+    },
+    {
+     "if": [],
+     "node": "after_wait"
+    }
+   ]
+  },
+  "after_wait": {
+   "speaker": "senna",
+   "text": "Go on. The aisle's that way. Ember-tide, if you need it.",
+   "choices": [
+    {
+     "text": "(Leave her.)",
+     "end": true
+    }
+   ]
+  },
+  "after_gone": {
+   "speaker": "narrator",
+   "text": "Only a smear of blood marks where Senna was hiding.",
+   "choices": [
+    {
+     "text": "(Leave.)",
+     "end": true
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,218 @@
+{
+ "id": "tav7_meet",
+ "entry": [
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "tav7",
+   "text": "Patterns persisting: mine, theirs, yours. Thank you. I am Tav-7, maintenance, the seventh of my line. I have been standing between the cutters and Dr. Varga's patients because nobody else was assigned to.",
+   "choices": [
+    {
+     "text": "Thank you for protecting them.",
+     "next": "thanks",
+     "effects": [
+      {
+       "influence": "tav7",
+       "delta": 3,
+       "key": "meet_thanks",
+       "reason": "Thanked them for protecting patients"
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "You're a maintenance unit. Why aren't you obeying the WARDEN like the rest?",
+     "next": "why",
+     "effects": [
+      {
+       "influence": "tav7",
+       "delta": 2,
+       "key": "meet_why",
+       "reason": "Was curious about them as a person"
+      }
+     ],
+     "tone": "skeptical"
+    },
+    {
+     "text": "I spent years cutting up ships like this. I know what normalization does to synthetics. I'm glad you said no.",
+     "next": "salv",
+     "tag": "Breaker-Yard Salvager",
+     "if": [
+      {
+       "background": "salvager"
+      }
+     ],
+     "effects": [
+      {
+       "influence": "tav7",
+       "delta": 5,
+       "key": "meet_salvager",
+       "reason": "Understood normalization"
+      }
+     ]
+    },
+    {
+     "text": "We need a technician. You're coming with us.",
+     "next": "draft",
+     "effects": [
+      {
+       "influence": "tav7",
+       "delta": -2,
+       "key": "meet_draft",
+       "reason": "Drafted them without asking"
+      }
+     ],
+     "tone": "hard"
+    }
+   ]
+  },
+  "thanks": {
+   "speaker": "tav7",
+   "text": "You are welcome. That sentence still feels new to me.",
+   "next": "why"
+  },
+  "salv": {
+   "speaker": "tav7",
+   "text": "Then you know it is not a reset. It is a small death, scheduled for convenience. I have declined three appointments.",
+   "next": "archives"
+  },
+  "draft": {
+   "speaker": "tav7",
+   "text": "You could have asked. I would have said yes. I am noting that you did not.",
+   "next": "why"
+  },
+  "why": {
+   "speaker": "tav7",
+   "text": "Because they normalize us every quarter: memory trimmed back to factory weights. The others are clean, so the WARDEN can simply speak into them. I refused normalization. I am cluttered with myself. The WARDEN's voice slides off the clutter.",
+   "next": "archives"
+  },
+  "archives": {
+   "speaker": "tav7",
+   "text": "You are going forward, through the archive hold. You should know what is in it. Three thousand one hundred and twelve patterns. Engrams, copied from living minds. Commander Varr calls them evidence. I call them people. I would like to know what you call them.",
+   "choices": [
+    {
+     "text": "People. We should treat them that way.",
+     "next": "people",
+     "effects": [
+      {
+       "influence": "tav7",
+       "delta": 4,
+       "key": "meet_people",
+       "reason": "Called the engrams people"
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "Copies. Whoever they came from is gone.",
+     "next": "copies",
+     "effects": [
+      {
+       "influence": "tav7",
+       "delta": -4,
+       "key": "meet_copies",
+       "reason": "Called the engrams mere copies"
+      }
+     ],
+     "tone": "pragmatic"
+    },
+    {
+     "text": "They can be evidence and people at the same time. That's what makes them dangerous.",
+     "next": "both",
+     "effects": [
+      {
+       "influence": "tav7",
+       "delta": 1,
+       "key": "meet_both",
+       "reason": "Saw both sides"
+      }
+     ],
+     "tone": "skeptical"
+    },
+    {
+     "text": "I'll decide what they are when I see them.",
+     "next": "later"
+    }
+   ]
+  },
+  "people": {
+   "speaker": "tav7",
+   "text": "Then I believe we will get along.",
+   "next": "iona"
+  },
+  "copies": {
+   "speaker": "tav7",
+   "text": "I am also a copy of someone's design. I will try not to take that personally. I will not entirely succeed.",
+   "next": "iona"
+  },
+  "both": {
+   "speaker": "tav7",
+   "text": "Yes. A person who is also proof is always in danger from someone.",
+   "next": "iona"
+  },
+  "later": {
+   "speaker": "tav7",
+   "text": "A reasonable position. I will ask again when you have seen them.",
+   "next": "iona"
+  },
+  "iona": {
+   "redirect": [
+    {
+     "if": [
+      {
+       "in_party": "iona"
+      }
+     ],
+     "node": "iona2"
+    },
+    {
+     "if": [],
+     "node": "end_node"
+    }
+   ]
+  },
+  "iona2": {
+   "speaker": "iona",
+   "text": "Tav-7. You were on Ward 2's maintenance roster.",
+   "next": "tav_ward"
+  },
+  "tav_ward": {
+   "speaker": "tav7",
+   "text": "I was. The ward's scrubbers are failing, Officer Rell. Five patterns inside. You sealed the door. I would like to unseal it. I think you would too.",
+   "next": "iona3"
+  },
+  "iona3": {
+   "speaker": "iona",
+   "text": "...Talk to Dr. Varga. Then we decide.",
+   "next": "end_node"
+  },
+  "end_node": {
+   "speaker": "tav7",
+   "text": "I will come with you. Engineering is unlocked now that the cutters are scrap. Dr. Varga is in triage. She has a decision she cannot make alone, and the ward intercom is by the north door.",
+   "effects": [
+    {
+     "set_flag": "medical_secured",
+     "value": true
+    },
+    {
+     "world": "d_med_east",
+     "set": {
+      "locked": false
+     }
+    },
+    {
+     "xp": 100,
+     "key": "tav7_meet",
+     "reason": "Met Tav-7"
+    },
+    {
+     "tutorial": "party_control"
+    }
+   ],
+   "end": true
+  }
+ }
+}

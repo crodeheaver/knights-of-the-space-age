@@ -130,9 +130,6 @@ door("d_blast", [[62, 7], [62, 8]], "checkpoint", "medical", kind="blast", name=
           "success_text": "You coax the lock open.", "failure": [{"set_flag": "checkpoint_alarm"}, {"start_encounter": "enc_checkpoint"}],
           "failure_text": "Wrong sequence: the lock trips an alarm.", "xp": 60, "key": "checkpoint_door"},
          {"id": "credential", "label": "Press your palm to the scanner (Resonance credential)", "player_only": True, "energy": 2,
-          "success": [{"world": "d_blast", "set": {"locked": False, "open": True}}, {"set_flag": "checkpoint_solved"}, {"set_flag": "checkpoint_by", "value": "credential"},
-                      {"set_flag": "used_credential"}, {"inc_flag": "credential_uses", "key": "cred_blast"}, {"codex": "cx_credential"}],
-          "success_text": "The scanner glows amber. 'CUSTODIAN AUTHORITY ACCEPTED.' The ship knows your neural signature.", "xp": 60, "key": "checkpoint_door",
           "dialogue": "checkpoint_credential"},
          {"id": "bash", "label": "Force it", "if": [{"flag": "never"}], "locked_text": "Far too heavy to force."},
      ])

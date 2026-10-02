@@ -1,0 +1,102 @@
+{
+ "id": "ketterick",
+ "entry": [
+  {
+   "if": [
+    {
+     "flag": "emergency_started"
+    }
+   ],
+   "node": "after"
+  },
+  {
+   "if": [
+    {
+     "flag": "brann_met"
+    }
+   ],
+   "node": "again"
+  },
+  {
+   "node": "start"
+  }
+ ],
+ "nodes": {
+  "start": {
+   "speaker": "ketterick",
+   "text": "Brann Ketterick, contract pilot, temporarily unemployed by an outbreak of peace. You play Shards? Twenty's the number, shards bend the count, and the house — me — is losing badly to the purser's nephew's cousin.",
+   "choices": [
+    {
+     "text": "Deal me in.",
+     "next": "deal"
+    },
+    {
+     "text": "How do you play?",
+     "next": "rules"
+    },
+    {
+     "text": "Not now.",
+     "end": true
+    }
+   ],
+   "effects": [
+    {
+     "set_flag": "brann_met",
+     "value": true
+    }
+   ]
+  },
+  "rules": {
+   "speaker": "ketterick",
+   "text": "Each round you draw from the shared deck and your total climbs. Stay at or under twenty, as close as you can. You get four shards from your own side deck: little adjusters, plus or minus. One per turn. Stand when you like. Best of three sets. Bust and you lose the set. Simple. Ruinous.",
+   "choices": [
+    {
+     "text": "Deal me in.",
+     "next": "deal"
+    },
+    {
+     "text": "Maybe later.",
+     "end": true
+    }
+   ]
+  },
+  "deal": {
+   "speaker": "ketterick",
+   "text": "That's the spirit. Wager's yours to call. Sit.",
+   "effects": [
+    {
+     "minigame": "shards"
+    }
+   ],
+   "end": true
+  },
+  "again": {
+   "speaker": "ketterick",
+   "text": "Another set? The deck's warm.",
+   "choices": [
+    {
+     "text": "Deal me in.",
+     "next": "deal"
+    },
+    {
+     "text": "Later.",
+     "end": true
+    }
+   ]
+  },
+  "after": {
+   "speaker": "ketterick",
+   "text": "Cards can wait for the end of the world, apparently. You want a hand to steady your nerves? I'm serious. My hands are shaking and I fly for a living.",
+   "choices": [
+    {
+     "text": "One set. Deal.",
+     "next": "deal"
+    },
+    {
+     "text": "Stay with Dray, Brann.",
+     "end": true
+    }
+   ]
+  }
+ }
+}
