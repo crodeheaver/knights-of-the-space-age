@@ -346,6 +346,14 @@ func test_player_choice_replaces_auto_attack() -> void:
 	assert_eq(w.queue_action(p, {"type": "feat", "id": feats[0], "target": p.target_uid}), "")
 	assert_eq(p.queue.size(), 1, "the automatic attack was replaced, not pushed back")
 	assert_eq(String(p.queue.front()["type"]), "feat")
+	# An automatic attack already walking to its target gives way at once too.
+	p.queue.clear()
+	assert_true(w.auto_queue_attack(p))
+	p.current = p.queue.pop_front()
+	assert_true(bool(p.current.get("auto", false)))
+	assert_eq(w.queue_action(p, {"type": "feat", "id": feats[0], "target": p.target_uid}), "")
+	assert_true(p.current.is_empty(), "the approaching automatic attack was dropped")
+	assert_eq(String(p.queue.front()["type"]), "feat")
 	# Re-selecting a target moves a pending automatic attack with it.
 	p.queue.clear()
 	assert_true(w.auto_queue_attack(p))

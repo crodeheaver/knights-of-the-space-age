@@ -1414,8 +1414,13 @@ func queue_action(a: Actor, action: Dictionary) -> String:
 		return reason
 	var act := action.duplicate()
 	act["manual"] = true
-	# The player's own choice replaces any automatic basic attack.
+	# The player's own choice replaces any automatic basic attack, including one
+	# still closing on its target (an action is current only until it executes).
 	a.queue.remove_auto()
+	if bool(a.current.get("auto", false)):
+		a.current = {}
+		if not a.manual_move:
+			a.stop()
 	a.queue.push(act)
 	if a.stealth and String(act["type"]) in ["attack", "feat", "power", "item"]:
 		pass  # stealth breaks when the action executes

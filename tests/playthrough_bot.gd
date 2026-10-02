@@ -262,7 +262,7 @@ func fight(timeout: float = 240.0) -> bool:
 			a = lead()
 		var low := float(a.sheet.hp) / float(maxi(1, a.sheet.max_hp())) < 0.4
 		# Revive a downed ally first, as a player would.
-		if a.queue.is_empty() and a.current.is_empty():
+		if _idle(a):
 			for p in world.party_actors():
 				var pa: Actor = p
 				if pa != a and pa.sheet.is_downed() and not pa.sheet.dead:
@@ -270,7 +270,7 @@ func fight(timeout: float = 240.0) -> bool:
 					if Game.state.inventory.count(rv) > 0:
 						world.queue_action(a, {"type": "item", "id": rv, "target": pa.uid})
 						break
-		if low and a.queue.is_empty() and a.current.is_empty():
+		if low and _idle(a):
 			var heal := "repair_kit" if a.sheet.kind == "machine" else "medpac"
 			if Game.state.inventory.count("trauma_pack") > 0 and a.sheet.kind == "organic":
 				heal = "trauma_pack"
@@ -280,7 +280,7 @@ func fight(timeout: float = 240.0) -> bool:
 			var h := world.nearest_hostile(a)
 			if h != null:
 				world.cmd_target(a, h.uid)
-		if a.queue.is_empty() and a.current.is_empty() and world.valid_hostile_target(a, a.target_uid):
+		if _idle(a) and world.valid_hostile_target(a, a.target_uid):
 			# The controlled character plays like a sensible player: the same
 			# tactical brain companions use (heals, revives, powers, grenades,
 			# feats), falling back to a basic attack.
@@ -301,6 +301,17 @@ func fight(timeout: float = 240.0) -> bool:
 	await rest()
 	level_ups()
 	return true
+
+
+## True when the character has nothing chosen by the player: an empty queue, or
+## only the basic attack the game queued on its own. The bot plays like a player
+## who picks actions, so its choice replaces the automatic one.
+func _idle(a: Actor) -> bool:
+	for q in a.queue.items:
+		var qd: Dictionary = q
+		if not bool(qd.get("auto_queued", false)):
+			return false
+	return a.current.is_empty() or bool(a.current.get("auto", false))
 
 
 ## Rests once the area is clear, as a player would between fights.

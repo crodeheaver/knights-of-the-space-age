@@ -50,8 +50,8 @@ sounds and floating numbers only display results that have already been resolved
   behaviour if it is a companion not under your control.
 - **Auto-attack** (Settings → Gameplay, on by default): when combat starts and the controlled character has
   nothing queued, a basic attack on the selected enemy (or the nearest one in sight) is queued and shown as
-  "(auto)". Queuing any action, moving (click or keys) or entering stealth replaces it; re-selecting a target
-  re-aims it. When the target falls and the queue is empty, the character moves on to the nearest enemy, unless
+  "(auto)". Queuing any action, moving (click or keys) or entering stealth replaces it, even while the
+  automatic attack is still closing on its target; re-selecting a target re-aims it. When the target falls and the queue is empty, the character moves on to the nearest enemy, unless
   "pause when the queue empties" is on, in which case the game pauses instead. Player movement is never
   overridden by an automatic attack.
 - **Auto-pause** options: combat start, member down, controlled character's queue empty, target defeated.
