@@ -1104,16 +1104,7 @@ func _auto_doors() -> void:
 			# brushing past in a fight.
 			if wo.distance_to_actor(aa) > 1.5:
 				continue
-			var heading := Vector3.ZERO
-			if aa.is_moving():
-				var nxt: Vector3 = aa.path[mini(aa.path_i, aa.path.size() - 1)]
-				heading = Vector3(nxt.x - aa.position.x, 0, nxt.z - aa.position.z)
-			elif Time.get_ticks_msec() / 1000.0 - aa.push_time < 0.25:
-				heading = aa.push_dir
-			var to_door := Vector3(wo.center.x - aa.position.x, 0, wo.center.z - aa.position.z)
-			if heading.length() < 0.05:
-				continue
-			if to_door.length() > 0.2 and to_door.normalized().dot(heading.normalized()) < 0.3:
+			if not _heading_through(aa, wo.cells):
 				continue
 			if true:
 				wo.st()["open"] = true
@@ -1123,6 +1114,36 @@ func _auto_doors() -> void:
 				Events.post("door_opened", {"id": wo.id})
 				Effects.apply_all(wo.def.get("on_open", []), Game.state, {"actor": aa.uid})
 				break
+
+
+## True when the actor's next ~2 m of travel (its path, or a recent WASD
+## push) passes through one of the given door cells.
+func _heading_through(aa: Actor, cells: Array) -> bool:
+	var door_cells := {}
+	for c in cells:
+		door_cells[grid.world_cell(int(c[0]), int(c[1]))] = true
+	var pts: Array[Vector3] = []
+	if aa.is_moving():
+		var cur := aa.position
+		var left := 2.0
+		for i in range(aa.path_i, aa.path.size()):
+			var q: Vector3 = aa.path[i]
+			var seg := Vector3(q.x - cur.x, 0, q.z - cur.z)
+			var l := seg.length()
+			var n := int(ceil(minf(l, left) / 0.25))
+			for k in range(1, n + 1):
+				pts.append(cur + seg.normalized() * minf(l, k * 0.25))
+			left -= l
+			cur = q
+			if left <= 0.0:
+				break
+	elif Time.get_ticks_msec() / 1000.0 - aa.push_time < 0.25:
+		for k in range(1, 5):
+			pts.append(aa.position + aa.push_dir * (k * 0.3))
+	for p in pts:
+		if door_cells.has(grid.cell_of(p)):
+			return true
+	return false
 
 
 func _hazard_step() -> void:
@@ -1281,6 +1302,7 @@ func cmd_move(a: Actor, p: Vector3) -> bool:
 	if String(a.current.get("type", "")) != "":
 		a.current = {}
 	var ok := a.move_to(grid.nearest_passable(p, 3), true)
+	dbg("move %s %s -> %s: %s" % [a.uid, str(a.position), str(p), str(a.path) if ok else "no path"])
 	if not ok:
 		Events.toast("No path there.", "warn")
 	return ok

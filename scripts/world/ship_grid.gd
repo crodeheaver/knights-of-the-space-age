@@ -209,7 +209,7 @@ func set_avoid(cells: Array, on: bool) -> void:
 		if not in_bounds(c):
 			continue
 		avoid[idx(c)] = 1 if on else 0
-		astar.set_point_weight_scale(c, 12.0 if on else 1.0)
+		astar.set_point_weight_scale(c, 3.0 if on else 1.0)
 
 
 func is_avoided(c: Vector2i) -> bool:

@@ -195,9 +195,11 @@ static func _tactical_choice(a: Actor, w: World, tgt: Actor, targets: Array, ali
 		for t in targets:
 			if (t as Actor).sheet.kind == "machine" and (t as Actor).position.distance_to(tgt.position) <= 3.0:
 				machines += 1
-		if machines >= 2 and Game.state.inventory.count("ion_grenade") > 0:
+		if not _friendly_clear(a, w, tgt.position, 3.5):
+			nade = ""
+		elif machines >= 2 and Game.state.inventory.count("ion_grenade") > 0:
 			nade = "ion_grenade"
-		elif Game.state.inventory.count("frag_grenade") > 0 and _friendly_clear(a, w, tgt.position, 3.5):
+		elif Game.state.inventory.count("frag_grenade") > 0:
 			nade = "frag_grenade"
 		if nade != "" and _chance(0.5) and ActionResolver.item_usable(s, nade, tgt.sheet, Game.state.inventory) == "":
 			return {"type": "item", "id": nade, "target": tgt.uid}
