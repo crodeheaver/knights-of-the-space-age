@@ -5,7 +5,8 @@ All results below were produced by commands in this repository, on the build con
 
 - **Environment:** Godot 4.4.1-stable (official), headless; Intel Xeon @ 2.80 GHz, 4 cores; no GPU (Mesa llvmpipe
   under Xvfb for anything rendered).
-- **Commit:** `d9ccc4c` + `docs/.gdignore` (branch `claude/admiring-faraday-5f1rx1`).
+- **Commit:** `d9ccc4c` + `docs/.gdignore` for sections 4–6; `2f3da3c` for the suite and sweep (sections 1–3)
+  (branch `claude/admiring-faraday-5f1rx1`).
 
 ## 1. Full suite — `./tools/run_tests.sh`
 
@@ -53,12 +54,16 @@ Logs with every choice and the full combat log are written to `user://bot_<route
 The same three routes are replayed with dice offsets 1–8 (24 runs):
 
 ```
-SWEEP: 22/24 route runs escaped
+SWEEP: 23/24 route runs escaped
 offset 7: diplomat — party wiped at the forward checkpoint (level 1 Adept + Iona vs turret and two pickets)
-offset 8: martial  — party wiped in the bay (Marshal Quill's line, reinforced by the martial route's choices)
 ```
 
-The failures are combat losses in the two hardest fights for those builds, not script or logic errors. A human
+This run was made after auto-attack was added (commit `2f3da3c`). In combat the bot picks its own actions, and
+they replace the automatic attack, as a player's would. The earlier sweep, before auto-attack, was 22/24: offset 7
+diplomat failed at the same checkpoint and offset 8 martial wiped in the bay. Dice consumption changed with
+auto-attack, so individual offsets are not comparable across the two sweeps.
+
+The remaining failure is a combat loss in the hardest fight for that build, not a script or logic error. A human
 player can pause, take cover, retreat or reload; the bot does not. Balance has not been validated with human
 players.
 
