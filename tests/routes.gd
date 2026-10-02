@@ -91,6 +91,7 @@ static func run(bot: PlaythroughBot, style: String) -> void:
 	if bot.halted():
 		return
 	# ---------------- checkpoint
+	bot.stage("checkpoint")
 	await bot.open_door("d_corridor_east")
 	if style == "technical":
 		await _checkpoint_technical(bot)
@@ -101,7 +102,11 @@ static func run(bot: PlaythroughBot, style: String) -> void:
 			await bot.fight()
 		await bot.use("d_armory", "keycard")
 		await bot.loot("armory_locker")
-		await bot.use("d_blast", "credential")
+		if style == "martial":
+			# Combat approach: the wrecked turret leaves the lock unpowered.
+			await bot.use("d_blast", "manual")
+		else:
+			await bot.use("d_blast", "credential")
 		await bot.pump()
 	bot.expect(bot.flag("checkpoint_solved") == true, "forward blast door opened (%s)" % str(bot.flag("checkpoint_by")))
 	if bot.halted():
@@ -131,6 +136,7 @@ static func run(bot: PlaythroughBot, style: String) -> void:
 	if bot.halted():
 		return
 	# ---------------- engineering
+	bot.stage("engineering")
 	await bot.open_door("d_med_east")
 	await bot.walk(Vector3(86, 0, 9))
 	await bot.read("eng_log")
@@ -144,6 +150,7 @@ static func run(bot: PlaythroughBot, style: String) -> void:
 		await bot.step(2.0)
 		if w.combat.active:
 			await bot.fight()
+		bot.stage("archive")
 		await bot.open_door("d_eng_east")
 		await bot.walk(Vector3(114, 0, 7.5))
 	if bot.halted():
@@ -171,6 +178,7 @@ static func finale(bot: PlaythroughBot, style: String, from: String = "archive")
 		bot.default_prefs = ["Continue", "Close", "Leave", "Log off", "(Step"]
 	# ---------------- command
 	if from == "archive":
+		bot.stage("command")
 		await bot.use("arc_intercom", "_dialogue")
 		await bot.pump()
 		bot.expect(bot.flag("command_open") == true, "command chamber opened")
@@ -200,6 +208,7 @@ static func _command(bot: PlaythroughBot, style: String) -> void:
 static func _bay(bot: PlaythroughBot, style: String) -> void:
 	var w := bot.world
 	# ---------------- bay
+	bot.stage("bay")
 	await bot.open_door("d_bay")
 	await bot.walk(Vector3(153.5, 0, 8.0))
 	await bot.step(1.0)
@@ -324,6 +333,7 @@ static func _engineering_technical(bot: PlaythroughBot) -> void:
 		await bot.step(2.0)
 		if w.combat.active:
 			await bot.fight()
+		bot.stage("archive")
 		await bot.open_door("d_eng_east")
 		await bot.walk(Vector3(114, 0, 7.5))
 

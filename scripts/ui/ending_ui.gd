@@ -69,7 +69,8 @@ static func compute_outcome() -> Dictionary:
 			continue
 		var txt := String(DB.dict(TEXT, key).get(String(v), ""))
 		if key == "checkpoint_by":
-			txt = {"credential": "You opened the forward blast door with your old Lattice credential — and WARDEN noticed.", "terminal": "You sliced the checkpoint terminal and walked through the front.", "": ""}.get(String(v), "You got past the forward checkpoint.")
+			txt = {"credential": "You opened the forward blast door with your old Lattice credential — and WARDEN noticed.", "terminal": "You sliced the checkpoint terminal and walked through the front.",
+				"combat": "You wrecked the checkpoint's defenses and cranked the dead blast door open by hand.", "security": "You bypassed the blast door's magnetic lock.", "": ""}.get(String(v), "You got past the forward checkpoint.")
 			if st.has_flag("checkpoint_bypassed"):
 				txt = "You crawled past the forward checkpoint through the maintenance crawlway."
 		if txt == "":

@@ -734,14 +734,38 @@
      "dialogue": "checkpoint_credential"
     },
     {
-     "id": "bash",
-     "label": "Force it",
+     "id": "manual",
+     "label": "Crank the dead lock open by hand (checkpoint defenses destroyed)",
      "if": [
       {
-       "flag": "never"
+       "cleared": "enc_checkpoint"
       }
      ],
-     "locked_text": "Far too heavy to force."
+     "locked_text": "The turret is still feeding power to the lock.",
+     "hide_if": [
+      {
+       "flag": "checkpoint_solved"
+      }
+     ],
+     "success": [
+      {
+       "world": "d_blast",
+       "set": {
+        "locked": false,
+        "open": true
+       }
+      },
+      {
+       "set_flag": "checkpoint_solved"
+      },
+      {
+       "set_flag": "checkpoint_by",
+       "value": "combat"
+      }
+     ],
+     "success_text": "With the turret wrecked, the lock has no power. You crank the door open by hand.",
+     "xp": 40,
+     "key": "checkpoint_door"
     }
    ]
   },

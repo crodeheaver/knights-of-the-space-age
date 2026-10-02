@@ -33,7 +33,8 @@ func test_every_preset_applies_and_loads() -> void:
 		for c in pd.get("companions", []):
 			assert_true(st.party.has(String(c)), "%s has %s" % [pid, c])
 		var w: World = await _load_world()
-		assert_eq(w.grid.area_at(w.controlled().position), String(pd["stage"]), "%s starts in its stage area" % pid)
+		var sg: Dictionary = DB.dev_stages[String(pd["stage"])]
+		assert_eq(w.grid.area_at(w.controlled().position), String(sg["area"]), "%s starts at its stage threshold" % pid)
 		for i in 10:
 			w.sim_step(0.1)
 		assert_false(w.game_over, pid)

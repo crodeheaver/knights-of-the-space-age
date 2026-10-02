@@ -20,6 +20,14 @@ var max_sim := 0.0
 
 
 var combat_lines: PackedStringArray = []
+## Called by Routes at the threshold of each major area (before its door
+## opens); tools/godot/gen_dev_stages.gd captures preset stages here.
+var stage_hook: Callable = Callable()
+
+
+func stage(name: String) -> void:
+	if stage_hook.is_valid():
+		stage_hook.call(name)
 
 
 func _init(t: SceneTree, h: Node) -> void:

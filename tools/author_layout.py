@@ -131,7 +131,10 @@ door("d_blast", [[62, 7], [62, 8]], "checkpoint", "medical", kind="blast", name=
           "failure_text": "Wrong sequence: the lock trips an alarm.", "xp": 60, "key": "checkpoint_door"},
          {"id": "credential", "label": "Press your palm to the scanner (Resonance credential)", "player_only": True, "energy": 2,
           "dialogue": "checkpoint_credential"},
-         {"id": "bash", "label": "Force it", "if": [{"flag": "never"}], "locked_text": "Far too heavy to force."},
+         {"id": "manual", "label": "Crank the dead lock open by hand (checkpoint defenses destroyed)", "if": [{"cleared": "enc_checkpoint"}],
+          "locked_text": "The turret is still feeding power to the lock.", "hide_if": [{"flag": "checkpoint_solved"}],
+          "success": [{"world": "d_blast", "set": {"locked": False, "open": True}}, {"set_flag": "checkpoint_solved"}, {"set_flag": "checkpoint_by", "value": "combat"}],
+          "success_text": "With the turret wrecked, the lock has no power. You crank the door open by hand.", "xp": 40, "key": "checkpoint_door"},
      ])
 door("d_ward", [[70, -1], [71, -1]], "medical", "ward", kind="sealed", name="Sealed Ward Door", locked=True, sealed=True,
      lock_text="Quarantine seal. The ward intercom beside the door can talk to the people inside.")

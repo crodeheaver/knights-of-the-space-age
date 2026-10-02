@@ -435,6 +435,18 @@
      }
     ],
     "attack_bonus": 1
+   },
+   {
+    "_note": "Level scaling: a party that reaches the bay below level 4 faces a thinner, wearier line.",
+    "if": [
+     {
+      "not": {
+       "level_gte": 4
+      }
+     }
+    ],
+    "hp_mult": 0.75,
+    "attack_bonus": -1
    }
   ],
   "on_resolve": [
