@@ -3,7 +3,7 @@
 *.translation
 export_credentials.cfg
 # Builds (release archives are published separately; see README)
-builds/tmp/
+builds/
 # Python
 __pycache__/
 .claude/

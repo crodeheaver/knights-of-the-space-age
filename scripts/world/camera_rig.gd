@@ -157,7 +157,9 @@ func frame(speaker_pos: Vector3, listener_pos: Vector3) -> void:
 		dir = Vector3(0, 0, 1)
 	dir = dir.normalized()
 	var side := Vector3(-dir.z, 0, dir.x)
-	var eye := listener_pos - dir * 1.4 + side * 0.75 + Vector3(0, 1.75, 0)
+	# Far enough back and to the side that the listener's shoulder frames the
+	# shot instead of filling it.
+	var eye := listener_pos - dir * 2.3 + side * 1.25 + Vector3(0, 1.95, 0)
 	var t := Transform3D(Basis(), eye)
 	_cine_to = t.looking_at(head, Vector3.UP)
 	_cine_t = 0.0

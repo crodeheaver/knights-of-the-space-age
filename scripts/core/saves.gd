@@ -148,7 +148,8 @@ func latest_slot() -> String:
 	var best := ""
 	var best_t := -1.0
 	for row in list_slots():
-		if bool(row["ok"]):
+		# The end-of-intro save is a carry-over record, not a place to resume.
+		if bool(row["ok"]) and String(row["slot"]) != "end_of_intro":
 			var t := float(row["header"].get("unix", 0))
 			if t > best_t:
 				best_t = t

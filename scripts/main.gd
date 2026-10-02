@@ -38,23 +38,27 @@ func _ready() -> void:
 		Game.new_game(b, "standard")
 		if args.has("dev"):
 			Game.state.dev_mode = true
-		if args.has("pos"):
-			var pp := String(args["pos"]).split(",")
-			Game.state.positions["player"] = [float(pp[0]), float(pp[1]), 90.0]
-		if args.has("cam"):
-			var cp := String(args["cam"]).split(",")
-			Game.state.positions["_cam"] = [float(cp[0]), float(cp[1]), float(cp[2])]
+		_apply_debug_view()
 		load_world()
 		if args.has("open"):
 			call_deferred("_debug_open", String(args["open"]))
 		return
 	if args.has("preset"):
-		DevTools.load_preset(String(args["preset"]))
+		var pr := DevTools.apply_preset(String(args["preset"]))
+		if not bool(pr["ok"]):
+			push_warning("Preset failed: " + String(pr["reason"]))
+			show_main_menu()
+			return
+		_apply_debug_view()
+		load_world()
 		if args.has("open"):
 			call_deferred("_debug_open", String(args["open"]))
 		return
 	show_main_menu()
-	# Screenshot/inspection helper: --ui=creator [--ui_step=N] [--ui_class=adept]
+	# Screenshot/inspection helpers: --ui=creator [--ui_step=N] [--ui_class=adept],
+	# --ui=practice_<shards|slipstream|turret>
+	if String(args.get("ui", "")).begins_with("practice_"):
+		Minigames.open_practice(screen, String(args["ui"]).substr(9))
 	if String(args.get("ui", "")) == "creator":
 		show_creator()
 		var cc: CharacterCreator = screen.get_child(screen.get_child_count() - 1)
@@ -94,6 +98,17 @@ func start_new_game(build: Dictionary, difficulty: String) -> void:
 	Settings.set_v("difficulty", difficulty)
 	load_world()
 	call_deferred("_intro")
+
+
+## --pos=x,z[,rot] places the party; --cam=yaw,pitch,distance frames the view.
+func _apply_debug_view() -> void:
+	if args.has("pos"):
+		var pp := String(args["pos"]).split(",")
+		var rot := float(pp[2]) if pp.size() > 2 else 90.0
+		Game.state.positions = {"player": [float(pp[0]), float(pp[1]), rot]}
+	if args.has("cam"):
+		var cp := String(args["cam"]).split(",")
+		Game.state.positions["_cam"] = [float(cp[0]), float(cp[1]), float(cp[2])]
 
 
 ## Screenshot/inspection helper for --quickstart runs: --open=<panel>.
@@ -158,6 +173,17 @@ func load_from_slot(slot: String) -> void:
 	var r := Saves.load_game(slot)
 	if not bool(r["ok"]):
 		Events.toast("Load failed: " + String(r["reason"]), "warn")
+		return
+	if slot == "end_of_intro" or Game.state.has_flag("escaped"):
+		# The slice ends at the escape: show that run's summary again.
+		unload_world()
+		clear_screen()
+		var e := EndingUI.new()
+		e.main = self
+		e.outcome = Game.state.ending if not Game.state.ending.is_empty() else EndingUI.compute_outcome()
+		e.saved = true
+		screen.add_child(e)
+		GameAudio.music("music_ending")
 		return
 	load_world()
 	if String(r.get("reason", "")) != "":
