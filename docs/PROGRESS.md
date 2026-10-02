@@ -43,7 +43,7 @@ increment, where the result departs from the plan, and what is still open.
   opening doors into other encounters, and noise carrying through bulkheads.
 - **Fixes:** rest, armor in the armory, glaive 1d10 ×2, a 1d6 mine, hazard avoidance, door rules, muffled noise,
   lighter reclaimers, and a slimmer bay composition.
-- **Current state:** 21/24 seeded bot runs escape. The rest wipe in two hard spots:
+- **Current state:** 22/24 seeded bot runs escape (`tools/bot_sweep.sh 1 8`). The other two wipe in two hard spots:
   - the level-1 Adept at the checkpoint;
   - the martial route's bay fight (Senna killed and the archive loaded add enemies; that is intended
     consequence, but the margin is thin).
