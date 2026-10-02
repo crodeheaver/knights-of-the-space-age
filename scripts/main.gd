@@ -50,6 +50,8 @@ func _ready() -> void:
 		return
 	if args.has("preset"):
 		DevTools.load_preset(String(args["preset"]))
+		if args.has("open"):
+			call_deferred("_debug_open", String(args["open"]))
 		return
 	show_main_menu()
 	# Screenshot/inspection helper: --ui=creator [--ui_step=N] [--ui_class=adept]
@@ -112,6 +114,10 @@ func _debug_open(what: String) -> void:
 		"dev":
 			Game.state.dev_mode = true
 			open_dev_menu()
+		"prestige":
+			var pu := PrestigeUI.new()
+			pu.main = self
+			push_panel(pu)
 		_:
 			open_game_menu(what)
 

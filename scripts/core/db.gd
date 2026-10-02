@@ -27,6 +27,7 @@ var tutorials: Dictionary = {}
 var codex: Dictionary = {}
 var layout: Dictionary = {}
 var dev_presets: Dictionary = {}
+var dev_stages: Dictionary = {}
 var builds: Dictionary = {}
 var dialogues: Dictionary = {}
 var load_errors: Array[String] = []
@@ -59,6 +60,7 @@ func load_all() -> void:
 	codex = _load("codex.json")
 	layout = _load("ship_layout.json")
 	dev_presets = _load("dev_presets.json")
+	dev_stages = _load("dev_stages.json")
 	builds = _load("builds.json")
 	dialogues.clear()
 	var ddir := DATA_DIR + "dialogue/"

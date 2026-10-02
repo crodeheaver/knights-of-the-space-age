@@ -84,7 +84,7 @@ static func compute_outcome() -> Dictionary:
 		var stance := "stays with you" if not leaves else "leaves when the Petrel docks"
 		if cid == "tav7" and st.has_flag("tav7_hosts_warden"):
 			stance += ", carrying WARDEN"
-		if cid == "iona" and String(st.flags.get("iona_training", "")) == "trained":
+		if cid == "iona" and st.has_flag("iona_trained"):
 			stance += ", newly trained in Resonance"
 		out["companions"].append({"id": cid, "name": s.display_name, "influence": inf, "leaves": leaves, "text": "%s (influence %d) %s." % [s.display_name, inf, stance]})
 	var left := int(st.flags.get("evac_left", 0))

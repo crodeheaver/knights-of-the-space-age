@@ -149,6 +149,14 @@ func _tab_character() -> void:
 		var lu := UIKit.button("LEVEL UP (%d available)" % s.levels_available(), func() -> void: main.open_levelup(s.uid))
 		lu.add_theme_color_override("font_color", UIKit.GOOD)
 		c0.add_child(lu)
+	if s.is_player and (s.level >= int(Prestige.data().get("min_level", 6)) or s.prestige != "") and main != null and main.has_method("push_panel"):
+		var sp := UIKit.button("Specialization…" if s.prestige == "" else "Specialization: %s" % Prestige.variant(s.prestige).get("name", ""), func() -> void:
+			var pu := PrestigeUI.new()
+			pu.main = main
+			pu.uid = s.uid
+			main.push_panel(pu))
+		sp.add_theme_color_override("font_color", UIKit.ACCENT2)
+		c0.add_child(sp)
 	c0.add_child(UIKit.label("Health %d / %d" % [s.hp, s.max_hp()], 16))
 	c0.add_child(UIKit.bar(s.hp, s.max_hp(), UIKit.GOOD, 12))
 	c0.add_child(UIKit.label("Energy %d / %d" % [s.energy, s.max_energy()], 16))
@@ -496,15 +504,14 @@ func _tab_party() -> void:
 
 func _iona_training_text() -> String:
 	var st := Game.state
-	var stage := String(st.flags.get("iona_training", ""))
-	match stage:
-		"":
-			return "Iona has Resonance potential she has never trained. High influence and the right conversation could change that."
-		"offered":
-			return "Resonance training: offered. Talk to her when you can."
-		"trained":
-			return "Resonance training: complete — Iona channels Resonance."
-	return "Resonance training: " + stage
+	if st.has_flag("iona_trained"):
+		return "Resonance: awakened. Iona knows Mend and Echo Sense and grows into a Resonance user."
+	if st.has_flag("iona_res_seen"):
+		var inf := int(st.influence.get("iona", 50))
+		if inf >= 70:
+			return "Resonance training: ready. Ask her about it when you talk."
+		return "Resonance training: she feels it, but needs to trust you more (influence %d / 70)." % inf
+	return "Iona has untrained Resonance potential. Use your abilities near her, then talk."
 
 
 # ================================================================ journal

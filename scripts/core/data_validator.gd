@@ -448,7 +448,19 @@ func _prestige() -> void:
 
 func _presets() -> void:
 	for pid in db.dev_presets.keys():
+		if String(pid).begins_with("_"):
+			continue
 		var pr: Dictionary = db.dev_presets[pid]
 		if pr.has("build"):
 			for e in BuildValidator.validate_build(pr["build"]):
 				err("dev preset %s build: %s" % [pid, e])
+		if not db.builds.has(String(pr.get("class", ""))):
+			err("dev preset %s: unknown class %s" % [pid, pr.get("class", "")])
+		var sg := String(pr.get("stage", ""))
+		if sg != "" and not db.dev_stages.has(sg):
+			err("dev preset %s: missing stage %s (regenerate data/dev_stages.json)" % [pid, sg])
+		for c in pr.get("companions", []):
+			if not db.companions.has(String(c)):
+				err("dev preset %s: unknown companion %s" % [pid, c])
+		if pr.has("adopt") and not DB.dict(db.prestige, "variants").has(String(pr["adopt"])):
+			err("dev preset %s: unknown prestige %s" % [pid, pr["adopt"]])

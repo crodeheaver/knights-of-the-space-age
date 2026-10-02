@@ -158,13 +158,31 @@ static func run(bot: PlaythroughBot, style: String) -> void:
 		return
 	# mid-level save/reload check
 	await _reload_check(bot)
-	w = bot.world
 	if bot.halted():
 		return
+	await finale(bot, style)
+
+
+## Command chamber, the bay and the launch. Also the entry point for runs that
+## start from a developer preset jump ("command" or "bay").
+static func finale(bot: PlaythroughBot, style: String, from: String = "archive") -> void:
+	bot.prefs = P[style]
+	if bot.default_prefs.is_empty():
+		bot.default_prefs = ["Continue", "Close", "Leave", "Log off", "(Step"]
 	# ---------------- command
-	await bot.use("arc_intercom", "_dialogue")
-	await bot.pump()
-	bot.expect(bot.flag("command_open") == true, "command chamber opened")
+	if from == "archive":
+		await bot.use("arc_intercom", "_dialogue")
+		await bot.pump()
+		bot.expect(bot.flag("command_open") == true, "command chamber opened")
+	if from != "bay":
+		await _command(bot, style)
+	if bot.halted():
+		return
+	await _bay(bot, style)
+
+
+static func _command(bot: PlaythroughBot, style: String) -> void:
+	var w := bot.world
 	await bot.walk(Vector3(139, 0, 8))
 	await bot.talk("varr")
 	await bot.pump()
@@ -177,8 +195,10 @@ static func run(bot: PlaythroughBot, style: String) -> void:
 	await bot.use("cmd_core", "_dialogue")
 	await bot.pump()
 	bot.note("WARDEN fate: %s" % str(bot.flag("warden_fate")))
-	if bot.halted():
-		return
+
+
+static func _bay(bot: PlaythroughBot, style: String) -> void:
+	var w := bot.world
 	# ---------------- bay
 	await bot.open_door("d_bay")
 	await bot.walk(Vector3(153.5, 0, 8.0))

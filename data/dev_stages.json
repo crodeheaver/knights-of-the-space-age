@@ -1,0 +1,5716 @@
+{
+ "archive": {
+  "area": "archive",
+  "areas_visited": [
+   "cabin",
+   "commons",
+   "corridor",
+   "checkpoint",
+   "armory",
+   "medical",
+   "storage",
+   "engineering",
+   "archive"
+  ],
+  "checks": {
+   "parley_persuade": {
+    "actor": "player",
+    "actor_name": "Ilun Marro",
+    "bonus": 8,
+    "dc": 15,
+    "id": "parley_persuade",
+    "margin": 1,
+    "natural": 8,
+    "skill": "persuasion",
+    "success": true,
+    "total": 16
+   },
+   "triage_split_iona": {
+    "actor": "iona",
+    "actor_name": "Iona Rell",
+    "bonus": 4,
+    "dc": 12,
+    "id": "triage_split_iona",
+    "margin": 9,
+    "natural": 17,
+    "skill": "medicine",
+    "success": true,
+    "total": 21
+   }
+  },
+  "discoveries": [
+   "cx_operator_case",
+   "cx_transfer_orders",
+   "cx_credential",
+   "cx_triage_notes",
+   "cx_marsh_log"
+  ],
+  "encounters": {
+   "enc_archive": {
+    "parleyed": true,
+    "resolution": "parley",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_checkpoint": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_corridor": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_engineering": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_medical": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   }
+  },
+  "enemies": {
+   "chk_d1": {
+    "encounter": "enc_checkpoint",
+    "npc_id": "",
+    "pos": [
+     56.5,
+     5.0,
+     270.0
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "chk_d2": {
+    "alert": true,
+    "encounter": "enc_checkpoint",
+    "home": [
+     57.5,
+     10.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     59.4334907531738,
+     11.0731649398804,
+     -106.51195526123
+    ],
+    "queue": [],
+    "recovery": 2.26666666666667,
+    "round_clock": 1.91466666666667,
+    "state": "dead",
+    "target": "player",
+    "template": "picket_drone"
+   },
+   "chk_turret": {
+    "alert": true,
+    "encounter": "enc_checkpoint",
+    "home": [
+     60.5,
+     2.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     60.5,
+     2.5,
+     -20.5844116210938
+    ],
+    "queue": [],
+    "recovery": 2.26666666666667,
+    "round_clock": 2.65866666666667,
+    "state": "dead",
+    "target": "player",
+    "template": "warden_turret"
+   },
+   "corr_d1": {
+    "encounter": "enc_corridor",
+    "npc_id": "",
+    "pos": [
+     39.5,
+     6.0,
+     -86.6229629516602
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "corr_d2": {
+    "encounter": "enc_corridor",
+    "npc_id": "",
+    "pos": [
+     40.5,
+     7.5,
+     -96.0257949829102
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "eng_sentinel": {
+    "alert": false,
+    "encounter": "enc_engineering",
+    "home": [
+     108.0,
+     7.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     108.0,
+     7.5,
+     -12.9742879867554
+    ],
+    "queue": [],
+    "recovery": 0.0,
+    "round_clock": 2.27733333333333,
+    "state": "dead",
+    "target": "",
+    "template": "warden_sentinel"
+   },
+   "eng_spider": {
+    "alert": false,
+    "encounter": "enc_engineering",
+    "home": [
+     108.5,
+     13.0
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     106.437637329102,
+     16.6190280914307,
+     -31.5717258453369
+    ],
+    "queue": [],
+    "recovery": 0.0,
+    "round_clock": 0.564333333333326,
+    "state": "dead",
+    "target": "",
+    "template": "spider_drone"
+   },
+   "eng_supp": {
+    "alert": false,
+    "encounter": "enc_engineering",
+    "home": [
+     107.0,
+     2.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     106.666389465332,
+     6.10123825073242,
+     -5.22682952880859
+    ],
+    "queue": [],
+    "recovery": 0.0,
+    "round_clock": 0.399333333333327,
+    "state": "dead",
+    "target": "",
+    "template": "suppression_drone"
+   },
+   "med_s1": {
+    "alert": true,
+    "encounter": "enc_medical",
+    "home": [
+     72.5,
+     8.0
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     66.8378295898438,
+     8.22801208496094,
+     -87.6940078735352
+    ],
+    "queue": [],
+    "recovery": 0.416666666666667,
+    "round_clock": 2.59933333333333,
+    "state": "dead",
+    "target": "player",
+    "template": "spider_drone"
+   },
+   "med_s2": {
+    "alert": true,
+    "encounter": "enc_medical",
+    "home": [
+     74.0,
+     11.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     66.7843322753906,
+     8.90941429138184,
+     -109.858764648438
+    ],
+    "queue": [],
+    "recovery": 0.136666666666667,
+    "round_clock": 2.60233333333333,
+    "state": "dead",
+    "target": "player",
+    "template": "spider_drone"
+   }
+  },
+  "flags": {
+   "archive_clear": true,
+   "archive_peace": true,
+   "case_opened": true,
+   "checked_in": true,
+   "checkpoint_by": "credential",
+   "checkpoint_clear": true,
+   "checkpoint_solved": true,
+   "corridor_clear": true,
+   "credential_uses": 1,
+   "dray_met": true,
+   "emergency_started": true,
+   "engineering_clear": true,
+   "iona_recruited": true,
+   "med_supplies_choice": "split",
+   "medical_clear": true,
+   "medical_secured": true,
+   "opening_tone": "compassionate",
+   "pell_met": true,
+   "promised_dray": true,
+   "promised_venns": true,
+   "pump_seal_known": true,
+   "q_ward_met": true,
+   "supplies_decided": true,
+   "survivors": 11,
+   "tav7_recruited": true,
+   "used_credential": true,
+   "venn_emergency_talked": true,
+   "venn_met": true,
+   "ward_choice": "rushed",
+   "ward_decided": true,
+   "ward_open": true,
+   "warden_tracking": true
+  },
+  "ledger": {
+   "align:dray_go": 6.79999999999999,
+   "align:dray_people": 6.79999999999999,
+   "align:meet_everyone": 25.0666666666671,
+   "align:triage": 74.566666666665,
+   "align:venn_hope": 5.29999999999999,
+   "align:venn_kind": 5.29999999999999,
+   "align:venn_promise": 9.29999999999998,
+   "align:ward": 77.0666666666649,
+   "flag:cred_door": 62.0666666666657,
+   "inf:iona:armory_keycard": 56.866666666666,
+   "inf:iona:cred_honest": 62.0666666666657,
+   "inf:iona:meet_everyone": 25.0666666666671,
+   "inf:iona:triage": 74.566666666665,
+   "inf:iona:ward": 77.0666666666649,
+   "inf:iona:ward_iona_opens": 77.0666666666649,
+   "inf:tav7:meet_people": 72.0666666666651,
+   "inf:tav7:meet_thanks": 72.0666666666651,
+   "inf:tav7:triage": 74.566666666665,
+   "inf:tav7:ward": 77.0666666666649,
+   "item:iona_keycard": 25.0666666666671,
+   "item:iona_medpac": 25.0666666666671,
+   "item:triage_split": 74.566666666665,
+   "item:triage_split_r": 74.566666666665,
+   "surv:commons_group": 6.79999999999999,
+   "surv:triage": 74.566666666665,
+   "surv:ward": 77.0666666666649,
+   "trigger:t_checkpoint_tut": 39.2000000000003,
+   "trigger:t_commons_tut": 4.19999999999999,
+   "trigger:t_corridor": 13.5333333333333,
+   "trigger:t_eng_tut": 86.333333333331,
+   "trigger:t_medical": 62.5333333333323,
+   "xp:area:armory": 57.5999999999993,
+   "xp:area:checkpoint": 39.2000000000003,
+   "xp:area:commons": 4.26666666666666,
+   "xp:area:corridor": 13.6,
+   "xp:area:engineering": 86.3999999999977,
+   "xp:area:medical": 62.6666666666657,
+   "xp:area:storage": 81.3333333333313,
+   "xp:armory_open": 56.866666666666,
+   "xp:checkpoint_door": 62.0666666666657,
+   "xp:enemy:arc_breacher": 117.333333333329,
+   "xp:enemy:arc_marksman": 117.333333333329,
+   "xp:enemy:arc_signalist": 117.333333333329,
+   "xp:enemy:chk_d1": 38.0333333333337,
+   "xp:enemy:chk_d2": 44.3333333333334,
+   "xp:enemy:chk_turret": 51.8666666666663,
+   "xp:enemy:corr_d1": 14.7333333333333,
+   "xp:enemy:corr_d2": 24.6666666666671,
+   "xp:enemy:eng_sentinel": 104.466666666663,
+   "xp:enemy:eng_spider": 97.6666666666637,
+   "xp:enemy:eng_supp": 99.0333333333303,
+   "xp:enemy:med_s1": 65.7666666666655,
+   "xp:enemy:med_s2": 71.8333333333318,
+   "xp:iona_meet": 25.0666666666671,
+   "xp:parley": 117.333333333329,
+   "xp:quest_complete:q_ward": 77.0666666666649,
+   "xp:quest_obj:q_main:belongings": 1.0,
+   "xp:quest_obj:q_ward:supplies": 74.566666666665,
+   "xp:quest_obj:q_ward:ward": 77.0666666666649,
+   "xp:quest_stage:q_main:archive": 117.866666666663,
+   "xp:quest_stage:q_main:checkpoint": 13.5333333333333,
+   "xp:quest_stage:q_main:corridor": 6.79999999999999,
+   "xp:quest_stage:q_main:engineering": 72.0666666666651,
+   "xp:quest_stage:q_main:medical": 62.0666666666657,
+   "xp:quest_stage:q_main:muster": 4.26666666666666,
+   "xp:read:cx_marsh_log": 87.3666666666643,
+   "xp:read:cx_transfer_orders": 2.0,
+   "xp:tav7_meet": 72.0666666666651,
+   "xp:triage_skill": 74.566666666665,
+   "xp:ward_open": 77.0666666666649
+  },
+  "npcs": {
+   "benedikt": {
+    "downed": false,
+    "pos": [
+     71.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "corin": {
+    "downed": false,
+    "pos": [
+     65.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "dalia": {
+    "pos": [
+     14.6,
+     5.0
+    ],
+    "rot": 60.0
+   },
+   "ilo": {
+    "pos": [
+     15.3,
+     4.4
+    ],
+    "rot": 60.0
+   },
+   "iona_npc": {
+    "removed": true
+   },
+   "ketterick": {
+    "pos": [
+     16.9,
+     8.9
+    ],
+    "rot": 200.0
+   },
+   "mae": {
+    "downed": false,
+    "pos": [
+     68.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "pell": {
+    "pos": [
+     69.0,
+     -4.0
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "steward": {
+    "pos": [
+     24.0,
+     7.5
+    ],
+    "rot": -90.0
+   },
+   "tav7_npc": {
+    "pos": [
+     75.5,
+     9.5
+    ],
+    "removed": true,
+    "rot": -90.0
+   },
+   "varga": {
+    "pos": [
+     69.0,
+     10.4
+    ],
+    "rot": 180.0
+   },
+   "varr": {
+    "pos": [
+     145.0,
+     9.5
+    ],
+    "rot": -90.0,
+    "sheet": {
+     "active_set": 0,
+     "appearance": {
+      "accent": "a2",
+      "body": "average",
+      "hair": "tail",
+      "hair_color": "h5",
+      "head": "long",
+      "model": "humanoid",
+      "skin": "s1"
+     },
+     "attr_inc": {
+
+     },
+     "attrs": {
+      "cha": 14,
+      "con": 12,
+      "dex": 14,
+      "int": 14,
+      "str": 10,
+      "wis": 13
+     },
+     "background": "",
+     "behavior": "ranged",
+     "class": "enemy",
+     "cooldowns": {
+
+     },
+     "dead": false,
+     "energy": 0,
+     "equipment": {
+      "body": {
+       "id": "security_weave",
+       "uid": "it17",
+       "upgrades": []
+      },
+      "main": {
+       "id": "service_pistol",
+       "uid": "it15",
+       "upgrades": []
+      }
+     },
+     "faction": "crew",
+     "feats": [
+      "prof_pistol",
+      "prof_armor_light",
+      "prof_armor_medium"
+     ],
+     "form": "",
+     "hp": 34,
+     "is_player": false,
+     "kind": "organic",
+     "kit": {
+      "shield_cell": 1
+     },
+     "level": 4,
+     "level_log": [],
+     "name": "Commander Ysolde Varr",
+     "overrides": {
+      "attack_bonus": 0,
+      "bab": 3,
+      "defense_bonus": 0,
+      "hp_max": 34,
+      "resist": {
+
+      },
+      "role": "ranged",
+      "saves": {
+       "fort": 2.0,
+       "ref": 3.0,
+       "will": 4.0
+      },
+      "sight": 14.0,
+      "speed": 4.0,
+      "stationary": false
+     },
+     "powers": [],
+     "prestige": "",
+     "pronouns": "they",
+     "skill_bank": 0,
+     "skills": {
+      "awareness": 5
+     },
+     "statuses": [],
+     "template": "commander_varr",
+     "uid": "varr",
+     "xp": 0
+    }
+   },
+   "ward_a": {
+    "pos": [
+     71.5,
+     -5.5
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "ward_b": {
+    "pos": [
+     73.5,
+     -3.5
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "ward_c": {
+    "pos": [
+     68.0,
+     -6.0
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "ward_d": {
+    "pos": [
+     74.0,
+     -6.5
+    ],
+    "rot": 180.0,
+    "spawn": true
+   }
+  },
+  "party": [
+   "player",
+   "iona",
+   "tav7"
+  ],
+  "player_level": 3,
+  "pos": [
+   113.1,
+   7.6,
+   108.0
+  ],
+  "quests": {
+   "q_lantern": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "Reclaimer signals in the archive hold suggest a scout was cut off from her squad. The archive index terminal may say what the cargo really is."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     }
+    ],
+    "objectives": {
+     "find_senna": "active",
+     "testimony": "active"
+    },
+    "outcome": "",
+    "stage": "find",
+    "state": "active"
+   },
+   "q_main": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "You woke in Transfer Cabin 4-C as the Cinder Wake left Haldis Reach. The purser wants every passenger at Muster Point B."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     },
+     {
+      "t": 0.0,
+      "text": "Check in with Purser Dray in the Crew Commons. There is time to look around before the jump."
+     },
+     {
+      "t": 0.0,
+      "text": "An explosion. The ship's defense network, WARDEN, has declared the passengers obstructions. Purser Dray begged you to help security in Transit Corridor C-3."
+     },
+     {
+      "t": 0.0,
+      "text": "Officer Iona Rell is with you. The forward sections are behind the security checkpoint and its WARDEN-controlled blast door."
+     },
+     {
+      "t": 0.0,
+      "text": "Beyond the checkpoint lies the medical deck, where the wounded wait and a maintenance synthetic is fighting off WARDEN cutters."
+     },
+     {
+      "t": 0.0,
+      "text": "The route to the launch bays runs through the engineering loop around the drive core, then the archive hold."
+     },
+     {
+      "t": 0.0,
+      "text": "Reclaimers from the Lantern Office are in the archive cargo hold, among thousands of stored minds. Command lies beyond."
+     }
+    ],
+    "objectives": {
+     "belongings": "completed",
+     "checkin": "completed",
+     "cross_archive": "active",
+     "cross_engineering": "completed",
+     "muster": "completed",
+     "pass_checkpoint": "completed",
+     "reach_corridor": "completed",
+     "secure_medical": "completed"
+    },
+    "outcome": "",
+    "stage": "archive",
+    "state": "active"
+   },
+   "q_restart": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "Chief Engineer Osei Marsh's last log: restart both coolant pumps. A replacement seal can be fabricated at the workshop bench."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     }
+    ],
+    "objectives": {
+     "pump_n": "active",
+     "pump_s": "active"
+    },
+    "outcome": "",
+    "stage": "pumps",
+    "state": "active"
+   },
+   "q_ward": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "Dr. Ilse Varga has a finite reserve of trauma gel and more patients than doses. Behind the quarantine seal, five passengers are breathing failing air. Iona sealed that door on Commander Varr's order."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest completed."
+     }
+    ],
+    "objectives": {
+     "supplies": "completed",
+     "ward": "completed"
+    },
+    "outcome": "",
+    "stage": "decide",
+    "state": "completed"
+   }
+  },
+  "seen_nodes": {
+   "checkpoint_credential:a": true,
+   "checkpoint_credential:done": true,
+   "checkpoint_credential:iona": true,
+   "checkpoint_credential:start": true,
+   "checkpoint_credential:w": true,
+   "intro_wake:end_c": true,
+   "intro_wake:intercom": true,
+   "intro_wake:memory": true,
+   "intro_wake:start": true,
+   "intro_wake:tut": true,
+   "iona_meet:end_node": true,
+   "iona_meet:medpac": true,
+   "iona_meet:r_comp": true,
+   "iona_meet:situation": true,
+   "iona_meet:start": true,
+   "iona_meet:who_plain": true,
+   "reclaimer_parley:peace": true,
+   "reclaimer_parley:start": true,
+   "reclaimer_parley:talked": true,
+   "steward:boom": true,
+   "steward:checkin": true,
+   "steward:dray2": true,
+   "steward:go_c": true,
+   "steward:hub": true,
+   "steward:people": true,
+   "steward:sal": true,
+   "steward:start": true,
+   "steward:unlock": true,
+   "steward:warden_says": true,
+   "tav7_meet:archives": true,
+   "tav7_meet:end_node": true,
+   "tav7_meet:iona2": true,
+   "tav7_meet:iona3": true,
+   "tav7_meet:people": true,
+   "tav7_meet:start": true,
+   "tav7_meet:tav_ward": true,
+   "tav7_meet:thanks": true,
+   "tav7_meet:why": true,
+   "varga_triage:choose": true,
+   "varga_triage:end_node": true,
+   "varga_triage:split_ok": true,
+   "varga_triage:start": true,
+   "venn_family:after": true,
+   "venn_family:kind": true,
+   "venn_family:promise": true,
+   "venn_family:start": true,
+   "venn_family:where": true,
+   "ward_intercom:end_node": true,
+   "ward_intercom:how_rush": true,
+   "ward_intercom:hub": true,
+   "ward_intercom:open_iona": true,
+   "ward_intercom:opened_rushed": true,
+   "ward_intercom:start": true,
+   "ward_intercom:unseal": true
+  },
+  "tutorials_seen": {
+
+  },
+  "vendor_stock": {
+
+  },
+  "world": {
+   "arc_crane": {
+
+   },
+   "arc_index": {
+
+   },
+   "arc_intercom": {
+
+   },
+   "arc_purge": {
+
+   },
+   "arc_slate": {
+
+   },
+   "armory_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "armory_manifest": {
+
+   },
+   "bay_spec": {
+
+   },
+   "bay_terminal": {
+
+   },
+   "cabin_case": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "cabin_datapad": {
+
+   },
+   "cabin_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "chk_body": {
+
+   },
+   "chk_mine": {
+    "aware_rolls": {
+     "iona": true,
+     "player": true
+    },
+    "disarmed": true,
+    "exploded": true
+   },
+   "chk_terminal": {
+
+   },
+   "cmd_console": {
+
+   },
+   "cmd_core": {
+
+   },
+   "cmd_muster": {
+
+   },
+   "cold_crates": {
+
+   },
+   "commons_cards": {
+
+   },
+   "commons_muster": {
+
+   },
+   "commons_sim": {
+
+   },
+   "commons_vendor": {
+
+   },
+   "corpse_chk_d1": {
+
+   },
+   "corpse_chk_d2": {
+
+   },
+   "corpse_chk_turret": {
+
+   },
+   "corpse_corr_d1": {
+
+   },
+   "corpse_corr_d2": {
+
+   },
+   "corpse_eng_sentinel": {
+
+   },
+   "corpse_eng_spider": {
+
+   },
+   "corpse_eng_supp": {
+
+   },
+   "corpse_med_s1": {
+
+   },
+   "corpse_med_s2": {
+
+   },
+   "corr_body": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "corr_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "corr_ticket": {
+
+   },
+   "crawl_cache": {
+
+   },
+   "crawl_note": {
+
+   },
+   "d_armory": {
+    "done": {
+     "keycard": true
+    },
+    "locked": false,
+    "open": true
+   },
+   "d_bay": {
+
+   },
+   "d_blast": {
+    "locked": false,
+    "open": true
+   },
+   "d_cabin": {
+    "open": true
+   },
+   "d_cold": {
+
+   },
+   "d_command": {
+
+   },
+   "d_commons_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_corridor_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_crawl_exit": {
+
+   },
+   "d_duct_hold": {
+
+   },
+   "d_eng_east": {
+    "open": true
+   },
+   "d_hatch": {
+
+   },
+   "d_lounge": {
+
+   },
+   "d_med_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_storage": {
+    "open": true
+   },
+   "d_vent": {
+
+   },
+   "d_ward": {
+    "locked": false,
+    "open": true
+   },
+   "d_workshop": {
+
+   },
+   "eng_body": {
+
+   },
+   "eng_junction": {
+
+   },
+   "eng_log": {
+
+   },
+   "eng_muster": {
+
+   },
+   "eng_terminal": {
+
+   },
+   "eng_workbench": {
+
+   },
+   "lounge_bag": {
+
+   },
+   "lounge_history": {
+
+   },
+   "lounge_manifest": {
+
+   },
+   "med_muster": {
+
+   },
+   "med_notes": {
+
+   },
+   "med_release": {
+
+   },
+   "med_station": {
+
+   },
+   "med_vendor": {
+
+   },
+   "petrel_ramp": {
+
+   },
+   "plate_1": {
+    "aware_rolls": {
+     "player": true
+    },
+    "detected": true
+   },
+   "plate_2": {
+    "aware_rolls": {
+     "player": true
+    },
+    "detected": true
+   },
+   "plate_3": {
+    "aware_rolls": {
+     "player": true
+    },
+    "detected": true
+   },
+   "plate_4": {
+    "aware_rolls": {
+     "player": true
+    },
+    "detected": true
+   },
+   "pump_n": {
+
+   },
+   "pump_s": {
+
+   },
+   "senna_spot": {
+
+   },
+   "storage_crate": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "vent_n": {
+
+   },
+   "ward_intercom": {
+
+   },
+   "ward_purge": {
+
+   }
+  }
+ },
+ "bay": {
+  "area": "bay",
+  "areas_visited": [
+   "cabin",
+   "commons",
+   "corridor",
+   "checkpoint",
+   "armory",
+   "medical",
+   "storage",
+   "engineering",
+   "archive",
+   "coldstore",
+   "command",
+   "bay"
+  ],
+  "checks": {
+   "parley_persuade": {
+    "actor": "player",
+    "actor_name": "Ilun Marro",
+    "bonus": 8.0,
+    "dc": 15.0,
+    "id": "parley_persuade",
+    "margin": 1.0,
+    "natural": 8.0,
+    "skill": "persuasion",
+    "success": true,
+    "total": 16.0
+   },
+   "triage_split_iona": {
+    "actor": "iona",
+    "actor_name": "Iona Rell",
+    "bonus": 4.0,
+    "dc": 12.0,
+    "id": "triage_split_iona",
+    "margin": 9.0,
+    "natural": 17.0,
+    "skill": "medicine",
+    "success": true,
+    "total": 21.0
+   },
+   "varr_handover": {
+    "actor": "player",
+    "actor_name": "Ilun Marro",
+    "bonus": 10,
+    "dc": 15,
+    "id": "varr_handover",
+    "margin": 5,
+    "natural": 10,
+    "skill": "persuasion",
+    "success": true,
+    "total": 20
+   },
+   "warden_cmd": {
+    "actor": "player",
+    "actor_name": "Ilun Marro",
+    "bonus": 10,
+    "dc": 13,
+    "id": "warden_cmd",
+    "margin": 10,
+    "natural": 13,
+    "skill": "persuasion",
+    "success": true,
+    "total": 23
+   }
+  },
+  "discoveries": [
+   "cx_operator_case",
+   "cx_transfer_orders",
+   "cx_credential",
+   "cx_triage_notes",
+   "cx_marsh_log",
+   "cx_lantern",
+   "cx_warden_spec",
+   "cx_petrel",
+   "cx_custodian"
+  ],
+  "encounters": {
+   "enc_archive": {
+    "parleyed": true,
+    "resolution": "parley",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_checkpoint": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_corridor": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_engineering": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_medical": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   }
+  },
+  "enemies": {
+   "chk_d1": {
+    "encounter": "enc_checkpoint",
+    "npc_id": "",
+    "pos": [
+     56.5,
+     5.0,
+     270.0
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "chk_d2": {
+    "alert": true,
+    "encounter": "enc_checkpoint",
+    "home": [
+     57.5,
+     10.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     59.4334907531738,
+     11.0731649398804,
+     -106.51195526123
+    ],
+    "queue": [],
+    "recovery": 2.26666666666667,
+    "round_clock": 1.91466666666667,
+    "state": "dead",
+    "target": "player",
+    "template": "picket_drone"
+   },
+   "chk_turret": {
+    "alert": true,
+    "encounter": "enc_checkpoint",
+    "home": [
+     60.5,
+     2.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     60.5,
+     2.5,
+     -20.5844116210938
+    ],
+    "queue": [],
+    "recovery": 2.26666666666667,
+    "round_clock": 2.65866666666667,
+    "state": "dead",
+    "target": "player",
+    "template": "warden_turret"
+   },
+   "corr_d1": {
+    "encounter": "enc_corridor",
+    "npc_id": "",
+    "pos": [
+     39.5,
+     6.0,
+     -86.6229629516602
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "corr_d2": {
+    "encounter": "enc_corridor",
+    "npc_id": "",
+    "pos": [
+     40.5,
+     7.5,
+     -96.0257949829102
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "eng_sentinel": {
+    "alert": false,
+    "encounter": "enc_engineering",
+    "home": [
+     108.0,
+     7.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     108.0,
+     7.5,
+     -12.9742879867554
+    ],
+    "queue": [],
+    "recovery": 0.0,
+    "round_clock": 2.27733333333333,
+    "state": "dead",
+    "target": "",
+    "template": "warden_sentinel"
+   },
+   "eng_spider": {
+    "alert": false,
+    "encounter": "enc_engineering",
+    "home": [
+     108.5,
+     13.0
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     106.437637329102,
+     16.6190280914307,
+     -31.5717258453369
+    ],
+    "queue": [],
+    "recovery": 0.0,
+    "round_clock": 0.564333333333326,
+    "state": "dead",
+    "target": "",
+    "template": "spider_drone"
+   },
+   "eng_supp": {
+    "alert": false,
+    "encounter": "enc_engineering",
+    "home": [
+     107.0,
+     2.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     106.666389465332,
+     6.10123825073242,
+     -5.22682952880859
+    ],
+    "queue": [],
+    "recovery": 0.0,
+    "round_clock": 0.399333333333327,
+    "state": "dead",
+    "target": "",
+    "template": "suppression_drone"
+   },
+   "med_s1": {
+    "alert": true,
+    "encounter": "enc_medical",
+    "home": [
+     72.5,
+     8.0
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     66.8378295898438,
+     8.22801208496094,
+     -87.6940078735352
+    ],
+    "queue": [],
+    "recovery": 0.416666666666667,
+    "round_clock": 2.59933333333333,
+    "state": "dead",
+    "target": "player",
+    "template": "spider_drone"
+   },
+   "med_s2": {
+    "alert": true,
+    "encounter": "enc_medical",
+    "home": [
+     74.0,
+     11.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     66.7843322753906,
+     8.90941429138184,
+     -109.858764648438
+    ],
+    "queue": [],
+    "recovery": 0.136666666666667,
+    "round_clock": 2.60233333333333,
+    "state": "dead",
+    "target": "player",
+    "template": "spider_drone"
+   }
+  },
+  "flags": {
+   "archive_clear": true,
+   "archive_fate": "handed_over",
+   "archive_peace": true,
+   "case_opened": true,
+   "checked_in": true,
+   "checkpoint_by": "credential",
+   "checkpoint_clear": true,
+   "checkpoint_solved": true,
+   "command_open": true,
+   "corridor_clear": true,
+   "credential_uses": 1.0,
+   "custodian_revealed": true,
+   "dray_met": true,
+   "emergency_started": true,
+   "engineering_clear": true,
+   "evac_aboard": 11,
+   "evac_choice": "handover",
+   "evac_left": 0,
+   "iona_recruited": true,
+   "lantern_passphrase": true,
+   "launch_decided": true,
+   "med_supplies_choice": "split",
+   "medical_clear": true,
+   "medical_secured": true,
+   "opening_tone": "compassionate",
+   "pell_met": true,
+   "promised_dray": true,
+   "promised_lantern": true,
+   "promised_venns": true,
+   "pump_seal_known": true,
+   "q_ward_met": true,
+   "senna_decided": true,
+   "senna_fate": "bargained",
+   "senna_found": true,
+   "senna_message": true,
+   "senna_met": true,
+   "supplies_decided": true,
+   "survivors": 11.0,
+   "tav7_recruited": true,
+   "used_credential": true,
+   "varr_fate": "cooperated",
+   "varr_humbled": true,
+   "varr_met": true,
+   "varr_q_cust": true,
+   "varr_q_ward": true,
+   "venn_emergency_talked": true,
+   "venn_met": true,
+   "ward_choice": "rushed",
+   "ward_decided": true,
+   "ward_open": true,
+   "warden_command_tried": true,
+   "warden_fate": "commanded",
+   "warden_met": true,
+   "warden_neutralized": true,
+   "warden_tracking": true
+  },
+  "ledger": {
+   "align:dray_go": 6.79999999999999,
+   "align:dray_people": 6.79999999999999,
+   "align:evac": 137.133333333328,
+   "align:meet_everyone": 25.0666666666671,
+   "align:triage": 74.566666666665,
+   "align:venn_hope": 5.29999999999999,
+   "align:venn_kind": 5.29999999999999,
+   "align:venn_promise": 9.29999999999998,
+   "align:ward": 77.0666666666649,
+   "flag:cred_door": 62.0666666666657,
+   "inf:iona:armory_keycard": 56.866666666666,
+   "inf:iona:cred_honest": 62.0666666666657,
+   "inf:iona:evac": 137.133333333328,
+   "inf:iona:meet_everyone": 25.0666666666671,
+   "inf:iona:senna": 125.633333333329,
+   "inf:iona:triage": 74.566666666665,
+   "inf:iona:varr_ward": 137.133333333328,
+   "inf:iona:ward": 77.0666666666649,
+   "inf:iona:ward_iona_opens": 77.0666666666649,
+   "inf:tav7:evac": 137.133333333328,
+   "inf:tav7:meet_people": 72.0666666666651,
+   "inf:tav7:meet_thanks": 72.0666666666651,
+   "inf:tav7:senna": 125.633333333329,
+   "inf:tav7:triage": 74.566666666665,
+   "inf:tav7:ward": 77.0666666666649,
+   "item:iona_keycard": 25.0666666666671,
+   "item:iona_medpac": 25.0666666666671,
+   "item:launch_codes": 137.133333333328,
+   "item:triage_split": 74.566666666665,
+   "item:triage_split_r": 74.566666666665,
+   "surv:commons_group": 6.79999999999999,
+   "surv:triage": 74.566666666665,
+   "surv:ward": 77.0666666666649,
+   "trigger:t_checkpoint_tut": 39.2000000000003,
+   "trigger:t_commons_tut": 4.19999999999999,
+   "trigger:t_corridor": 13.5333333333333,
+   "trigger:t_eng_tut": 86.333333333331,
+   "trigger:t_medical": 62.5333333333323,
+   "xp:area:archive": 117.866666666663,
+   "xp:area:armory": 57.5999999999993,
+   "xp:area:checkpoint": 39.2000000000003,
+   "xp:area:coldstore": 123.999999999996,
+   "xp:area:command": 134.199999999995,
+   "xp:area:commons": 4.26666666666666,
+   "xp:area:corridor": 13.6,
+   "xp:area:engineering": 86.3999999999977,
+   "xp:area:medical": 62.6666666666657,
+   "xp:area:storage": 81.3333333333313,
+   "xp:armory_open": 56.866666666666,
+   "xp:checkpoint_door": 62.0666666666657,
+   "xp:custodian_reveal": 139.133333333328,
+   "xp:enemy:arc_breacher": 117.333333333329,
+   "xp:enemy:arc_marksman": 117.333333333329,
+   "xp:enemy:arc_signalist": 117.333333333329,
+   "xp:enemy:chk_d1": 38.0333333333337,
+   "xp:enemy:chk_d2": 44.3333333333334,
+   "xp:enemy:chk_turret": 51.8666666666663,
+   "xp:enemy:corr_d1": 14.7333333333333,
+   "xp:enemy:corr_d2": 24.6666666666671,
+   "xp:enemy:eng_sentinel": 104.466666666663,
+   "xp:enemy:eng_spider": 97.6666666666637,
+   "xp:enemy:eng_supp": 99.0333333333303,
+   "xp:enemy:med_s1": 65.7666666666655,
+   "xp:enemy:med_s2": 71.8333333333318,
+   "xp:iona_meet": 25.0666666666671,
+   "xp:launch_decision": 137.133333333328,
+   "xp:parley": 117.333333333329,
+   "xp:quest_complete:q_lantern": 125.633333333329,
+   "xp:quest_complete:q_ward": 77.0666666666649,
+   "xp:quest_obj:q_lantern:decide_senna": 125.633333333329,
+   "xp:quest_obj:q_main:belongings": 1.0,
+   "xp:quest_obj:q_ward:supplies": 74.566666666665,
+   "xp:quest_obj:q_ward:ward": 77.0666666666649,
+   "xp:quest_stage:q_main:archive": 117.866666666663,
+   "xp:quest_stage:q_main:bay": 137.133333333328,
+   "xp:quest_stage:q_main:checkpoint": 13.5333333333333,
+   "xp:quest_stage:q_main:command": 134.199999999995,
+   "xp:quest_stage:q_main:corridor": 6.79999999999999,
+   "xp:quest_stage:q_main:engineering": 72.0666666666651,
+   "xp:quest_stage:q_main:medical": 62.0666666666657,
+   "xp:quest_stage:q_main:muster": 4.26666666666666,
+   "xp:read:cx_marsh_log": 87.3666666666643,
+   "xp:read:cx_transfer_orders": 2.0,
+   "xp:tav7_meet": 72.0666666666651,
+   "xp:triage_skill": 74.566666666665,
+   "xp:ward_open": 77.0666666666649,
+   "xp:warden_fate": 139.133333333328
+  },
+  "npcs": {
+   "benedikt": {
+    "downed": false,
+    "pos": [
+     71.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "corin": {
+    "downed": false,
+    "pos": [
+     65.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "dalia": {
+    "pos": [
+     14.6,
+     5.0
+    ],
+    "rot": 60.0
+   },
+   "ilo": {
+    "pos": [
+     15.3,
+     4.4
+    ],
+    "rot": 60.0
+   },
+   "iona_npc": {
+    "removed": true
+   },
+   "ketterick": {
+    "pos": [
+     16.9,
+     8.9
+    ],
+    "rot": 200.0
+   },
+   "mae": {
+    "downed": false,
+    "pos": [
+     68.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "pell": {
+    "pos": [
+     69.0,
+     -4.0
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "senna": {
+    "pos": [
+     124.5,
+     23.6
+    ],
+    "rot": 200.0,
+    "sheet": {
+     "active_set": 0,
+     "appearance": {
+      "accent": "a1",
+      "body": "slight",
+      "hair": "swept",
+      "hair_color": "h3",
+      "head": "angular",
+      "model": "humanoid",
+      "skin": "s6"
+     },
+     "attr_inc": {
+
+     },
+     "attrs": {
+      "cha": 12,
+      "con": 12,
+      "dex": 16,
+      "int": 12,
+      "str": 10,
+      "wis": 12
+     },
+     "background": "",
+     "behavior": "ranged",
+     "class": "enemy",
+     "cooldowns": {
+
+     },
+     "dead": false,
+     "energy": 0,
+     "equipment": {
+      "body": {
+       "id": "travel_jacket",
+       "uid": "it251",
+       "upgrades": []
+      },
+      "main": {
+       "id": "service_pistol",
+       "uid": "it217",
+       "upgrades": []
+      }
+     },
+     "faction": "lantern",
+     "feats": [
+      "prof_pistol",
+      "prof_armor_light"
+     ],
+     "form": "",
+     "hp": 24,
+     "is_player": false,
+     "kind": "organic",
+     "kit": {
+
+     },
+     "level": 3,
+     "level_log": [],
+     "name": "Senna Thorne",
+     "overrides": {
+      "attack_bonus": 0,
+      "bab": 2,
+      "defense_bonus": 0,
+      "hp_max": 24,
+      "resist": {
+
+      },
+      "role": "ranged",
+      "saves": {
+       "fort": 2.0,
+       "ref": 4.0,
+       "will": 2.0
+      },
+      "sight": 12.0,
+      "speed": 4.0,
+      "stationary": false
+     },
+     "powers": [],
+     "prestige": "",
+     "pronouns": "they",
+     "skill_bank": 0,
+     "skills": {
+      "awareness": 6,
+      "stealth": 8
+     },
+     "statuses": [
+      {
+       "id": "downed",
+       "remaining": 1.0,
+       "source": ""
+      }
+     ],
+     "template": "senna_thorne",
+     "uid": "senna",
+     "xp": 0
+    },
+    "spawn": true
+   },
+   "steward": {
+    "pos": [
+     24.0,
+     7.5
+    ],
+    "rot": -90.0
+   },
+   "tav7_npc": {
+    "pos": [
+     75.5,
+     9.5
+    ],
+    "removed": true,
+    "rot": -90.0
+   },
+   "varga": {
+    "pos": [
+     69.0,
+     10.4
+    ],
+    "rot": 180.0
+   },
+   "varr": {
+    "pos": [
+     145.0,
+     9.5
+    ],
+    "rot": -90.0,
+    "sheet": {
+     "active_set": 0,
+     "appearance": {
+      "accent": "a2",
+      "body": "average",
+      "hair": "tail",
+      "hair_color": "h5",
+      "head": "long",
+      "model": "humanoid",
+      "skin": "s1"
+     },
+     "attr_inc": {
+
+     },
+     "attrs": {
+      "cha": 14,
+      "con": 12,
+      "dex": 14,
+      "int": 14,
+      "str": 10,
+      "wis": 13
+     },
+     "background": "",
+     "behavior": "ranged",
+     "class": "enemy",
+     "cooldowns": {
+
+     },
+     "dead": false,
+     "energy": 0,
+     "equipment": {
+      "body": {
+       "id": "security_weave",
+       "uid": "it256",
+       "upgrades": []
+      },
+      "main": {
+       "id": "service_pistol",
+       "uid": "it15",
+       "upgrades": []
+      }
+     },
+     "faction": "crew",
+     "feats": [
+      "prof_pistol",
+      "prof_armor_light",
+      "prof_armor_medium"
+     ],
+     "form": "",
+     "hp": 34,
+     "is_player": false,
+     "kind": "organic",
+     "kit": {
+      "shield_cell": 1
+     },
+     "level": 4,
+     "level_log": [],
+     "name": "Commander Ysolde Varr",
+     "overrides": {
+      "attack_bonus": 0,
+      "bab": 3,
+      "defense_bonus": 0,
+      "hp_max": 34,
+      "resist": {
+
+      },
+      "role": "ranged",
+      "saves": {
+       "fort": 2.0,
+       "ref": 3.0,
+       "will": 4.0
+      },
+      "sight": 14.0,
+      "speed": 4.0,
+      "stationary": false
+     },
+     "powers": [],
+     "prestige": "",
+     "pronouns": "they",
+     "skill_bank": 0,
+     "skills": {
+      "awareness": 5
+     },
+     "statuses": [],
+     "template": "commander_varr",
+     "uid": "varr",
+     "xp": 0
+    }
+   },
+   "ward_a": {
+    "pos": [
+     71.5,
+     -5.5
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "ward_b": {
+    "pos": [
+     73.5,
+     -3.5
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "ward_c": {
+    "pos": [
+     68.0,
+     -6.0
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "ward_d": {
+    "pos": [
+     74.0,
+     -6.5
+    ],
+    "rot": 180.0,
+    "spawn": true
+   }
+  },
+  "party": [
+   "player",
+   "iona",
+   "tav7"
+  ],
+  "player_level": 4,
+  "pos": [
+   150.9,
+   7.7,
+   84.0
+  ],
+  "quests": {
+   "q_lantern": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "Reclaimer signals in the archive hold suggest a scout was cut off from her squad. The archive index terminal may say what the cargo really is."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     },
+     {
+      "t": 0.0,
+      "text": "You found Senna Thorne, wounded, in cold storage. What happens to her now is your call."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest completed."
+     }
+    ],
+    "objectives": {
+     "decide_senna": "completed",
+     "find_senna": "completed",
+     "testimony": "active"
+    },
+    "outcome": "",
+    "stage": "decide",
+    "state": "completed"
+   },
+   "q_main": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "You woke in Transfer Cabin 4-C as the Cinder Wake left Haldis Reach. The purser wants every passenger at Muster Point B."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     },
+     {
+      "t": 0.0,
+      "text": "Check in with Purser Dray in the Crew Commons. There is time to look around before the jump."
+     },
+     {
+      "t": 0.0,
+      "text": "An explosion. The ship's defense network, WARDEN, has declared the passengers obstructions. Purser Dray begged you to help security in Transit Corridor C-3."
+     },
+     {
+      "t": 0.0,
+      "text": "Officer Iona Rell is with you. The forward sections are behind the security checkpoint and its WARDEN-controlled blast door."
+     },
+     {
+      "t": 0.0,
+      "text": "Beyond the checkpoint lies the medical deck, where the wounded wait and a maintenance synthetic is fighting off WARDEN cutters."
+     },
+     {
+      "t": 0.0,
+      "text": "The route to the launch bays runs through the engineering loop around the drive core, then the archive hold."
+     },
+     {
+      "t": 0.0,
+      "text": "Reclaimers from the Lantern Office are in the archive cargo hold, among thousands of stored minds. Command lies beyond."
+     },
+     {
+      "t": 0.0,
+      "text": "Commander Ysolde Varr holds launch control. Nothing launches without her codes — or without a decision about what the Petrel carries."
+     },
+     {
+      "t": 0.0,
+      "text": "Evacuation Bay 2. The Petrel waits, and so does Marshal Teodor Quill."
+     }
+    ],
+    "objectives": {
+     "belongings": "completed",
+     "board": "active",
+     "checkin": "completed",
+     "cross_archive": "completed",
+     "cross_engineering": "completed",
+     "launch_decision": "completed",
+     "muster": "completed",
+     "pass_checkpoint": "completed",
+     "reach_corridor": "completed",
+     "resolve_bay": "active",
+     "secure_medical": "completed"
+    },
+    "outcome": "",
+    "stage": "bay",
+    "state": "active"
+   },
+   "q_restart": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "Chief Engineer Osei Marsh's last log: restart both coolant pumps. A replacement seal can be fabricated at the workshop bench."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     }
+    ],
+    "objectives": {
+     "pump_n": "active",
+     "pump_s": "active"
+    },
+    "outcome": "",
+    "stage": "pumps",
+    "state": "active"
+   },
+   "q_ward": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "Dr. Ilse Varga has a finite reserve of trauma gel and more patients than doses. Behind the quarantine seal, five passengers are breathing failing air. Iona sealed that door on Commander Varr's order."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest completed."
+     }
+    ],
+    "objectives": {
+     "supplies": "completed",
+     "ward": "completed"
+    },
+    "outcome": "",
+    "stage": "decide",
+    "state": "completed"
+   }
+  },
+  "seen_nodes": {
+   "checkpoint_credential:a": true,
+   "checkpoint_credential:done": true,
+   "checkpoint_credential:iona": true,
+   "checkpoint_credential:start": true,
+   "checkpoint_credential:w": true,
+   "command_intercom:iona": true,
+   "command_intercom:open": true,
+   "command_intercom:start": true,
+   "intro_wake:end_c": true,
+   "intro_wake:intercom": true,
+   "intro_wake:memory": true,
+   "intro_wake:start": true,
+   "intro_wake:tut": true,
+   "iona_meet:end_node": true,
+   "iona_meet:medpac": true,
+   "iona_meet:r_comp": true,
+   "iona_meet:situation": true,
+   "iona_meet:start": true,
+   "iona_meet:who_plain": true,
+   "reclaimer_parley:peace": true,
+   "reclaimer_parley:start": true,
+   "reclaimer_parley:talked": true,
+   "senna:bargain": true,
+   "senna:decide": true,
+   "senna:end_node": true,
+   "senna:lantern": true,
+   "senna:lantern_tav": true,
+   "senna:start": true,
+   "senna:who": true,
+   "steward:boom": true,
+   "steward:checkin": true,
+   "steward:dray2": true,
+   "steward:go_c": true,
+   "steward:hub": true,
+   "steward:people": true,
+   "steward:sal": true,
+   "steward:start": true,
+   "steward:unlock": true,
+   "steward:warden_says": true,
+   "tav7_meet:archives": true,
+   "tav7_meet:end_node": true,
+   "tav7_meet:iona2": true,
+   "tav7_meet:iona3": true,
+   "tav7_meet:people": true,
+   "tav7_meet:start": true,
+   "tav7_meet:tav_ward": true,
+   "tav7_meet:thanks": true,
+   "tav7_meet:why": true,
+   "varga_triage:choose": true,
+   "varga_triage:end_node": true,
+   "varga_triage:split_ok": true,
+   "varga_triage:start": true,
+   "varr:capacity": true,
+   "varr:codes": true,
+   "varr:d_agree": true,
+   "varr:d_obj": true,
+   "varr:decide": true,
+   "varr:hub": true,
+   "varr:nobreach": true,
+   "varr:q_cust": true,
+   "varr:q_ward": true,
+   "varr:q_ward2": true,
+   "varr:start_cred": true,
+   "varr:ward_back_iona": true,
+   "varr:warden_hint": true,
+   "venn_family:after": true,
+   "venn_family:kind": true,
+   "venn_family:promise": true,
+   "venn_family:start": true,
+   "venn_family:where": true,
+   "ward_intercom:end_node": true,
+   "ward_intercom:how_rush": true,
+   "ward_intercom:hub": true,
+   "ward_intercom:open_iona": true,
+   "ward_intercom:opened_rushed": true,
+   "ward_intercom:start": true,
+   "ward_intercom:unseal": true,
+   "warden_core:cmd_ok": true,
+   "warden_core:command": true,
+   "warden_core:end_node": true,
+   "warden_core:hello": true,
+   "warden_core:hub": true,
+   "warden_core:start": true,
+   "warden_core:what": true,
+   "warden_core:what_iona": true,
+   "warden_core:what_tav2": true
+  },
+  "tutorials_seen": {
+
+  },
+  "vendor_stock": {
+
+  },
+  "world": {
+   "arc_crane": {
+
+   },
+   "arc_index": {
+
+   },
+   "arc_intercom": {
+
+   },
+   "arc_purge": {
+
+   },
+   "arc_slate": {
+
+   },
+   "armory_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "armory_manifest": {
+
+   },
+   "bay_spec": {
+
+   },
+   "bay_terminal": {
+
+   },
+   "cabin_case": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "cabin_datapad": {
+
+   },
+   "cabin_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "chk_body": {
+
+   },
+   "chk_mine": {
+    "aware_rolls": {
+     "iona": true,
+     "player": true
+    },
+    "disarmed": true,
+    "exploded": true
+   },
+   "chk_terminal": {
+
+   },
+   "cmd_console": {
+
+   },
+   "cmd_core": {
+
+   },
+   "cmd_muster": {
+
+   },
+   "cold_crates": {
+
+   },
+   "commons_cards": {
+
+   },
+   "commons_muster": {
+
+   },
+   "commons_sim": {
+
+   },
+   "commons_vendor": {
+
+   },
+   "corpse_chk_d1": {
+
+   },
+   "corpse_chk_d2": {
+
+   },
+   "corpse_chk_turret": {
+
+   },
+   "corpse_corr_d1": {
+
+   },
+   "corpse_corr_d2": {
+
+   },
+   "corpse_eng_sentinel": {
+
+   },
+   "corpse_eng_spider": {
+
+   },
+   "corpse_eng_supp": {
+
+   },
+   "corpse_med_s1": {
+
+   },
+   "corpse_med_s2": {
+
+   },
+   "corr_body": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "corr_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "corr_ticket": {
+
+   },
+   "crawl_cache": {
+
+   },
+   "crawl_note": {
+
+   },
+   "d_armory": {
+    "done": {
+     "keycard": true
+    },
+    "locked": false,
+    "open": true
+   },
+   "d_bay": {
+    "locked": false,
+    "open": true
+   },
+   "d_blast": {
+    "locked": false,
+    "open": true
+   },
+   "d_cabin": {
+    "open": true
+   },
+   "d_cold": {
+    "open": true
+   },
+   "d_command": {
+    "locked": false,
+    "open": true
+   },
+   "d_commons_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_corridor_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_crawl_exit": {
+
+   },
+   "d_duct_hold": {
+
+   },
+   "d_eng_east": {
+    "open": true
+   },
+   "d_hatch": {
+
+   },
+   "d_lounge": {
+
+   },
+   "d_med_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_storage": {
+    "open": true
+   },
+   "d_vent": {
+
+   },
+   "d_ward": {
+    "locked": false,
+    "open": true
+   },
+   "d_workshop": {
+
+   },
+   "eng_body": {
+
+   },
+   "eng_junction": {
+
+   },
+   "eng_log": {
+
+   },
+   "eng_muster": {
+
+   },
+   "eng_terminal": {
+
+   },
+   "eng_workbench": {
+
+   },
+   "lounge_bag": {
+
+   },
+   "lounge_history": {
+
+   },
+   "lounge_manifest": {
+
+   },
+   "med_muster": {
+
+   },
+   "med_notes": {
+
+   },
+   "med_release": {
+
+   },
+   "med_station": {
+
+   },
+   "med_vendor": {
+
+   },
+   "petrel_ramp": {
+
+   },
+   "plate_1": {
+    "aware_rolls": {
+     "player": true
+    },
+    "detected": true
+   },
+   "plate_2": {
+    "aware_rolls": {
+     "player": true
+    },
+    "detected": true
+   },
+   "plate_3": {
+    "aware_rolls": {
+     "player": true
+    },
+    "detected": true
+   },
+   "plate_4": {
+    "aware_rolls": {
+     "player": true
+    },
+    "detected": true
+   },
+   "pump_n": {
+
+   },
+   "pump_s": {
+
+   },
+   "senna_spot": {
+    "aware_rolls": {
+     "player": true
+    },
+    "detected": true
+   },
+   "storage_crate": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "vent_n": {
+
+   },
+   "ward_intercom": {
+
+   },
+   "ward_purge": {
+
+   }
+  }
+ },
+ "checkpoint": {
+  "area": "checkpoint",
+  "areas_visited": [
+   "cabin",
+   "commons",
+   "corridor",
+   "checkpoint"
+  ],
+  "checks": {
+
+  },
+  "discoveries": [
+   "cx_operator_case",
+   "cx_transfer_orders"
+  ],
+  "encounters": {
+   "enc_archive": {
+    "spawned": false,
+    "state": "pending"
+   },
+   "enc_checkpoint": {
+    "spawned": true,
+    "state": "active"
+   },
+   "enc_corridor": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_engineering": {
+    "spawned": false,
+    "state": "pending"
+   },
+   "enc_medical": {
+    "spawned": false,
+    "state": "pending"
+   }
+  },
+  "enemies": {
+   "chk_d1": {
+    "encounter": "enc_checkpoint",
+    "npc_id": "",
+    "pos": [
+     56.5,
+     5.0,
+     270.0
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "corr_d1": {
+    "encounter": "enc_corridor",
+    "npc_id": "",
+    "pos": [
+     39.5,
+     6.0,
+     -86.6229629516602
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "corr_d2": {
+    "encounter": "enc_corridor",
+    "npc_id": "",
+    "pos": [
+     40.5,
+     7.5,
+     -96.0257949829102
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   }
+  },
+  "flags": {
+   "case_opened": true,
+   "checked_in": true,
+   "corridor_clear": true,
+   "dray_met": true,
+   "emergency_started": true,
+   "iona_recruited": true,
+   "opening_tone": "compassionate",
+   "promised_dray": true,
+   "promised_venns": true,
+   "survivors": 4,
+   "venn_emergency_talked": true,
+   "venn_met": true
+  },
+  "ledger": {
+   "align:dray_go": 6.79999999999999,
+   "align:dray_people": 6.79999999999999,
+   "align:meet_everyone": 25.0666666666671,
+   "align:venn_hope": 5.29999999999999,
+   "align:venn_kind": 5.29999999999999,
+   "align:venn_promise": 9.29999999999998,
+   "inf:iona:meet_everyone": 25.0666666666671,
+   "item:iona_keycard": 25.0666666666671,
+   "item:iona_medpac": 25.0666666666671,
+   "surv:commons_group": 6.79999999999999,
+   "trigger:t_commons_tut": 4.19999999999999,
+   "trigger:t_corridor": 13.5333333333333,
+   "xp:area:commons": 4.26666666666666,
+   "xp:area:corridor": 13.6,
+   "xp:enemy:chk_d1": 38.0333333333337,
+   "xp:enemy:corr_d1": 14.7333333333333,
+   "xp:enemy:corr_d2": 24.6666666666671,
+   "xp:iona_meet": 25.0666666666671,
+   "xp:quest_obj:q_main:belongings": 1.0,
+   "xp:quest_stage:q_main:checkpoint": 13.5333333333333,
+   "xp:quest_stage:q_main:corridor": 6.79999999999999,
+   "xp:quest_stage:q_main:muster": 4.26666666666666,
+   "xp:read:cx_transfer_orders": 2.0
+  },
+  "npcs": {
+   "benedikt": {
+    "pos": [
+     71.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "corin": {
+    "pos": [
+     65.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "dalia": {
+    "pos": [
+     14.6,
+     5.0
+    ],
+    "rot": 60.0
+   },
+   "ilo": {
+    "pos": [
+     15.3,
+     4.4
+    ],
+    "rot": 60.0
+   },
+   "iona_npc": {
+    "removed": true
+   },
+   "ketterick": {
+    "pos": [
+     16.9,
+     8.9
+    ],
+    "rot": 200.0
+   },
+   "mae": {
+    "pos": [
+     68.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "steward": {
+    "pos": [
+     24.0,
+     7.5
+    ],
+    "rot": -90.0
+   },
+   "tav7_npc": {
+    "pos": [
+     75.5,
+     9.5
+    ],
+    "rot": -90.0
+   },
+   "varga": {
+    "pos": [
+     69.0,
+     10.4
+    ],
+    "rot": 180.0
+   },
+   "varr": {
+    "pos": [
+     145.0,
+     9.5
+    ],
+    "rot": -90.0,
+    "sheet": {
+     "active_set": 0,
+     "appearance": {
+      "accent": "a2",
+      "body": "average",
+      "hair": "tail",
+      "hair_color": "h5",
+      "head": "long",
+      "model": "humanoid",
+      "skin": "s1"
+     },
+     "attr_inc": {
+
+     },
+     "attrs": {
+      "cha": 14,
+      "con": 12,
+      "dex": 14,
+      "int": 14,
+      "str": 10,
+      "wis": 13
+     },
+     "background": "",
+     "behavior": "ranged",
+     "class": "enemy",
+     "cooldowns": {
+
+     },
+     "dead": false,
+     "energy": 0,
+     "equipment": {
+      "body": {
+       "id": "security_weave",
+       "uid": "it17",
+       "upgrades": []
+      },
+      "main": {
+       "id": "service_pistol",
+       "uid": "it15",
+       "upgrades": []
+      }
+     },
+     "faction": "crew",
+     "feats": [
+      "prof_pistol",
+      "prof_armor_light",
+      "prof_armor_medium"
+     ],
+     "form": "",
+     "hp": 34,
+     "is_player": false,
+     "kind": "organic",
+     "kit": {
+      "shield_cell": 1
+     },
+     "level": 4,
+     "level_log": [],
+     "name": "Commander Ysolde Varr",
+     "overrides": {
+      "attack_bonus": 0,
+      "bab": 3,
+      "defense_bonus": 0,
+      "hp_max": 34,
+      "resist": {
+
+      },
+      "role": "ranged",
+      "saves": {
+       "fort": 2.0,
+       "ref": 3.0,
+       "will": 4.0
+      },
+      "sight": 14.0,
+      "speed": 4.0,
+      "stationary": false
+     },
+     "powers": [],
+     "prestige": "",
+     "pronouns": "they",
+     "skill_bank": 0,
+     "skills": {
+      "awareness": 5
+     },
+     "statuses": [],
+     "template": "commander_varr",
+     "uid": "varr",
+     "xp": 0
+    }
+   }
+  },
+  "party": [
+   "player",
+   "iona"
+  ],
+  "player_level": 1,
+  "pos": [
+   48.0,
+   7.7,
+   73.0
+  ],
+  "quests": {
+   "q_main": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "You woke in Transfer Cabin 4-C as the Cinder Wake left Haldis Reach. The purser wants every passenger at Muster Point B."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     },
+     {
+      "t": 0.0,
+      "text": "Check in with Purser Dray in the Crew Commons. There is time to look around before the jump."
+     },
+     {
+      "t": 0.0,
+      "text": "An explosion. The ship's defense network, WARDEN, has declared the passengers obstructions. Purser Dray begged you to help security in Transit Corridor C-3."
+     },
+     {
+      "t": 0.0,
+      "text": "Officer Iona Rell is with you. The forward sections are behind the security checkpoint and its WARDEN-controlled blast door."
+     }
+    ],
+    "objectives": {
+     "belongings": "completed",
+     "checkin": "completed",
+     "muster": "completed",
+     "pass_checkpoint": "active",
+     "reach_corridor": "completed"
+    },
+    "outcome": "",
+    "stage": "checkpoint",
+    "state": "active"
+   }
+  },
+  "seen_nodes": {
+   "intro_wake:end_c": true,
+   "intro_wake:intercom": true,
+   "intro_wake:memory": true,
+   "intro_wake:start": true,
+   "intro_wake:tut": true,
+   "iona_meet:end_node": true,
+   "iona_meet:medpac": true,
+   "iona_meet:r_comp": true,
+   "iona_meet:situation": true,
+   "iona_meet:start": true,
+   "iona_meet:who_plain": true,
+   "steward:boom": true,
+   "steward:checkin": true,
+   "steward:dray2": true,
+   "steward:go_c": true,
+   "steward:hub": true,
+   "steward:people": true,
+   "steward:sal": true,
+   "steward:start": true,
+   "steward:unlock": true,
+   "steward:warden_says": true,
+   "venn_family:after": true,
+   "venn_family:kind": true,
+   "venn_family:promise": true,
+   "venn_family:start": true,
+   "venn_family:where": true
+  },
+  "tutorials_seen": {
+
+  },
+  "vendor_stock": {
+
+  },
+  "world": {
+   "arc_crane": {
+
+   },
+   "arc_index": {
+
+   },
+   "arc_intercom": {
+
+   },
+   "arc_purge": {
+
+   },
+   "arc_slate": {
+
+   },
+   "armory_locker": {
+
+   },
+   "armory_manifest": {
+
+   },
+   "bay_spec": {
+
+   },
+   "bay_terminal": {
+
+   },
+   "cabin_case": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "cabin_datapad": {
+
+   },
+   "cabin_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "chk_body": {
+
+   },
+   "chk_mine": {
+    "aware_rolls": {
+     "iona": true,
+     "player": true
+    }
+   },
+   "chk_terminal": {
+
+   },
+   "cmd_console": {
+
+   },
+   "cmd_core": {
+
+   },
+   "cmd_muster": {
+
+   },
+   "cold_crates": {
+
+   },
+   "commons_cards": {
+
+   },
+   "commons_muster": {
+
+   },
+   "commons_sim": {
+
+   },
+   "commons_vendor": {
+
+   },
+   "corpse_corr_d1": {
+
+   },
+   "corpse_corr_d2": {
+
+   },
+   "corr_body": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "corr_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "corr_ticket": {
+
+   },
+   "crawl_cache": {
+
+   },
+   "crawl_note": {
+
+   },
+   "d_armory": {
+
+   },
+   "d_bay": {
+
+   },
+   "d_blast": {
+
+   },
+   "d_cabin": {
+    "open": true
+   },
+   "d_cold": {
+
+   },
+   "d_command": {
+
+   },
+   "d_commons_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_corridor_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_crawl_exit": {
+
+   },
+   "d_duct_hold": {
+
+   },
+   "d_eng_east": {
+
+   },
+   "d_hatch": {
+
+   },
+   "d_lounge": {
+
+   },
+   "d_med_east": {
+
+   },
+   "d_storage": {
+
+   },
+   "d_vent": {
+
+   },
+   "d_ward": {
+
+   },
+   "d_workshop": {
+
+   },
+   "eng_body": {
+
+   },
+   "eng_junction": {
+
+   },
+   "eng_log": {
+
+   },
+   "eng_muster": {
+
+   },
+   "eng_terminal": {
+
+   },
+   "eng_workbench": {
+
+   },
+   "lounge_bag": {
+
+   },
+   "lounge_history": {
+
+   },
+   "lounge_manifest": {
+
+   },
+   "med_muster": {
+
+   },
+   "med_notes": {
+
+   },
+   "med_release": {
+
+   },
+   "med_station": {
+
+   },
+   "med_vendor": {
+
+   },
+   "petrel_ramp": {
+
+   },
+   "plate_1": {
+
+   },
+   "plate_2": {
+
+   },
+   "plate_3": {
+
+   },
+   "plate_4": {
+
+   },
+   "pump_n": {
+
+   },
+   "pump_s": {
+
+   },
+   "senna_spot": {
+
+   },
+   "storage_crate": {
+
+   },
+   "vent_n": {
+
+   },
+   "ward_intercom": {
+
+   },
+   "ward_purge": {
+
+   }
+  }
+ },
+ "command": {
+  "area": "command",
+  "areas_visited": [
+   "cabin",
+   "commons",
+   "corridor",
+   "checkpoint",
+   "armory",
+   "medical",
+   "storage",
+   "engineering",
+   "archive",
+   "coldstore",
+   "command"
+  ],
+  "checks": {
+   "parley_persuade": {
+    "actor": "player",
+    "actor_name": "Ilun Marro",
+    "bonus": 8.0,
+    "dc": 15.0,
+    "id": "parley_persuade",
+    "margin": 1.0,
+    "natural": 8.0,
+    "skill": "persuasion",
+    "success": true,
+    "total": 16.0
+   },
+   "triage_split_iona": {
+    "actor": "iona",
+    "actor_name": "Iona Rell",
+    "bonus": 4.0,
+    "dc": 12.0,
+    "id": "triage_split_iona",
+    "margin": 9.0,
+    "natural": 17.0,
+    "skill": "medicine",
+    "success": true,
+    "total": 21.0
+   }
+  },
+  "discoveries": [
+   "cx_operator_case",
+   "cx_transfer_orders",
+   "cx_credential",
+   "cx_triage_notes",
+   "cx_marsh_log",
+   "cx_lantern"
+  ],
+  "encounters": {
+   "enc_archive": {
+    "parleyed": true,
+    "resolution": "parley",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_checkpoint": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_corridor": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_engineering": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_medical": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   }
+  },
+  "enemies": {
+   "chk_d1": {
+    "encounter": "enc_checkpoint",
+    "npc_id": "",
+    "pos": [
+     56.5,
+     5.0,
+     270.0
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "chk_d2": {
+    "alert": true,
+    "encounter": "enc_checkpoint",
+    "home": [
+     57.5,
+     10.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     59.4334907531738,
+     11.0731649398804,
+     -106.51195526123
+    ],
+    "queue": [],
+    "recovery": 2.26666666666667,
+    "round_clock": 1.91466666666667,
+    "state": "dead",
+    "target": "player",
+    "template": "picket_drone"
+   },
+   "chk_turret": {
+    "alert": true,
+    "encounter": "enc_checkpoint",
+    "home": [
+     60.5,
+     2.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     60.5,
+     2.5,
+     -20.5844116210938
+    ],
+    "queue": [],
+    "recovery": 2.26666666666667,
+    "round_clock": 2.65866666666667,
+    "state": "dead",
+    "target": "player",
+    "template": "warden_turret"
+   },
+   "corr_d1": {
+    "encounter": "enc_corridor",
+    "npc_id": "",
+    "pos": [
+     39.5,
+     6.0,
+     -86.6229629516602
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "corr_d2": {
+    "encounter": "enc_corridor",
+    "npc_id": "",
+    "pos": [
+     40.5,
+     7.5,
+     -96.0257949829102
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "eng_sentinel": {
+    "alert": false,
+    "encounter": "enc_engineering",
+    "home": [
+     108.0,
+     7.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     108.0,
+     7.5,
+     -12.9742879867554
+    ],
+    "queue": [],
+    "recovery": 0.0,
+    "round_clock": 2.27733333333333,
+    "state": "dead",
+    "target": "",
+    "template": "warden_sentinel"
+   },
+   "eng_spider": {
+    "alert": false,
+    "encounter": "enc_engineering",
+    "home": [
+     108.5,
+     13.0
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     106.437637329102,
+     16.6190280914307,
+     -31.5717258453369
+    ],
+    "queue": [],
+    "recovery": 0.0,
+    "round_clock": 0.564333333333326,
+    "state": "dead",
+    "target": "",
+    "template": "spider_drone"
+   },
+   "eng_supp": {
+    "alert": false,
+    "encounter": "enc_engineering",
+    "home": [
+     107.0,
+     2.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     106.666389465332,
+     6.10123825073242,
+     -5.22682952880859
+    ],
+    "queue": [],
+    "recovery": 0.0,
+    "round_clock": 0.399333333333327,
+    "state": "dead",
+    "target": "",
+    "template": "suppression_drone"
+   },
+   "med_s1": {
+    "alert": true,
+    "encounter": "enc_medical",
+    "home": [
+     72.5,
+     8.0
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     66.8378295898438,
+     8.22801208496094,
+     -87.6940078735352
+    ],
+    "queue": [],
+    "recovery": 0.416666666666667,
+    "round_clock": 2.59933333333333,
+    "state": "dead",
+    "target": "player",
+    "template": "spider_drone"
+   },
+   "med_s2": {
+    "alert": true,
+    "encounter": "enc_medical",
+    "home": [
+     74.0,
+     11.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     66.7843322753906,
+     8.90941429138184,
+     -109.858764648438
+    ],
+    "queue": [],
+    "recovery": 0.136666666666667,
+    "round_clock": 2.60233333333333,
+    "state": "dead",
+    "target": "player",
+    "template": "spider_drone"
+   }
+  },
+  "flags": {
+   "archive_clear": true,
+   "archive_peace": true,
+   "case_opened": true,
+   "checked_in": true,
+   "checkpoint_by": "credential",
+   "checkpoint_clear": true,
+   "checkpoint_solved": true,
+   "command_open": true,
+   "corridor_clear": true,
+   "credential_uses": 1.0,
+   "dray_met": true,
+   "emergency_started": true,
+   "engineering_clear": true,
+   "iona_recruited": true,
+   "lantern_passphrase": true,
+   "med_supplies_choice": "split",
+   "medical_clear": true,
+   "medical_secured": true,
+   "opening_tone": "compassionate",
+   "pell_met": true,
+   "promised_dray": true,
+   "promised_lantern": true,
+   "promised_venns": true,
+   "pump_seal_known": true,
+   "q_ward_met": true,
+   "senna_decided": true,
+   "senna_fate": "bargained",
+   "senna_found": true,
+   "senna_message": true,
+   "senna_met": true,
+   "supplies_decided": true,
+   "survivors": 11.0,
+   "tav7_recruited": true,
+   "used_credential": true,
+   "venn_emergency_talked": true,
+   "venn_met": true,
+   "ward_choice": "rushed",
+   "ward_decided": true,
+   "ward_open": true,
+   "warden_tracking": true
+  },
+  "ledger": {
+   "align:dray_go": 6.79999999999999,
+   "align:dray_people": 6.79999999999999,
+   "align:meet_everyone": 25.0666666666671,
+   "align:triage": 74.566666666665,
+   "align:venn_hope": 5.29999999999999,
+   "align:venn_kind": 5.29999999999999,
+   "align:venn_promise": 9.29999999999998,
+   "align:ward": 77.0666666666649,
+   "flag:cred_door": 62.0666666666657,
+   "inf:iona:armory_keycard": 56.866666666666,
+   "inf:iona:cred_honest": 62.0666666666657,
+   "inf:iona:meet_everyone": 25.0666666666671,
+   "inf:iona:senna": 125.633333333329,
+   "inf:iona:triage": 74.566666666665,
+   "inf:iona:ward": 77.0666666666649,
+   "inf:iona:ward_iona_opens": 77.0666666666649,
+   "inf:tav7:meet_people": 72.0666666666651,
+   "inf:tav7:meet_thanks": 72.0666666666651,
+   "inf:tav7:senna": 125.633333333329,
+   "inf:tav7:triage": 74.566666666665,
+   "inf:tav7:ward": 77.0666666666649,
+   "item:iona_keycard": 25.0666666666671,
+   "item:iona_medpac": 25.0666666666671,
+   "item:triage_split": 74.566666666665,
+   "item:triage_split_r": 74.566666666665,
+   "surv:commons_group": 6.79999999999999,
+   "surv:triage": 74.566666666665,
+   "surv:ward": 77.0666666666649,
+   "trigger:t_checkpoint_tut": 39.2000000000003,
+   "trigger:t_commons_tut": 4.19999999999999,
+   "trigger:t_corridor": 13.5333333333333,
+   "trigger:t_eng_tut": 86.333333333331,
+   "trigger:t_medical": 62.5333333333323,
+   "xp:area:archive": 117.866666666663,
+   "xp:area:armory": 57.5999999999993,
+   "xp:area:checkpoint": 39.2000000000003,
+   "xp:area:coldstore": 123.999999999996,
+   "xp:area:commons": 4.26666666666666,
+   "xp:area:corridor": 13.6,
+   "xp:area:engineering": 86.3999999999977,
+   "xp:area:medical": 62.6666666666657,
+   "xp:area:storage": 81.3333333333313,
+   "xp:armory_open": 56.866666666666,
+   "xp:checkpoint_door": 62.0666666666657,
+   "xp:enemy:arc_breacher": 117.333333333329,
+   "xp:enemy:arc_marksman": 117.333333333329,
+   "xp:enemy:arc_signalist": 117.333333333329,
+   "xp:enemy:chk_d1": 38.0333333333337,
+   "xp:enemy:chk_d2": 44.3333333333334,
+   "xp:enemy:chk_turret": 51.8666666666663,
+   "xp:enemy:corr_d1": 14.7333333333333,
+   "xp:enemy:corr_d2": 24.6666666666671,
+   "xp:enemy:eng_sentinel": 104.466666666663,
+   "xp:enemy:eng_spider": 97.6666666666637,
+   "xp:enemy:eng_supp": 99.0333333333303,
+   "xp:enemy:med_s1": 65.7666666666655,
+   "xp:enemy:med_s2": 71.8333333333318,
+   "xp:iona_meet": 25.0666666666671,
+   "xp:parley": 117.333333333329,
+   "xp:quest_complete:q_lantern": 125.633333333329,
+   "xp:quest_complete:q_ward": 77.0666666666649,
+   "xp:quest_obj:q_lantern:decide_senna": 125.633333333329,
+   "xp:quest_obj:q_main:belongings": 1.0,
+   "xp:quest_obj:q_ward:supplies": 74.566666666665,
+   "xp:quest_obj:q_ward:ward": 77.0666666666649,
+   "xp:quest_stage:q_main:archive": 117.866666666663,
+   "xp:quest_stage:q_main:checkpoint": 13.5333333333333,
+   "xp:quest_stage:q_main:command": 134.199999999995,
+   "xp:quest_stage:q_main:corridor": 6.79999999999999,
+   "xp:quest_stage:q_main:engineering": 72.0666666666651,
+   "xp:quest_stage:q_main:medical": 62.0666666666657,
+   "xp:quest_stage:q_main:muster": 4.26666666666666,
+   "xp:read:cx_marsh_log": 87.3666666666643,
+   "xp:read:cx_transfer_orders": 2.0,
+   "xp:tav7_meet": 72.0666666666651,
+   "xp:triage_skill": 74.566666666665,
+   "xp:ward_open": 77.0666666666649
+  },
+  "npcs": {
+   "benedikt": {
+    "downed": false,
+    "pos": [
+     71.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "corin": {
+    "downed": false,
+    "pos": [
+     65.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "dalia": {
+    "pos": [
+     14.6,
+     5.0
+    ],
+    "rot": 60.0
+   },
+   "ilo": {
+    "pos": [
+     15.3,
+     4.4
+    ],
+    "rot": 60.0
+   },
+   "iona_npc": {
+    "removed": true
+   },
+   "ketterick": {
+    "pos": [
+     16.9,
+     8.9
+    ],
+    "rot": 200.0
+   },
+   "mae": {
+    "downed": false,
+    "pos": [
+     68.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "pell": {
+    "pos": [
+     69.0,
+     -4.0
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "senna": {
+    "pos": [
+     124.5,
+     23.6
+    ],
+    "rot": 200.0,
+    "sheet": {
+     "active_set": 0,
+     "appearance": {
+      "accent": "a1",
+      "body": "slight",
+      "hair": "swept",
+      "hair_color": "h3",
+      "head": "angular",
+      "model": "humanoid",
+      "skin": "s6"
+     },
+     "attr_inc": {
+
+     },
+     "attrs": {
+      "cha": 12,
+      "con": 12,
+      "dex": 16,
+      "int": 12,
+      "str": 10,
+      "wis": 12
+     },
+     "background": "",
+     "behavior": "ranged",
+     "class": "enemy",
+     "cooldowns": {
+
+     },
+     "dead": false,
+     "energy": 0,
+     "equipment": {
+      "body": {
+       "id": "travel_jacket",
+       "uid": "it251",
+       "upgrades": []
+      },
+      "main": {
+       "id": "service_pistol",
+       "uid": "it217",
+       "upgrades": []
+      }
+     },
+     "faction": "lantern",
+     "feats": [
+      "prof_pistol",
+      "prof_armor_light"
+     ],
+     "form": "",
+     "hp": 24,
+     "is_player": false,
+     "kind": "organic",
+     "kit": {
+
+     },
+     "level": 3,
+     "level_log": [],
+     "name": "Senna Thorne",
+     "overrides": {
+      "attack_bonus": 0,
+      "bab": 2,
+      "defense_bonus": 0,
+      "hp_max": 24,
+      "resist": {
+
+      },
+      "role": "ranged",
+      "saves": {
+       "fort": 2.0,
+       "ref": 4.0,
+       "will": 2.0
+      },
+      "sight": 12.0,
+      "speed": 4.0,
+      "stationary": false
+     },
+     "powers": [],
+     "prestige": "",
+     "pronouns": "they",
+     "skill_bank": 0,
+     "skills": {
+      "awareness": 6,
+      "stealth": 8
+     },
+     "statuses": [
+      {
+       "id": "downed",
+       "remaining": 1.0,
+       "source": ""
+      }
+     ],
+     "template": "senna_thorne",
+     "uid": "senna",
+     "xp": 0
+    },
+    "spawn": true
+   },
+   "steward": {
+    "pos": [
+     24.0,
+     7.5
+    ],
+    "rot": -90.0
+   },
+   "tav7_npc": {
+    "pos": [
+     75.5,
+     9.5
+    ],
+    "removed": true,
+    "rot": -90.0
+   },
+   "varga": {
+    "pos": [
+     69.0,
+     10.4
+    ],
+    "rot": 180.0
+   },
+   "varr": {
+    "pos": [
+     145.0,
+     9.5
+    ],
+    "rot": -90.0,
+    "sheet": {
+     "active_set": 0,
+     "appearance": {
+      "accent": "a2",
+      "body": "average",
+      "hair": "tail",
+      "hair_color": "h5",
+      "head": "long",
+      "model": "humanoid",
+      "skin": "s1"
+     },
+     "attr_inc": {
+
+     },
+     "attrs": {
+      "cha": 14,
+      "con": 12,
+      "dex": 14,
+      "int": 14,
+      "str": 10,
+      "wis": 13
+     },
+     "background": "",
+     "behavior": "ranged",
+     "class": "enemy",
+     "cooldowns": {
+
+     },
+     "dead": false,
+     "energy": 0,
+     "equipment": {
+      "body": {
+       "id": "security_weave",
+       "uid": "it256",
+       "upgrades": []
+      },
+      "main": {
+       "id": "service_pistol",
+       "uid": "it15",
+       "upgrades": []
+      }
+     },
+     "faction": "crew",
+     "feats": [
+      "prof_pistol",
+      "prof_armor_light",
+      "prof_armor_medium"
+     ],
+     "form": "",
+     "hp": 34,
+     "is_player": false,
+     "kind": "organic",
+     "kit": {
+      "shield_cell": 1
+     },
+     "level": 4,
+     "level_log": [],
+     "name": "Commander Ysolde Varr",
+     "overrides": {
+      "attack_bonus": 0,
+      "bab": 3,
+      "defense_bonus": 0,
+      "hp_max": 34,
+      "resist": {
+
+      },
+      "role": "ranged",
+      "saves": {
+       "fort": 2.0,
+       "ref": 3.0,
+       "will": 4.0
+      },
+      "sight": 14.0,
+      "speed": 4.0,
+      "stationary": false
+     },
+     "powers": [],
+     "prestige": "",
+     "pronouns": "they",
+     "skill_bank": 0,
+     "skills": {
+      "awareness": 5
+     },
+     "statuses": [],
+     "template": "commander_varr",
+     "uid": "varr",
+     "xp": 0
+    }
+   },
+   "ward_a": {
+    "pos": [
+     71.5,
+     -5.5
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "ward_b": {
+    "pos": [
+     73.5,
+     -3.5
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "ward_c": {
+    "pos": [
+     68.0,
+     -6.0
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "ward_d": {
+    "pos": [
+     74.0,
+     -6.5
+    ],
+    "rot": 180.0,
+    "spawn": true
+   }
+  },
+  "party": [
+   "player",
+   "iona",
+   "tav7"
+  ],
+  "player_level": 3,
+  "pos": [
+   136.1,
+   7.7,
+   114.0
+  ],
+  "quests": {
+   "q_lantern": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "Reclaimer signals in the archive hold suggest a scout was cut off from her squad. The archive index terminal may say what the cargo really is."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     },
+     {
+      "t": 0.0,
+      "text": "You found Senna Thorne, wounded, in cold storage. What happens to her now is your call."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest completed."
+     }
+    ],
+    "objectives": {
+     "decide_senna": "completed",
+     "find_senna": "completed",
+     "testimony": "active"
+    },
+    "outcome": "",
+    "stage": "decide",
+    "state": "completed"
+   },
+   "q_main": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "You woke in Transfer Cabin 4-C as the Cinder Wake left Haldis Reach. The purser wants every passenger at Muster Point B."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     },
+     {
+      "t": 0.0,
+      "text": "Check in with Purser Dray in the Crew Commons. There is time to look around before the jump."
+     },
+     {
+      "t": 0.0,
+      "text": "An explosion. The ship's defense network, WARDEN, has declared the passengers obstructions. Purser Dray begged you to help security in Transit Corridor C-3."
+     },
+     {
+      "t": 0.0,
+      "text": "Officer Iona Rell is with you. The forward sections are behind the security checkpoint and its WARDEN-controlled blast door."
+     },
+     {
+      "t": 0.0,
+      "text": "Beyond the checkpoint lies the medical deck, where the wounded wait and a maintenance synthetic is fighting off WARDEN cutters."
+     },
+     {
+      "t": 0.0,
+      "text": "The route to the launch bays runs through the engineering loop around the drive core, then the archive hold."
+     },
+     {
+      "t": 0.0,
+      "text": "Reclaimers from the Lantern Office are in the archive cargo hold, among thousands of stored minds. Command lies beyond."
+     },
+     {
+      "t": 0.0,
+      "text": "Commander Ysolde Varr holds launch control. Nothing launches without her codes — or without a decision about what the Petrel carries."
+     }
+    ],
+    "objectives": {
+     "belongings": "completed",
+     "checkin": "completed",
+     "cross_archive": "completed",
+     "cross_engineering": "completed",
+     "launch_decision": "active",
+     "muster": "completed",
+     "pass_checkpoint": "completed",
+     "reach_corridor": "completed",
+     "secure_medical": "completed"
+    },
+    "outcome": "",
+    "stage": "command",
+    "state": "active"
+   },
+   "q_restart": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "Chief Engineer Osei Marsh's last log: restart both coolant pumps. A replacement seal can be fabricated at the workshop bench."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     }
+    ],
+    "objectives": {
+     "pump_n": "active",
+     "pump_s": "active"
+    },
+    "outcome": "",
+    "stage": "pumps",
+    "state": "active"
+   },
+   "q_ward": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "Dr. Ilse Varga has a finite reserve of trauma gel and more patients than doses. Behind the quarantine seal, five passengers are breathing failing air. Iona sealed that door on Commander Varr's order."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest completed."
+     }
+    ],
+    "objectives": {
+     "supplies": "completed",
+     "ward": "completed"
+    },
+    "outcome": "",
+    "stage": "decide",
+    "state": "completed"
+   }
+  },
+  "seen_nodes": {
+   "checkpoint_credential:a": true,
+   "checkpoint_credential:done": true,
+   "checkpoint_credential:iona": true,
+   "checkpoint_credential:start": true,
+   "checkpoint_credential:w": true,
+   "command_intercom:iona": true,
+   "command_intercom:open": true,
+   "command_intercom:start": true,
+   "intro_wake:end_c": true,
+   "intro_wake:intercom": true,
+   "intro_wake:memory": true,
+   "intro_wake:start": true,
+   "intro_wake:tut": true,
+   "iona_meet:end_node": true,
+   "iona_meet:medpac": true,
+   "iona_meet:r_comp": true,
+   "iona_meet:situation": true,
+   "iona_meet:start": true,
+   "iona_meet:who_plain": true,
+   "reclaimer_parley:peace": true,
+   "reclaimer_parley:start": true,
+   "reclaimer_parley:talked": true,
+   "senna:bargain": true,
+   "senna:decide": true,
+   "senna:end_node": true,
+   "senna:lantern": true,
+   "senna:lantern_tav": true,
+   "senna:start": true,
+   "senna:who": true,
+   "steward:boom": true,
+   "steward:checkin": true,
+   "steward:dray2": true,
+   "steward:go_c": true,
+   "steward:hub": true,
+   "steward:people": true,
+   "steward:sal": true,
+   "steward:start": true,
+   "steward:unlock": true,
+   "steward:warden_says": true,
+   "tav7_meet:archives": true,
+   "tav7_meet:end_node": true,
+   "tav7_meet:iona2": true,
+   "tav7_meet:iona3": true,
+   "tav7_meet:people": true,
+   "tav7_meet:start": true,
+   "tav7_meet:tav_ward": true,
+   "tav7_meet:thanks": true,
+   "tav7_meet:why": true,
+   "varga_triage:choose": true,
+   "varga_triage:end_node": true,
+   "varga_triage:split_ok": true,
+   "varga_triage:start": true,
+   "venn_family:after": true,
+   "venn_family:kind": true,
+   "venn_family:promise": true,
+   "venn_family:start": true,
+   "venn_family:where": true,
+   "ward_intercom:end_node": true,
+   "ward_intercom:how_rush": true,
+   "ward_intercom:hub": true,
+   "ward_intercom:open_iona": true,
+   "ward_intercom:opened_rushed": true,
+   "ward_intercom:start": true,
+   "ward_intercom:unseal": true
+  },
+  "tutorials_seen": {
+
+  },
+  "vendor_stock": {
+
+  },
+  "world": {
+   "arc_crane": {
+
+   },
+   "arc_index": {
+
+   },
+   "arc_intercom": {
+
+   },
+   "arc_purge": {
+
+   },
+   "arc_slate": {
+
+   },
+   "armory_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "armory_manifest": {
+
+   },
+   "bay_spec": {
+
+   },
+   "bay_terminal": {
+
+   },
+   "cabin_case": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "cabin_datapad": {
+
+   },
+   "cabin_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "chk_body": {
+
+   },
+   "chk_mine": {
+    "aware_rolls": {
+     "iona": true,
+     "player": true
+    },
+    "disarmed": true,
+    "exploded": true
+   },
+   "chk_terminal": {
+
+   },
+   "cmd_console": {
+
+   },
+   "cmd_core": {
+
+   },
+   "cmd_muster": {
+
+   },
+   "cold_crates": {
+
+   },
+   "commons_cards": {
+
+   },
+   "commons_muster": {
+
+   },
+   "commons_sim": {
+
+   },
+   "commons_vendor": {
+
+   },
+   "corpse_chk_d1": {
+
+   },
+   "corpse_chk_d2": {
+
+   },
+   "corpse_chk_turret": {
+
+   },
+   "corpse_corr_d1": {
+
+   },
+   "corpse_corr_d2": {
+
+   },
+   "corpse_eng_sentinel": {
+
+   },
+   "corpse_eng_spider": {
+
+   },
+   "corpse_eng_supp": {
+
+   },
+   "corpse_med_s1": {
+
+   },
+   "corpse_med_s2": {
+
+   },
+   "corr_body": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "corr_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "corr_ticket": {
+
+   },
+   "crawl_cache": {
+
+   },
+   "crawl_note": {
+
+   },
+   "d_armory": {
+    "done": {
+     "keycard": true
+    },
+    "locked": false,
+    "open": true
+   },
+   "d_bay": {
+
+   },
+   "d_blast": {
+    "locked": false,
+    "open": true
+   },
+   "d_cabin": {
+    "open": true
+   },
+   "d_cold": {
+    "open": true
+   },
+   "d_command": {
+    "locked": false,
+    "open": true
+   },
+   "d_commons_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_corridor_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_crawl_exit": {
+
+   },
+   "d_duct_hold": {
+
+   },
+   "d_eng_east": {
+    "open": true
+   },
+   "d_hatch": {
+
+   },
+   "d_lounge": {
+
+   },
+   "d_med_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_storage": {
+    "open": true
+   },
+   "d_vent": {
+
+   },
+   "d_ward": {
+    "locked": false,
+    "open": true
+   },
+   "d_workshop": {
+
+   },
+   "eng_body": {
+
+   },
+   "eng_junction": {
+
+   },
+   "eng_log": {
+
+   },
+   "eng_muster": {
+
+   },
+   "eng_terminal": {
+
+   },
+   "eng_workbench": {
+
+   },
+   "lounge_bag": {
+
+   },
+   "lounge_history": {
+
+   },
+   "lounge_manifest": {
+
+   },
+   "med_muster": {
+
+   },
+   "med_notes": {
+
+   },
+   "med_release": {
+
+   },
+   "med_station": {
+
+   },
+   "med_vendor": {
+
+   },
+   "petrel_ramp": {
+
+   },
+   "plate_1": {
+    "aware_rolls": {
+     "player": true
+    },
+    "detected": true
+   },
+   "plate_2": {
+    "aware_rolls": {
+     "player": true
+    },
+    "detected": true
+   },
+   "plate_3": {
+    "aware_rolls": {
+     "player": true
+    },
+    "detected": true
+   },
+   "plate_4": {
+    "aware_rolls": {
+     "player": true
+    },
+    "detected": true
+   },
+   "pump_n": {
+
+   },
+   "pump_s": {
+
+   },
+   "senna_spot": {
+    "aware_rolls": {
+     "player": true
+    },
+    "detected": true
+   },
+   "storage_crate": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "vent_n": {
+
+   },
+   "ward_intercom": {
+
+   },
+   "ward_purge": {
+
+   }
+  }
+ },
+ "engineering": {
+  "area": "engineering",
+  "areas_visited": [
+   "cabin",
+   "commons",
+   "corridor",
+   "checkpoint",
+   "armory",
+   "medical",
+   "storage",
+   "engineering"
+  ],
+  "checks": {
+   "triage_split_iona": {
+    "actor": "iona",
+    "actor_name": "Iona Rell",
+    "bonus": 4,
+    "dc": 12,
+    "id": "triage_split_iona",
+    "margin": 9,
+    "natural": 17,
+    "skill": "medicine",
+    "success": true,
+    "total": 21
+   }
+  },
+  "discoveries": [
+   "cx_operator_case",
+   "cx_transfer_orders",
+   "cx_credential",
+   "cx_triage_notes"
+  ],
+  "encounters": {
+   "enc_archive": {
+    "spawned": false,
+    "state": "pending"
+   },
+   "enc_checkpoint": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_corridor": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_engineering": {
+    "spawned": false,
+    "state": "pending"
+   },
+   "enc_medical": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   }
+  },
+  "enemies": {
+   "chk_d1": {
+    "encounter": "enc_checkpoint",
+    "npc_id": "",
+    "pos": [
+     56.5,
+     5.0,
+     270.0
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "chk_d2": {
+    "alert": true,
+    "encounter": "enc_checkpoint",
+    "home": [
+     57.5,
+     10.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     59.4334907531738,
+     11.0731649398804,
+     -106.51195526123
+    ],
+    "queue": [],
+    "recovery": 2.26666666666667,
+    "round_clock": 1.91466666666667,
+    "state": "dead",
+    "target": "player",
+    "template": "picket_drone"
+   },
+   "chk_turret": {
+    "alert": true,
+    "encounter": "enc_checkpoint",
+    "home": [
+     60.5,
+     2.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     60.5,
+     2.5,
+     -20.5844116210938
+    ],
+    "queue": [],
+    "recovery": 2.26666666666667,
+    "round_clock": 2.65866666666667,
+    "state": "dead",
+    "target": "player",
+    "template": "warden_turret"
+   },
+   "corr_d1": {
+    "encounter": "enc_corridor",
+    "npc_id": "",
+    "pos": [
+     39.5,
+     6.0,
+     -86.6229629516602
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "corr_d2": {
+    "encounter": "enc_corridor",
+    "npc_id": "",
+    "pos": [
+     40.5,
+     7.5,
+     -96.0257949829102
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "med_s1": {
+    "alert": true,
+    "encounter": "enc_medical",
+    "home": [
+     72.5,
+     8.0
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     66.8378295898438,
+     8.22801208496094,
+     -87.6940078735352
+    ],
+    "queue": [],
+    "recovery": 0.416666666666667,
+    "round_clock": 2.59933333333333,
+    "state": "dead",
+    "target": "player",
+    "template": "spider_drone"
+   },
+   "med_s2": {
+    "alert": true,
+    "encounter": "enc_medical",
+    "home": [
+     74.0,
+     11.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     66.7843322753906,
+     8.90941429138184,
+     -109.858764648438
+    ],
+    "queue": [],
+    "recovery": 0.136666666666667,
+    "round_clock": 2.60233333333333,
+    "state": "dead",
+    "target": "player",
+    "template": "spider_drone"
+   }
+  },
+  "flags": {
+   "case_opened": true,
+   "checked_in": true,
+   "checkpoint_by": "credential",
+   "checkpoint_clear": true,
+   "checkpoint_solved": true,
+   "corridor_clear": true,
+   "credential_uses": 1,
+   "dray_met": true,
+   "emergency_started": true,
+   "iona_recruited": true,
+   "med_supplies_choice": "split",
+   "medical_clear": true,
+   "medical_secured": true,
+   "opening_tone": "compassionate",
+   "pell_met": true,
+   "promised_dray": true,
+   "promised_venns": true,
+   "q_ward_met": true,
+   "supplies_decided": true,
+   "survivors": 11,
+   "tav7_recruited": true,
+   "used_credential": true,
+   "venn_emergency_talked": true,
+   "venn_met": true,
+   "ward_choice": "rushed",
+   "ward_decided": true,
+   "ward_open": true,
+   "warden_tracking": true
+  },
+  "ledger": {
+   "align:dray_go": 6.79999999999999,
+   "align:dray_people": 6.79999999999999,
+   "align:meet_everyone": 25.0666666666671,
+   "align:triage": 74.566666666665,
+   "align:venn_hope": 5.29999999999999,
+   "align:venn_kind": 5.29999999999999,
+   "align:venn_promise": 9.29999999999998,
+   "align:ward": 77.0666666666649,
+   "flag:cred_door": 62.0666666666657,
+   "inf:iona:armory_keycard": 56.866666666666,
+   "inf:iona:cred_honest": 62.0666666666657,
+   "inf:iona:meet_everyone": 25.0666666666671,
+   "inf:iona:triage": 74.566666666665,
+   "inf:iona:ward": 77.0666666666649,
+   "inf:iona:ward_iona_opens": 77.0666666666649,
+   "inf:tav7:meet_people": 72.0666666666651,
+   "inf:tav7:meet_thanks": 72.0666666666651,
+   "inf:tav7:triage": 74.566666666665,
+   "inf:tav7:ward": 77.0666666666649,
+   "item:iona_keycard": 25.0666666666671,
+   "item:iona_medpac": 25.0666666666671,
+   "item:triage_split": 74.566666666665,
+   "item:triage_split_r": 74.566666666665,
+   "surv:commons_group": 6.79999999999999,
+   "surv:triage": 74.566666666665,
+   "surv:ward": 77.0666666666649,
+   "trigger:t_checkpoint_tut": 39.2000000000003,
+   "trigger:t_commons_tut": 4.19999999999999,
+   "trigger:t_corridor": 13.5333333333333,
+   "trigger:t_eng_tut": 86.333333333331,
+   "trigger:t_medical": 62.5333333333323,
+   "xp:area:armory": 57.5999999999993,
+   "xp:area:checkpoint": 39.2000000000003,
+   "xp:area:commons": 4.26666666666666,
+   "xp:area:corridor": 13.6,
+   "xp:area:medical": 62.6666666666657,
+   "xp:area:storage": 81.3333333333313,
+   "xp:armory_open": 56.866666666666,
+   "xp:checkpoint_door": 62.0666666666657,
+   "xp:enemy:chk_d1": 38.0333333333337,
+   "xp:enemy:chk_d2": 44.3333333333334,
+   "xp:enemy:chk_turret": 51.8666666666663,
+   "xp:enemy:corr_d1": 14.7333333333333,
+   "xp:enemy:corr_d2": 24.6666666666671,
+   "xp:enemy:med_s1": 65.7666666666655,
+   "xp:enemy:med_s2": 71.8333333333318,
+   "xp:iona_meet": 25.0666666666671,
+   "xp:quest_complete:q_ward": 77.0666666666649,
+   "xp:quest_obj:q_main:belongings": 1.0,
+   "xp:quest_obj:q_ward:supplies": 74.566666666665,
+   "xp:quest_obj:q_ward:ward": 77.0666666666649,
+   "xp:quest_stage:q_main:checkpoint": 13.5333333333333,
+   "xp:quest_stage:q_main:corridor": 6.79999999999999,
+   "xp:quest_stage:q_main:engineering": 72.0666666666651,
+   "xp:quest_stage:q_main:medical": 62.0666666666657,
+   "xp:quest_stage:q_main:muster": 4.26666666666666,
+   "xp:read:cx_transfer_orders": 2.0,
+   "xp:tav7_meet": 72.0666666666651,
+   "xp:triage_skill": 74.566666666665,
+   "xp:ward_open": 77.0666666666649
+  },
+  "npcs": {
+   "benedikt": {
+    "downed": false,
+    "pos": [
+     71.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "corin": {
+    "downed": false,
+    "pos": [
+     65.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "dalia": {
+    "pos": [
+     14.6,
+     5.0
+    ],
+    "rot": 60.0
+   },
+   "ilo": {
+    "pos": [
+     15.3,
+     4.4
+    ],
+    "rot": 60.0
+   },
+   "iona_npc": {
+    "removed": true
+   },
+   "ketterick": {
+    "pos": [
+     16.9,
+     8.9
+    ],
+    "rot": 200.0
+   },
+   "mae": {
+    "downed": false,
+    "pos": [
+     68.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "pell": {
+    "pos": [
+     69.0,
+     -4.0
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "steward": {
+    "pos": [
+     24.0,
+     7.5
+    ],
+    "rot": -90.0
+   },
+   "tav7_npc": {
+    "pos": [
+     75.5,
+     9.5
+    ],
+    "removed": true,
+    "rot": -90.0
+   },
+   "varga": {
+    "pos": [
+     69.0,
+     10.4
+    ],
+    "rot": 180.0
+   },
+   "varr": {
+    "pos": [
+     145.0,
+     9.5
+    ],
+    "rot": -90.0,
+    "sheet": {
+     "active_set": 0,
+     "appearance": {
+      "accent": "a2",
+      "body": "average",
+      "hair": "tail",
+      "hair_color": "h5",
+      "head": "long",
+      "model": "humanoid",
+      "skin": "s1"
+     },
+     "attr_inc": {
+
+     },
+     "attrs": {
+      "cha": 14,
+      "con": 12,
+      "dex": 14,
+      "int": 14,
+      "str": 10,
+      "wis": 13
+     },
+     "background": "",
+     "behavior": "ranged",
+     "class": "enemy",
+     "cooldowns": {
+
+     },
+     "dead": false,
+     "energy": 0,
+     "equipment": {
+      "body": {
+       "id": "security_weave",
+       "uid": "it17",
+       "upgrades": []
+      },
+      "main": {
+       "id": "service_pistol",
+       "uid": "it15",
+       "upgrades": []
+      }
+     },
+     "faction": "crew",
+     "feats": [
+      "prof_pistol",
+      "prof_armor_light",
+      "prof_armor_medium"
+     ],
+     "form": "",
+     "hp": 34,
+     "is_player": false,
+     "kind": "organic",
+     "kit": {
+      "shield_cell": 1
+     },
+     "level": 4,
+     "level_log": [],
+     "name": "Commander Ysolde Varr",
+     "overrides": {
+      "attack_bonus": 0,
+      "bab": 3,
+      "defense_bonus": 0,
+      "hp_max": 34,
+      "resist": {
+
+      },
+      "role": "ranged",
+      "saves": {
+       "fort": 2.0,
+       "ref": 3.0,
+       "will": 4.0
+      },
+      "sight": 14.0,
+      "speed": 4.0,
+      "stationary": false
+     },
+     "powers": [],
+     "prestige": "",
+     "pronouns": "they",
+     "skill_bank": 0,
+     "skills": {
+      "awareness": 5
+     },
+     "statuses": [],
+     "template": "commander_varr",
+     "uid": "varr",
+     "xp": 0
+    }
+   },
+   "ward_a": {
+    "pos": [
+     71.5,
+     -5.5
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "ward_b": {
+    "pos": [
+     73.5,
+     -3.5
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "ward_c": {
+    "pos": [
+     68.0,
+     -6.0
+    ],
+    "rot": 180.0,
+    "spawn": true
+   },
+   "ward_d": {
+    "pos": [
+     74.0,
+     -6.5
+    ],
+    "rot": 180.0,
+    "spawn": true
+   }
+  },
+  "party": [
+   "player",
+   "iona",
+   "tav7"
+  ],
+  "player_level": 2,
+  "pos": [
+   83.9,
+   8.8,
+   84.0
+  ],
+  "quests": {
+   "q_main": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "You woke in Transfer Cabin 4-C as the Cinder Wake left Haldis Reach. The purser wants every passenger at Muster Point B."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     },
+     {
+      "t": 0.0,
+      "text": "Check in with Purser Dray in the Crew Commons. There is time to look around before the jump."
+     },
+     {
+      "t": 0.0,
+      "text": "An explosion. The ship's defense network, WARDEN, has declared the passengers obstructions. Purser Dray begged you to help security in Transit Corridor C-3."
+     },
+     {
+      "t": 0.0,
+      "text": "Officer Iona Rell is with you. The forward sections are behind the security checkpoint and its WARDEN-controlled blast door."
+     },
+     {
+      "t": 0.0,
+      "text": "Beyond the checkpoint lies the medical deck, where the wounded wait and a maintenance synthetic is fighting off WARDEN cutters."
+     },
+     {
+      "t": 0.0,
+      "text": "The route to the launch bays runs through the engineering loop around the drive core, then the archive hold."
+     }
+    ],
+    "objectives": {
+     "belongings": "completed",
+     "checkin": "completed",
+     "cross_engineering": "active",
+     "muster": "completed",
+     "pass_checkpoint": "completed",
+     "reach_corridor": "completed",
+     "secure_medical": "completed"
+    },
+    "outcome": "",
+    "stage": "engineering",
+    "state": "active"
+   },
+   "q_restart": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "Chief Engineer Osei Marsh's last log: restart both coolant pumps. A replacement seal can be fabricated at the workshop bench."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     }
+    ],
+    "objectives": {
+     "pump_n": "active",
+     "pump_s": "active"
+    },
+    "outcome": "",
+    "stage": "pumps",
+    "state": "active"
+   },
+   "q_ward": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "Dr. Ilse Varga has a finite reserve of trauma gel and more patients than doses. Behind the quarantine seal, five passengers are breathing failing air. Iona sealed that door on Commander Varr's order."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest completed."
+     }
+    ],
+    "objectives": {
+     "supplies": "completed",
+     "ward": "completed"
+    },
+    "outcome": "",
+    "stage": "decide",
+    "state": "completed"
+   }
+  },
+  "seen_nodes": {
+   "checkpoint_credential:a": true,
+   "checkpoint_credential:done": true,
+   "checkpoint_credential:iona": true,
+   "checkpoint_credential:start": true,
+   "checkpoint_credential:w": true,
+   "intro_wake:end_c": true,
+   "intro_wake:intercom": true,
+   "intro_wake:memory": true,
+   "intro_wake:start": true,
+   "intro_wake:tut": true,
+   "iona_meet:end_node": true,
+   "iona_meet:medpac": true,
+   "iona_meet:r_comp": true,
+   "iona_meet:situation": true,
+   "iona_meet:start": true,
+   "iona_meet:who_plain": true,
+   "steward:boom": true,
+   "steward:checkin": true,
+   "steward:dray2": true,
+   "steward:go_c": true,
+   "steward:hub": true,
+   "steward:people": true,
+   "steward:sal": true,
+   "steward:start": true,
+   "steward:unlock": true,
+   "steward:warden_says": true,
+   "tav7_meet:archives": true,
+   "tav7_meet:end_node": true,
+   "tav7_meet:iona2": true,
+   "tav7_meet:iona3": true,
+   "tav7_meet:people": true,
+   "tav7_meet:start": true,
+   "tav7_meet:tav_ward": true,
+   "tav7_meet:thanks": true,
+   "tav7_meet:why": true,
+   "varga_triage:choose": true,
+   "varga_triage:end_node": true,
+   "varga_triage:split_ok": true,
+   "varga_triage:start": true,
+   "venn_family:after": true,
+   "venn_family:kind": true,
+   "venn_family:promise": true,
+   "venn_family:start": true,
+   "venn_family:where": true,
+   "ward_intercom:end_node": true,
+   "ward_intercom:how_rush": true,
+   "ward_intercom:hub": true,
+   "ward_intercom:open_iona": true,
+   "ward_intercom:opened_rushed": true,
+   "ward_intercom:start": true,
+   "ward_intercom:unseal": true
+  },
+  "tutorials_seen": {
+
+  },
+  "vendor_stock": {
+
+  },
+  "world": {
+   "arc_crane": {
+
+   },
+   "arc_index": {
+
+   },
+   "arc_intercom": {
+
+   },
+   "arc_purge": {
+
+   },
+   "arc_slate": {
+
+   },
+   "armory_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "armory_manifest": {
+
+   },
+   "bay_spec": {
+
+   },
+   "bay_terminal": {
+
+   },
+   "cabin_case": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "cabin_datapad": {
+
+   },
+   "cabin_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "chk_body": {
+
+   },
+   "chk_mine": {
+    "aware_rolls": {
+     "iona": true,
+     "player": true
+    },
+    "disarmed": true,
+    "exploded": true
+   },
+   "chk_terminal": {
+
+   },
+   "cmd_console": {
+
+   },
+   "cmd_core": {
+
+   },
+   "cmd_muster": {
+
+   },
+   "cold_crates": {
+
+   },
+   "commons_cards": {
+
+   },
+   "commons_muster": {
+
+   },
+   "commons_sim": {
+
+   },
+   "commons_vendor": {
+
+   },
+   "corpse_chk_d1": {
+
+   },
+   "corpse_chk_d2": {
+
+   },
+   "corpse_chk_turret": {
+
+   },
+   "corpse_corr_d1": {
+
+   },
+   "corpse_corr_d2": {
+
+   },
+   "corpse_med_s1": {
+
+   },
+   "corpse_med_s2": {
+
+   },
+   "corr_body": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "corr_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "corr_ticket": {
+
+   },
+   "crawl_cache": {
+
+   },
+   "crawl_note": {
+
+   },
+   "d_armory": {
+    "done": {
+     "keycard": true
+    },
+    "locked": false,
+    "open": true
+   },
+   "d_bay": {
+
+   },
+   "d_blast": {
+    "locked": false,
+    "open": true
+   },
+   "d_cabin": {
+    "open": true
+   },
+   "d_cold": {
+
+   },
+   "d_command": {
+
+   },
+   "d_commons_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_corridor_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_crawl_exit": {
+
+   },
+   "d_duct_hold": {
+
+   },
+   "d_eng_east": {
+
+   },
+   "d_hatch": {
+
+   },
+   "d_lounge": {
+
+   },
+   "d_med_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_storage": {
+    "open": true
+   },
+   "d_vent": {
+
+   },
+   "d_ward": {
+    "locked": false,
+    "open": true
+   },
+   "d_workshop": {
+
+   },
+   "eng_body": {
+
+   },
+   "eng_junction": {
+
+   },
+   "eng_log": {
+
+   },
+   "eng_muster": {
+
+   },
+   "eng_terminal": {
+
+   },
+   "eng_workbench": {
+
+   },
+   "lounge_bag": {
+
+   },
+   "lounge_history": {
+
+   },
+   "lounge_manifest": {
+
+   },
+   "med_muster": {
+
+   },
+   "med_notes": {
+
+   },
+   "med_release": {
+
+   },
+   "med_station": {
+
+   },
+   "med_vendor": {
+
+   },
+   "petrel_ramp": {
+
+   },
+   "plate_1": {
+
+   },
+   "plate_2": {
+
+   },
+   "plate_3": {
+
+   },
+   "plate_4": {
+
+   },
+   "pump_n": {
+
+   },
+   "pump_s": {
+
+   },
+   "senna_spot": {
+
+   },
+   "storage_crate": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "vent_n": {
+
+   },
+   "ward_intercom": {
+
+   },
+   "ward_purge": {
+
+   }
+  }
+ },
+ "medical": {
+  "area": "medical",
+  "areas_visited": [
+   "cabin",
+   "commons",
+   "corridor",
+   "checkpoint",
+   "armory",
+   "medical"
+  ],
+  "checks": {
+
+  },
+  "discoveries": [
+   "cx_operator_case",
+   "cx_transfer_orders",
+   "cx_credential"
+  ],
+  "encounters": {
+   "enc_archive": {
+    "spawned": false,
+    "state": "pending"
+   },
+   "enc_checkpoint": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_corridor": {
+    "resolution": "combat",
+    "spawned": true,
+    "state": "resolved"
+   },
+   "enc_engineering": {
+    "spawned": false,
+    "state": "pending"
+   },
+   "enc_medical": {
+    "spawned": true,
+    "state": "active"
+   }
+  },
+  "enemies": {
+   "chk_d1": {
+    "encounter": "enc_checkpoint",
+    "npc_id": "",
+    "pos": [
+     56.5,
+     5.0,
+     270.0
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "chk_d2": {
+    "alert": true,
+    "encounter": "enc_checkpoint",
+    "home": [
+     57.5,
+     10.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     59.4334907531738,
+     11.0731649398804,
+     -106.51195526123
+    ],
+    "queue": [],
+    "recovery": 2.26666666666667,
+    "round_clock": 1.91466666666667,
+    "state": "dead",
+    "target": "player",
+    "template": "picket_drone"
+   },
+   "chk_turret": {
+    "alert": true,
+    "encounter": "enc_checkpoint",
+    "home": [
+     60.5,
+     2.5
+    ],
+    "hostile_override": "",
+    "npc_id": "",
+    "pos": [
+     60.5,
+     2.5,
+     -20.5844116210938
+    ],
+    "queue": [],
+    "recovery": 2.26666666666667,
+    "round_clock": 2.65866666666667,
+    "state": "dead",
+    "target": "player",
+    "template": "warden_turret"
+   },
+   "corr_d1": {
+    "encounter": "enc_corridor",
+    "npc_id": "",
+    "pos": [
+     39.5,
+     6.0,
+     -86.6229629516602
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   },
+   "corr_d2": {
+    "encounter": "enc_corridor",
+    "npc_id": "",
+    "pos": [
+     40.5,
+     7.5,
+     -96.0257949829102
+    ],
+    "state": "dead",
+    "template": "picket_drone"
+   }
+  },
+  "flags": {
+   "case_opened": true,
+   "checked_in": true,
+   "checkpoint_by": "credential",
+   "checkpoint_clear": true,
+   "checkpoint_solved": true,
+   "corridor_clear": true,
+   "credential_uses": 1,
+   "dray_met": true,
+   "emergency_started": true,
+   "iona_recruited": true,
+   "opening_tone": "compassionate",
+   "promised_dray": true,
+   "promised_venns": true,
+   "survivors": 4,
+   "tav7_recruited": true,
+   "used_credential": true,
+   "venn_emergency_talked": true,
+   "venn_met": true,
+   "warden_tracking": true
+  },
+  "ledger": {
+   "align:dray_go": 6.79999999999999,
+   "align:dray_people": 6.79999999999999,
+   "align:meet_everyone": 25.0666666666671,
+   "align:venn_hope": 5.29999999999999,
+   "align:venn_kind": 5.29999999999999,
+   "align:venn_promise": 9.29999999999998,
+   "flag:cred_door": 62.0666666666657,
+   "inf:iona:armory_keycard": 56.866666666666,
+   "inf:iona:cred_honest": 62.0666666666657,
+   "inf:iona:meet_everyone": 25.0666666666671,
+   "item:iona_keycard": 25.0666666666671,
+   "item:iona_medpac": 25.0666666666671,
+   "surv:commons_group": 6.79999999999999,
+   "trigger:t_checkpoint_tut": 39.2000000000003,
+   "trigger:t_commons_tut": 4.19999999999999,
+   "trigger:t_corridor": 13.5333333333333,
+   "trigger:t_medical": 62.5333333333323,
+   "xp:area:armory": 57.5999999999993,
+   "xp:area:checkpoint": 39.2000000000003,
+   "xp:area:commons": 4.26666666666666,
+   "xp:area:corridor": 13.6,
+   "xp:armory_open": 56.866666666666,
+   "xp:checkpoint_door": 62.0666666666657,
+   "xp:enemy:chk_d1": 38.0333333333337,
+   "xp:enemy:chk_d2": 44.3333333333334,
+   "xp:enemy:chk_turret": 51.8666666666663,
+   "xp:enemy:corr_d1": 14.7333333333333,
+   "xp:enemy:corr_d2": 24.6666666666671,
+   "xp:iona_meet": 25.0666666666671,
+   "xp:quest_obj:q_main:belongings": 1.0,
+   "xp:quest_stage:q_main:checkpoint": 13.5333333333333,
+   "xp:quest_stage:q_main:corridor": 6.79999999999999,
+   "xp:quest_stage:q_main:medical": 62.0666666666657,
+   "xp:quest_stage:q_main:muster": 4.26666666666666,
+   "xp:read:cx_transfer_orders": 2.0
+  },
+  "npcs": {
+   "benedikt": {
+    "pos": [
+     71.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "corin": {
+    "pos": [
+     65.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "dalia": {
+    "pos": [
+     14.6,
+     5.0
+    ],
+    "rot": 60.0
+   },
+   "ilo": {
+    "pos": [
+     15.3,
+     4.4
+    ],
+    "rot": 60.0
+   },
+   "iona_npc": {
+    "removed": true
+   },
+   "ketterick": {
+    "pos": [
+     16.9,
+     8.9
+    ],
+    "rot": 200.0
+   },
+   "mae": {
+    "pos": [
+     68.5,
+     13.6
+    ],
+    "rot": 0.0
+   },
+   "steward": {
+    "pos": [
+     24.0,
+     7.5
+    ],
+    "rot": -90.0
+   },
+   "tav7_npc": {
+    "pos": [
+     75.5,
+     9.5
+    ],
+    "removed": true,
+    "rot": -90.0
+   },
+   "varga": {
+    "pos": [
+     69.0,
+     10.4
+    ],
+    "rot": 180.0
+   },
+   "varr": {
+    "pos": [
+     145.0,
+     9.5
+    ],
+    "rot": -90.0,
+    "sheet": {
+     "active_set": 0,
+     "appearance": {
+      "accent": "a2",
+      "body": "average",
+      "hair": "tail",
+      "hair_color": "h5",
+      "head": "long",
+      "model": "humanoid",
+      "skin": "s1"
+     },
+     "attr_inc": {
+
+     },
+     "attrs": {
+      "cha": 14,
+      "con": 12,
+      "dex": 14,
+      "int": 14,
+      "str": 10,
+      "wis": 13
+     },
+     "background": "",
+     "behavior": "ranged",
+     "class": "enemy",
+     "cooldowns": {
+
+     },
+     "dead": false,
+     "energy": 0,
+     "equipment": {
+      "body": {
+       "id": "security_weave",
+       "uid": "it17",
+       "upgrades": []
+      },
+      "main": {
+       "id": "service_pistol",
+       "uid": "it15",
+       "upgrades": []
+      }
+     },
+     "faction": "crew",
+     "feats": [
+      "prof_pistol",
+      "prof_armor_light",
+      "prof_armor_medium"
+     ],
+     "form": "",
+     "hp": 34,
+     "is_player": false,
+     "kind": "organic",
+     "kit": {
+      "shield_cell": 1
+     },
+     "level": 4,
+     "level_log": [],
+     "name": "Commander Ysolde Varr",
+     "overrides": {
+      "attack_bonus": 0,
+      "bab": 3,
+      "defense_bonus": 0,
+      "hp_max": 34,
+      "resist": {
+
+      },
+      "role": "ranged",
+      "saves": {
+       "fort": 2.0,
+       "ref": 3.0,
+       "will": 4.0
+      },
+      "sight": 14.0,
+      "speed": 4.0,
+      "stationary": false
+     },
+     "powers": [],
+     "prestige": "",
+     "pronouns": "they",
+     "skill_bank": 0,
+     "skills": {
+      "awareness": 5
+     },
+     "statuses": [],
+     "template": "commander_varr",
+     "uid": "varr",
+     "xp": 0
+    }
+   }
+  },
+  "party": [
+   "player",
+   "iona",
+   "tav7"
+  ],
+  "player_level": 2,
+  "pos": [
+   64.2,
+   8.1,
+   77.0
+  ],
+  "quests": {
+   "q_main": {
+    "log": [
+     {
+      "t": 0.0,
+      "text": "You woke in Transfer Cabin 4-C as the Cinder Wake left Haldis Reach. The purser wants every passenger at Muster Point B."
+     },
+     {
+      "t": 0.0,
+      "text": "Quest active."
+     },
+     {
+      "t": 0.0,
+      "text": "Check in with Purser Dray in the Crew Commons. There is time to look around before the jump."
+     },
+     {
+      "t": 0.0,
+      "text": "An explosion. The ship's defense network, WARDEN, has declared the passengers obstructions. Purser Dray begged you to help security in Transit Corridor C-3."
+     },
+     {
+      "t": 0.0,
+      "text": "Officer Iona Rell is with you. The forward sections are behind the security checkpoint and its WARDEN-controlled blast door."
+     },
+     {
+      "t": 0.0,
+      "text": "Beyond the checkpoint lies the medical deck, where the wounded wait and a maintenance synthetic is fighting off WARDEN cutters."
+     }
+    ],
+    "objectives": {
+     "belongings": "completed",
+     "checkin": "completed",
+     "muster": "completed",
+     "pass_checkpoint": "completed",
+     "reach_corridor": "completed",
+     "secure_medical": "active"
+    },
+    "outcome": "",
+    "stage": "medical",
+    "state": "active"
+   }
+  },
+  "seen_nodes": {
+   "checkpoint_credential:a": true,
+   "checkpoint_credential:done": true,
+   "checkpoint_credential:iona": true,
+   "checkpoint_credential:start": true,
+   "checkpoint_credential:w": true,
+   "intro_wake:end_c": true,
+   "intro_wake:intercom": true,
+   "intro_wake:memory": true,
+   "intro_wake:start": true,
+   "intro_wake:tut": true,
+   "iona_meet:end_node": true,
+   "iona_meet:medpac": true,
+   "iona_meet:r_comp": true,
+   "iona_meet:situation": true,
+   "iona_meet:start": true,
+   "iona_meet:who_plain": true,
+   "steward:boom": true,
+   "steward:checkin": true,
+   "steward:dray2": true,
+   "steward:go_c": true,
+   "steward:hub": true,
+   "steward:people": true,
+   "steward:sal": true,
+   "steward:start": true,
+   "steward:unlock": true,
+   "steward:warden_says": true,
+   "venn_family:after": true,
+   "venn_family:kind": true,
+   "venn_family:promise": true,
+   "venn_family:start": true,
+   "venn_family:where": true
+  },
+  "tutorials_seen": {
+
+  },
+  "vendor_stock": {
+
+  },
+  "world": {
+   "arc_crane": {
+
+   },
+   "arc_index": {
+
+   },
+   "arc_intercom": {
+
+   },
+   "arc_purge": {
+
+   },
+   "arc_slate": {
+
+   },
+   "armory_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "armory_manifest": {
+
+   },
+   "bay_spec": {
+
+   },
+   "bay_terminal": {
+
+   },
+   "cabin_case": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "cabin_datapad": {
+
+   },
+   "cabin_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "chk_body": {
+
+   },
+   "chk_mine": {
+    "aware_rolls": {
+     "iona": true,
+     "player": true
+    },
+    "disarmed": true,
+    "exploded": true
+   },
+   "chk_terminal": {
+
+   },
+   "cmd_console": {
+
+   },
+   "cmd_core": {
+
+   },
+   "cmd_muster": {
+
+   },
+   "cold_crates": {
+
+   },
+   "commons_cards": {
+
+   },
+   "commons_muster": {
+
+   },
+   "commons_sim": {
+
+   },
+   "commons_vendor": {
+
+   },
+   "corpse_chk_d1": {
+
+   },
+   "corpse_chk_d2": {
+
+   },
+   "corpse_chk_turret": {
+
+   },
+   "corpse_corr_d1": {
+
+   },
+   "corpse_corr_d2": {
+
+   },
+   "corr_body": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "corr_locker": {
+    "loot_left": {
+
+    },
+    "looted": true
+   },
+   "corr_ticket": {
+
+   },
+   "crawl_cache": {
+
+   },
+   "crawl_note": {
+
+   },
+   "d_armory": {
+    "done": {
+     "keycard": true
+    },
+    "locked": false,
+    "open": true
+   },
+   "d_bay": {
+
+   },
+   "d_blast": {
+    "locked": false,
+    "open": true
+   },
+   "d_cabin": {
+    "open": true
+   },
+   "d_cold": {
+
+   },
+   "d_command": {
+
+   },
+   "d_commons_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_corridor_east": {
+    "locked": false,
+    "open": true
+   },
+   "d_crawl_exit": {
+
+   },
+   "d_duct_hold": {
+
+   },
+   "d_eng_east": {
+
+   },
+   "d_hatch": {
+
+   },
+   "d_lounge": {
+
+   },
+   "d_med_east": {
+
+   },
+   "d_storage": {
+
+   },
+   "d_vent": {
+
+   },
+   "d_ward": {
+
+   },
+   "d_workshop": {
+
+   },
+   "eng_body": {
+
+   },
+   "eng_junction": {
+
+   },
+   "eng_log": {
+
+   },
+   "eng_muster": {
+
+   },
+   "eng_terminal": {
+
+   },
+   "eng_workbench": {
+
+   },
+   "lounge_bag": {
+
+   },
+   "lounge_history": {
+
+   },
+   "lounge_manifest": {
+
+   },
+   "med_muster": {
+
+   },
+   "med_notes": {
+
+   },
+   "med_release": {
+
+   },
+   "med_station": {
+
+   },
+   "med_vendor": {
+
+   },
+   "petrel_ramp": {
+
+   },
+   "plate_1": {
+
+   },
+   "plate_2": {
+
+   },
+   "plate_3": {
+
+   },
+   "plate_4": {
+
+   },
+   "pump_n": {
+
+   },
+   "pump_s": {
+
+   },
+   "senna_spot": {
+
+   },
+   "storage_crate": {
+
+   },
+   "vent_n": {
+
+   },
+   "ward_intercom": {
+
+   },
+   "ward_purge": {
+
+   }
+  }
+ }
+}
