@@ -84,6 +84,13 @@ func find_instance(uid: String) -> Dictionary:
 	return {}
 
 
+func first_instance(id: String) -> Dictionary:
+	for inst in instances:
+		if inst["id"] == id:
+			return inst
+	return {}
+
+
 func remove_instance(uid: String) -> Dictionary:
 	for i in instances.size():
 		if instances[i]["uid"] == uid:

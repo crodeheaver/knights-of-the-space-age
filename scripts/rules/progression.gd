@@ -18,7 +18,7 @@ static func preview(sheet: CharacterSheet) -> Dictionary:
 		"skill_points": sp,
 		"feat_picks": BuildValidator.feat_picks(sheet.class_id, nl),
 		"power_picks": BuildValidator.power_picks(sheet.class_id, nl) if sheet.has_resonance() else 0,
-		"attr_increase": DB.arr(DB.progression, "attribute_increase_levels").has(nl),
+		"attr_increase": DB.int_arr(DB.progression.get("attribute_increase_levels", [])).has(nl),
 		"class_features": BuildValidator.class_features(sheet.class_id, nl),
 		"bab": tmp.bab() - sheet.bab(),
 	}

@@ -1,0 +1,24 @@
+{
+  "id": "test_fixture",
+  "_comment": "Fixture used by the automated dialogue tests. Never started in normal play.",
+  "names": {"tester": "Test Speaker"},
+  "entry": [
+    {"if": [{"flag": "fixture_done"}], "node": "repeat"},
+    {"node": "start"}
+  ],
+  "nodes": {
+    "start": {"speaker": "tester", "text": "Hello, {name}. {They} {are} here.", "effects": [{"xp": 50, "key": "fixture_hello", "reason": "Said hello"}],
+      "choices": [
+        {"text": "Persuade me.", "check": {"skill": "persuasion", "dc": 15, "id": "fixture_persuade"}, "success": "won", "failure": "lost"},
+        {"text": "[Iona] Let Iona talk.", "check": {"skill": "persuasion", "dc": 10, "who": "iona"}, "success": "won", "failure": "lost"},
+        {"text": "Sway them.", "check": {"skill": "persuasion", "dc": 18, "power": "sway", "energy": 3, "id": "fixture_sway"}, "success": "won", "failure": "lost", "effects": [{"alignment": -5, "key": "fixture_sway", "reason": "Pushed a mind"}]},
+        {"text": "Veterans only.", "if": [{"background": "veteran"}], "next": "won"},
+        {"text": "Locked option.", "if": [{"flag": "never"}], "show_locked": "Requires something", "next": "won"},
+        {"text": "Be kind.", "next": "kind", "effects": [{"alignment": 10, "key": "fixture_kind", "reason": "Kindness"}, {"influence": "iona", "delta": 8, "key": "fixture_kind", "reason": "Kind to a stranger"}, {"influence": "tav7", "delta": -3, "key": "fixture_kind", "reason": "Wasted time"}]}
+      ]},
+    "won": {"speaker": "tester", "text": "You win.", "effects": [{"set_flag": "fixture_done"}], "next": "end"},
+    "lost": {"speaker": "tester", "text": "You lose, but we keep talking.", "effects": [{"set_flag": "fixture_done"}], "choices": [{"text": "Fine.", "end": true}]},
+    "kind": {"speaker": "tester", "text": "That was kind.", "effects": [{"set_flag": "fixture_done"}], "next": "end"},
+    "repeat": {"speaker": "tester", "text": "We already spoke.", "choices": [{"text": "Bye.", "end": true}]}
+  }
+}

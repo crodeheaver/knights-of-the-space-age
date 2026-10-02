@@ -169,6 +169,15 @@ static func dict(d: Dictionary, key: String) -> Dictionary:
 	return {}
 
 
+## JSON numbers are floats; Array.has() is type-strict, so convert first.
+static func int_arr(v: Variant) -> Array[int]:
+	var out: Array[int] = []
+	if typeof(v) == TYPE_ARRAY:
+		for x in v:
+			out.append(int(x))
+	return out
+
+
 static func str_arr(v: Variant) -> Array[String]:
 	var out: Array[String] = []
 	if typeof(v) == TYPE_ARRAY:

@@ -172,7 +172,7 @@ func to_dict() -> Dictionary:
 		"tracked_quest": tracked_quest, "influence": influence.duplicate(), "influence_log": influence_log.duplicate(true),
 		"alignment": alignment, "alignment_log": alignment_log.duplicate(true), "ledger": ledger.duplicate(),
 		"world": world.duplicate(true), "enemies": enemies.duplicate(true), "encounters": encounters.duplicate(true),
-		"explored": Marshalls.raw_to_base64(explored), "areas_visited": areas_visited.duplicate(),
+		"explored": Marshalls.raw_to_base64(explored) if not explored.is_empty() else "", "areas_visited": areas_visited.duplicate(),
 		"discoveries": discoveries.duplicate(), "dialogue_history": dialogue_history.duplicate(true),
 		"seen_nodes": seen_nodes.duplicate(), "checks": checks.duplicate(true), "vendor_stock": vendor_stock.duplicate(true),
 		"tutorials_seen": tutorials_seen.duplicate(), "positions": positions.duplicate(true), "area": area,
@@ -206,7 +206,8 @@ static func from_dict(d: Dictionary) -> GameState:
 	g.world = (d.get("world", {}) as Dictionary).duplicate(true)
 	g.enemies = (d.get("enemies", {}) as Dictionary).duplicate(true)
 	g.encounters = (d.get("encounters", {}) as Dictionary).duplicate(true)
-	g.explored = Marshalls.base64_to_raw(String(d.get("explored", "")))
+	var ex := String(d.get("explored", ""))
+	g.explored = Marshalls.base64_to_raw(ex) if ex != "" else PackedByteArray()
 	g.areas_visited = DB.str_arr(d.get("areas_visited", []))
 	g.discoveries = DB.str_arr(d.get("discoveries", []))
 	g.dialogue_history = (d.get("dialogue_history", []) as Array).duplicate(true)
