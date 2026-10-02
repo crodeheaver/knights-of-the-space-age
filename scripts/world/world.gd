@@ -130,7 +130,8 @@ func _spawn_party() -> void:
 			a.set_pos(Vector3(float(p[0]), 0, float(p[1])))
 			a.set_facing_deg(float(p[2]) if p.size() > 2 else 0.0)
 		else:
-			var sp: Array = start["pos"]
+			# No saved spot: fall in beside the player (or the ship's start).
+			var sp: Array = st.positions.get("player", start["pos"]) if uid != "player" else start["pos"]
 			a.set_pos(grid.nearest_passable(Vector3(float(sp[0]) - i * 0.9, 0, float(sp[1]) + i * 0.6)))
 			a.set_facing_deg(float(start.get("rot", 90)))
 		if st.queues.has(uid):

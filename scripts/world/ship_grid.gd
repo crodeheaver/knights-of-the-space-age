@@ -262,12 +262,13 @@ func path(from: Vector3, to: Vector3, allow_partial: bool = true, doors_block: b
 		pts.append(center_of(c))
 	if passable(cell_of(to)) and ids[ids.size() - 1] == ct:
 		pts[pts.size() - 1] = Vector3(to.x, 0, to.z)
-	# String-pulling smoothing.
+	# String-pulling smoothing, looking at most 16 cells ahead so long paths
+	# stay cheap (a full look-ahead is quadratic in path length).
 	var cur := Vector3(from.x, 0, from.z)
 	var i := 0
 	while i < pts.size():
 		var far := i
-		for j in range(pts.size() - 1, i, -1):
+		for j in range(mini(pts.size() - 1, i + 16), i, -1):
 			if walk_clear(cur, pts[j]):
 				far = j
 				break
