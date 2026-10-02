@@ -408,6 +408,8 @@ func _update_dynamic() -> void:
 				var lbl := world.action_label(q)
 				if q.has("target") and world.actors.has(String(q["target"])) and String(q["target"]) != lead.uid:
 					lbl += " → " + (world.actors[String(q["target"])] as Actor).sheet.display_name
+				if bool(q.get("auto_queued", false)):
+					lbl += " (auto)"
 				slot.add_child(UIKit.button("%d. %s ✕" % [i + 1, lbl], func() -> void:
 					lead.queue.cancel_index(idx)
 					_dirty = true, "Cancel this action"))
@@ -530,7 +532,7 @@ func action_entries(a: Actor) -> Array:
 	if world.actors.has(a.target_uid):
 		tgt = (world.actors[a.target_uid] as Actor).sheet
 	var prof := CombatRules.weapon_profile(s, "main")
-	out.append({"row": "Attacks", "label": "Attack", "action": {"type": "attack"}, "needs": "enemy", "tip": "Basic attack with %s (%s %s). Repeats automatically against the selected enemy when the queue is empty." % [prof["name"], prof["dice"], prof["dtype"]]})
+	out.append({"row": "Attacks", "label": "Attack", "action": {"type": "attack"}, "needs": "enemy", "tip": "Basic attack with %s (%s %s). With Auto-attack on (Settings → Gameplay), a basic attack is queued when combat starts and repeats against the selected (or nearest) enemy whenever your queue is empty; anything you queue replaces it." % [prof["name"], prof["dice"], prof["dtype"]]})
 	for f in s.action_feats():
 		var fd: Dictionary = DB.feat(f)
 		var act: Dictionary = fd["action"]

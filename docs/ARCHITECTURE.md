@@ -31,6 +31,9 @@ sounds and floating numbers only display results that have already been resolved
   `sim_step`: statuses, cooldowns, round clocks, recovery, projectiles, bash jobs, hazards, stealth, regeneration and
   pending corpses. Pausing therefore freezes all of them. (`tests/test_world.gd::test_pause_freezes_everything`
   snapshots every actor, status, cooldown and projectile across 45 paused frames.)
+- Keyboard movement is sampled each physics frame into the controlled actor's `input_dir` and applied inside
+  `Actor.sim_step`, exactly like click-to-move paths, so it shares the pause gate and drives the walk animation
+  from the distance actually covered.
 - Tests and bots set `manual_step = true` and call `sim_step` themselves.
 - `Game.state.sim_time` is the deterministic clock. `play_time` is wall-clock while unpaused.
 - Saving is refused while a conversation, cinematic or minigame is open, during unpaused combat, with a grenade in
@@ -45,6 +48,12 @@ sounds and floating numbers only display results that have already been resolved
   actions are validated when queued and again when executed. Actions whose target has died are purged
   (`queue.purge_target`). An actor with an empty queue makes a basic attack on its target, or acts by AI
   behaviour if it is a companion not under your control.
+- **Auto-attack** (Settings → Gameplay, on by default): when combat starts and the controlled character has
+  nothing queued, a basic attack on the selected enemy (or the nearest one in sight) is queued and shown as
+  "(auto)". Queuing any action, moving (click or keys) or entering stealth replaces it, even while the
+  automatic attack is still closing on its target; re-selecting a target re-aims it. When the target falls and the queue is empty, the character moves on to the nearest enemy, unless
+  "pause when the queue empties" is on, in which case the game pauses instead. Player movement is never
+  overridden by an automatic attack.
 - **Auto-pause** options: combat start, member down, controlled character's queue empty, target defeated.
 - **Movement into range:** actions with a range move the actor until it is in range and has line of sight, then
   resolve. Enemies treat closed doors as walls. During combat, only the character you control opens doors.

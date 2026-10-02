@@ -121,8 +121,13 @@ func destination() -> Vector3:
 	return path[path.size() - 1] if not path.is_empty() else position
 
 
-## Last direct (WASD) push direction and when it happened, so doors can open
-## for a player walking into them.
+## Keyboard (WASD) movement wanted this frame, in world space. The World sets
+## it from input every physics frame; sim_step() applies it at the fixed
+## simulation rate, so keyboard movement freezes with the pause, runs at the
+## same speed as click-movement and drives the walk animation the same way.
+var input_dir := Vector3.ZERO
+## Last direct push direction and its sim time, so doors open for a player
+## walking into them.
 var push_dir := Vector3.ZERO
 var push_time := -10.0
 
@@ -132,7 +137,7 @@ func direct_move(dir: Vector3, dt: float) -> void:
 		return
 	stop()
 	push_dir = dir.normalized()
-	push_time = Time.get_ticks_msec() / 1000.0
+	push_time = Game.state.sim_time if Game.state != null else 0.0
 	var sp := move_speed()
 	var np: Vector3 = world.grid.try_move(position, dir.normalized() * sp * dt, RADIUS)
 	speed_now = position.distance_to(np) / maxf(dt, 0.0001)
@@ -153,6 +158,9 @@ func sim_step(dt: float) -> void:
 	speed_now = 0.0
 	if sheet.dead or sheet.is_downed():
 		stop()
+		input_dir = Vector3.ZERO
+	elif input_dir.length_squared() > 0.0001 and sheet.can_move():
+		direct_move(input_dir, dt)  # sets speed_now from the distance covered
 	elif is_moving() and sheet.can_move():
 		var target := path[path_i]
 		var to := Vector3(target.x - position.x, 0, target.z - position.z)

@@ -35,6 +35,7 @@ Unless noted otherwise, every test listed is in `tests/` and runs in `./tools/ru
 | Real time with pause, 3 s per-actor rounds | ✅ | `world/combat_manager.gd` | bot playthroughs |
 | 4-slot queue: add, cancel, reorder, clear | ✅ | `rules/action_queue.gd`, HUD queue strip | `test_status_queue::test_queue_order_cancel_reorder` |
 | Pause freezes everything; menus too | ✅ | `World.sim_running` gate | `test_world::test_pause_freezes_everything` |
+| Auto-attack: a basic attack is queued at combat start when nothing is queued (cancelable, replaced by any choice or move, even mid-approach, follows re-targeting, skipped while sneaking; continues on the nearest enemy when the target falls; toggle in Settings → Gameplay) | ✅ | `World.auto_queue_attack`, `CombatManager.start/_next_action` | `test_world::test_combat_start_auto_queues_basic_attack`, `test_player_choice_replaces_auto_attack`, `test_no_auto_attack_when_disabled_or_sneaking`, `test_auto_attack_moves_on_when_target_falls` |
 | Auto-pause (start, member down, queue empty, target defeated) | ✅ | Settings + `combat_manager.gd`/`world.gd` | 🟡 option toggles exercised in UI test |
 | d20 attack, natural 1/20 on attacks only, crit threat and confirm | ✅ | `rules/combat_rules.gd` | `test_combat_rules` (forced rolls) |
 | Saving throws, skill checks (no auto 1/20) | ✅ | `CombatRules.saving_throw/skill_check` | `test_combat_rules`, `test_story_systems` |
@@ -63,7 +64,7 @@ Unless noted otherwise, every test listed is in `tests/` and runs in `./tools/ru
 
 | Mechanic | Status | Implementation | Verification |
 |---|---|---|---|
-| WASD and click-move, orbit and zoom camera with collision | 🟡 | `world.gd`, `world/camera_rig.gd` | screenshots |
+| WASD and click-move (both animate the walk cycle and stop on pause); orbit and zoom camera with collision | ✅ | `World._direct_input` → `Actor.input_dir` → `Actor.sim_step`; `world/camera_rig.gd` | `test_world::test_keyboard_movement_drives_walk_animation`; camera 🟡 screenshots |
 | Doors, containers, corpses, readables, explored map | ✅ | `world/world_object.gd`, `ui/minimap.gd` | bots loot and read along every route |
 | All 8 skills have world uses | ✅ | `data/ship_layout.json` options | `test_data::test_every_skill_used_in_level` |
 | Stealth: LOS, cone, distance, suspicion, shadows, detection | ✅ | `rules/stealth_rules.gd`, `World._stealth_step` | `test_world::test_stealth_detection_line_of_sight`; technical bot sneaks to the north pump |
@@ -136,7 +137,7 @@ Unless noted otherwise, every test listed is in `tests/` and runs in `./tools/ru
 
 | Item | Status | Notes |
 |---|---|---|
-| Automated tests | ✅ | 105 tests; see `docs/TEST_RESULTS.md` |
+| Automated tests | ✅ | 110 tests; see `docs/TEST_RESULTS.md` |
 | Playtest-style verification | ⚠️ | Three automated bot playthroughs and a seed sweep. **No human playtest** has been run. |
 | Runnable build | ✅ | Linux and Windows exports; the Linux export was launched headless and under Xvfb (see TEST_RESULTS) |
 | Screenshots | ✅ | `docs/screenshots/` (29 images) |

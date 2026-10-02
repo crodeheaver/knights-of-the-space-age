@@ -5,12 +5,13 @@ All results below were produced by commands in this repository, on the build con
 
 - **Environment:** Godot 4.4.1-stable (official), headless; Intel Xeon @ 2.80 GHz, 4 cores; no GPU (Mesa llvmpipe
   under Xvfb for anything rendered).
-- **Commit:** `d9ccc4c` + `docs/.gdignore` (branch `claude/admiring-faraday-5f1rx1`).
+- **Commit:** `d9ccc4c` + `docs/.gdignore` for sections 4–6; `2f3da3c` for the suite and sweep (sections 1–3)
+  (branch `claude/admiring-faraday-5f1rx1`).
 
 ## 1. Full suite — `./tools/run_tests.sh`
 
 ```
-RESULT: 105 tests, 105 passed, 0 failed
+RESULT: 110 tests, 110 passed, 0 failed
 exit code 0, no SCRIPT ERROR lines
 ```
 
@@ -25,7 +26,7 @@ exit code 0, no SCRIPT ERROR lines
 | `test_data.gd` | 3 | every data reference and dialogue destination valid, content minimums, every skill used in the level |
 | `test_scripts.gd` | 2 | every script compiles; main scene instantiates |
 | `test_ui.gd` | 7 | creator flow and invalid-build blocking, all game-menu tabs and equip/use, level-up (recommended and manual), vendor/crafting/muster, save/load/delete with confirmation, settings and rebinding conflicts, ending outcome |
-| `test_world.gd` | 11 | pause freezes everything (incl. behind menus), simultaneous events (dead target, purged queue, kill and down in one blast, grenade after the thrower falls, scene transition mid-throw), stealth LOS, the four checkpoint approaches |
+| `test_world.gd` | 16 | auto-attack at combat start (queued, replaced by player choices and moves, off/sneaking, moves on after a kill), keyboard movement drives the walk animation and freezes with pause, pause freezes everything (incl. behind menus), simultaneous events (dead target, purged queue, kill and down in one blast, grenade after the thrower falls, scene transition mid-throw), stealth LOS, the four checkpoint approaches |
 | `test_presets.gd` | 4 | every preset loads into the world; prestige presets eligible for exactly their variant; Iona's training; bay jump plays to the escape |
 | `test_minigames.gd` | 16 | Shards rules, AI legality, wager escrow and settlement, Slipstream finish/best/par-once, turret win/loss/autopilot, practice changes nothing |
 | `test_audio_assets.gd` | 5 | every sound id loads; length budgets; loops seamless through the mixer |
@@ -53,12 +54,16 @@ Logs with every choice and the full combat log are written to `user://bot_<route
 The same three routes are replayed with dice offsets 1–8 (24 runs):
 
 ```
-SWEEP: 22/24 route runs escaped
+SWEEP: 23/24 route runs escaped
 offset 7: diplomat — party wiped at the forward checkpoint (level 1 Adept + Iona vs turret and two pickets)
-offset 8: martial  — party wiped in the bay (Marshal Quill's line, reinforced by the martial route's choices)
 ```
 
-The failures are combat losses in the two hardest fights for those builds, not script or logic errors. A human
+This run was made after auto-attack was added (commit `2f3da3c`). In combat the bot picks its own actions, and
+they replace the automatic attack, as a player's would. The earlier sweep, before auto-attack, was 22/24: offset 7
+diplomat failed at the same checkpoint and offset 8 martial wiped in the bay. Dice consumption changed with
+auto-attack, so individual offsets are not comparable across the two sweeps.
+
+The remaining failure is a combat loss in the hardest fight for that build, not a script or logic error. A human
 player can pause, take cover, retreat or reload; the bot does not. Balance has not been validated with human
 players.
 

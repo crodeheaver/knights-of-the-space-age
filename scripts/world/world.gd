@@ -494,7 +494,9 @@ func _physics_process(delta: float) -> void:
 	if manual_step:
 		return
 	if not Game.ui_blocked() and not game_over:
-		_direct_input(delta)
+		_direct_input()
+	elif controlled() != null:
+		controlled().input_dir = Vector3.ZERO
 	if _pending_autosave != "" and sim_running() and not combat.active:
 		_checkpoint(_pending_autosave)
 	if sim_running():
@@ -508,9 +510,14 @@ func _physics_process(delta: float) -> void:
 	_update_hover()
 
 
-func _direct_input(delta: float) -> void:
+## Samples the movement keys into the controlled actor's input_dir; the
+## movement itself happens in Actor.sim_step at the fixed simulation rate.
+func _direct_input() -> void:
 	var a := controlled()
-	if a == null or not sim_running():
+	if a == null:
+		return
+	if not sim_running():
+		a.input_dir = Vector3.ZERO
 		return
 	var v := Vector3.ZERO
 	var b := cam.basis_flat()
@@ -523,9 +530,12 @@ func _direct_input(delta: float) -> void:
 	if Input.is_action_pressed("move_left"):
 		v -= b[1]
 	if v.length_squared() > 0.0:
-		a.current = {} if String(a.current.get("type", "")) == "interact" else a.current
+		a.current = {} if String(a.current.get("type", "")) == "interact" or bool(a.current.get("auto", false)) else a.current
 		_pending_interact = {}
-		a.direct_move(v, delta * time_scale)
+		a.queue.remove_auto()
+		a.input_dir = v.normalized()
+	else:
+		a.input_dir = Vector3.ZERO
 
 
 ## One deterministic simulation step. Tests call this directly.
@@ -735,8 +745,13 @@ func switch_control(uid: String) -> void:
 	if a.sheet.is_downed():
 		Events.toast("%s is down." % a.sheet.display_name, "warn")
 		return
+	var prev := controlled()
+	if prev != null:
+		prev.input_dir = Vector3.ZERO
 	Game.state.controlled = uid
 	cam.target = a
+	if combat.active:
+		auto_queue_attack(a)
 	refresh_markers()
 	Events.post("control_changed", {"uid": uid})
 	hud_changed.emit()
@@ -1139,7 +1154,7 @@ func _heading_through(aa: Actor, cells: Array) -> bool:
 			cur = q
 			if left <= 0.0:
 				break
-	elif Time.get_ticks_msec() / 1000.0 - aa.push_time < 0.25:
+	elif Game.state.sim_time - aa.push_time < 0.25:
 		for k in range(1, 5):
 			pts.append(aa.position + aa.push_dir * (k * 0.3))
 	for p in pts:
@@ -1303,6 +1318,7 @@ func cmd_move(a: Actor, p: Vector3) -> bool:
 	_pending_interact = {}
 	if String(a.current.get("type", "")) != "":
 		a.current = {}
+	a.queue.remove_auto()
 	var ok := a.move_to(grid.nearest_passable(p, 3), true)
 	dbg("move %s %s -> %s: %s" % [a.uid, str(a.position), str(p), str(a.path) if ok else "no path"])
 	if not ok:
@@ -1314,8 +1330,59 @@ func cmd_target(a: Actor, uid: String) -> void:
 	if a == null:
 		return
 	a.target_uid = uid
+	# A pending automatic attack follows the player's new selection.
+	if valid_hostile_target(a, uid):
+		a.queue.retarget_auto(uid)
 	refresh_markers()
 	hud_changed.emit()
+
+
+## The enemy an idle character would go for: the nearest engaged hostile,
+## preferring ones in line of sight.
+func auto_target(a: Actor) -> Actor:
+	var best: Actor = null
+	var bd := INF
+	for o in hostiles_of(a):
+		var h: Actor = o
+		if not valid_hostile_target(a, h.uid):
+			continue
+		var d := h.position.distance_to(a.position)
+		if not grid.los(a.position, h.position):
+			d += 1000.0
+		if d < bd:
+			bd = d
+			best = h
+	return best
+
+
+## True while the player is steering this character themselves (a click-move
+## path or the movement keys): automatic attacks must not override that.
+func player_moving(a: Actor) -> bool:
+	return (a.manual_move and a.is_moving()) or a.input_dir.length_squared() > 0.0001
+
+
+## Auto-attack: when combat starts (or control passes to someone idle mid-
+## fight) and the player has queued nothing, queue a basic attack on the
+## selected enemy, or the nearest one. Skipped while sneaking, moving, busy
+## with an interaction, or when turned off in Settings → Gameplay.
+func auto_queue_attack(a: Actor) -> bool:
+	if a == null or a.role != "party" or a.uid != Game.state.controlled or not bool(Settings.get_v("auto_attack")):
+		return false
+	if a.sheet.is_downed() or a.sheet.dead or not a.sheet.can_act() or a.stealth:
+		return false
+	if not a.queue.is_empty() or not a.current.is_empty() or a.interaction.size() > 0 or player_moving(a):
+		return false
+	var t: Actor = actors[a.target_uid] if valid_hostile_target(a, a.target_uid) else auto_target(a)
+	if t == null:
+		return false
+	var act := {"type": "attack", "target": t.uid, "auto": true, "auto_queued": true}
+	if validate_action(a, act, true) != "":
+		return false
+	a.target_uid = t.uid
+	a.queue.push(act)
+	refresh_markers()
+	hud_changed.emit()
+	return true
 
 
 func cmd_attack(a: Actor, uid: String) -> void:
@@ -1347,6 +1414,13 @@ func queue_action(a: Actor, action: Dictionary) -> String:
 		return reason
 	var act := action.duplicate()
 	act["manual"] = true
+	# The player's own choice replaces any automatic basic attack, including one
+	# still closing on its target (an action is current only until it executes).
+	a.queue.remove_auto()
+	if bool(a.current.get("auto", false)):
+		a.current = {}
+		if not a.manual_move:
+			a.stop()
 	a.queue.push(act)
 	if a.stealth and String(act["type"]) in ["attack", "feat", "power", "item"]:
 		pass  # stealth breaks when the action executes

@@ -16,7 +16,8 @@ increment, where the result departs from the plan, and what is still open.
 | 7 | World regression tests, combat approach at the checkpoint, bay level scaling | `9ec2be0` |
 | 8 | Procedural audio (delegated to a sub-agent, then reviewed and merged) | `26e6eca`, `e49c117` |
 | 9 | Minigames: Shards, Slipstream, turret, practice mode (delegated, reviewed, merged) | `3623be7`, `5ec8085` |
-| 10 | Performance tooling and fixes, export presets and builds, screenshots, documentation | this commit and its neighbours |
+| 10 | Performance tooling and fixes, export presets and builds, screenshots, documentation | `d9ccc4c` and its neighbours |
+| 11 | Follow-ups: keyboard movement drives the walk animation; auto-attack at combat start | `9f41655`, `a4c7e4b`, `2f3da3c` |
 
 ## Departures from the plan
 
@@ -43,10 +44,9 @@ increment, where the result departs from the plan, and what is still open.
   opening doors into other encounters, and noise carrying through bulkheads.
 - **Fixes:** rest, armor in the armory, glaive 1d10 ×2, a 1d6 mine, hazard avoidance, door rules, muffled noise,
   lighter reclaimers, and a slimmer bay composition.
-- **Current state:** 22/24 seeded bot runs escape (`tools/bot_sweep.sh 1 8`). The other two wipe in two hard spots:
-  - the level-1 Adept at the checkpoint;
-  - the martial route's bay fight (Senna killed and the archive loaded add enemies; that is intended
-    consequence, but the margin is thin).
+- **Current state:** 23/24 seeded bot runs escape (`tools/bot_sweep.sh 1 8`, after auto-attack). The one
+  failure is the level-1 Adept at the checkpoint. The previous sweep also lost a martial bay fight: killing
+  Senna and loading the archive add enemies there. That is intended consequence, but the margin is thin.
 - A human can pause, reposition, use the terrain and retry, but this has **not been verified with human
   players**.
 

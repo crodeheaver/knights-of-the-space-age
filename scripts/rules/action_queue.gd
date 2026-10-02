@@ -73,6 +73,24 @@ func clear() -> void:
 	items.clear()
 
 
+## Removes the basic attacks the game queued on its own (auto_queued), e.g.
+## because the player chose an action or a move of their own.
+func remove_auto() -> int:
+	var n := 0
+	for i in range(items.size() - 1, -1, -1):
+		if bool(items[i].get("auto_queued", false)):
+			items.remove_at(i)
+			n += 1
+	return n
+
+
+## Points auto-queued attacks at a new target (the player re-selected).
+func retarget_auto(uid: String) -> void:
+	for it in items:
+		if bool(it.get("auto_queued", false)):
+			it["target"] = uid
+
+
 ## Removes actions that target the given uid (e.g. the target died).
 func purge_target(uid: String) -> int:
 	var n := 0

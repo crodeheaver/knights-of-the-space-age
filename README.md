@@ -65,7 +65,7 @@ Example: `godot --path . -- --preset=jump_bay --dev`
 | Move / click-move | W A S D or arrows / left-click the floor |
 | Camera orbit, zoom, rotate | right-drag, wheel, Q / T |
 | Interact or talk (nearest) | E, or left-click the object or person |
-| **Tactical pause** | Space |
+| **Tactical pause** | Space (combat auto-pauses at the start with a basic attack already queued; queue anything to replace it) |
 | Attack the target / cycle targets | F / R (left-click a hostile to target; double-click to attack) |
 | Action bar (feats, powers, items) | 1 … 0 (actions go into the 4-slot queue; Backspace clears it) |
 | Switch character / hold / solo | Tab / G / H |
