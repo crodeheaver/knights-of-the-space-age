@@ -11,7 +11,7 @@ There are **no third-party assets** in this project. All content is original and
 | Shaders | `assets/shaders/floor.gdshader`, `wall.gdshader` (world-space panel seams) | written for this project | project-owned |
 | Portraits | rendered live from the character models (`scripts/ui/portraits.gd`) | generated | project-owned |
 | UI | theme and widgets in code (`scripts/ui/ui_kit.gd`); minigame visuals drawn with `_draw()` | written for this project | project-owned |
-| Audio | 38 files: UI, combat and world SFX, ship ambience, 5 music loops (`assets/audio/*.wav`) | synthesized by `tools/gen_audio.py` (standard library only, deterministic) | original, CC0-equivalent; full per-file table in [ASSETS_AUDIO.md](ASSETS_AUDIO.md) |
+| Audio | 102 files: UI, combat and world SFX, ship ambiences, positional machine loops, 5 music loops, and 52 voice syllables in four banks (two human, Tav-7, WARDEN) that are strung together into babbled speech (`assets/audio/*.wav`) | synthesized by `tools/gen_audio.py` (standard library only, deterministic) | original, CC0-equivalent; full per-file table in [ASSETS_AUDIO.md](ASSETS_AUDIO.md) |
 | Font | Godot's built-in default UI font | ships with the engine | engine licence (Godot is MIT; its default font is under its open licence) |
 | Icon | `icon.svg` | drawn for this project | project-owned |
 | Screenshots | `docs/screenshots/*.jpg` | captured from the game under Xvfb (software rendering) | project-owned |
