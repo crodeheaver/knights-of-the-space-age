@@ -15,9 +15,15 @@ var cam: Camera3D
 var cine_cam: Camera3D
 var dragging := false
 var cinematic := false
+## A Cinematics script drives cine_cam directly; the rig keeps its hands off.
+var scripted := false
 var _cine_from: Transform3D
 var _cine_to: Transform3D
 var _cine_t := 1.0
+var _cine_speed := 1.8
+## Slow push-in after each conversation cut (metres per second, capped).
+var _drift := Vector3.ZERO
+var _drift_left := 0.0
 var shake := 0.0
 var _focus := Vector3.ZERO
 
@@ -77,9 +83,15 @@ func add_shake(amount: float) -> void:
 
 func _process(delta: float) -> void:
 	if cinematic:
-		_cine_t = minf(1.0, _cine_t + delta * 1.8)
+		if scripted:
+			return
+		_cine_t = minf(1.0, _cine_t + delta * _cine_speed)
 		var tt := smoothstep(0.0, 1.0, _cine_t)
 		cine_cam.global_transform = _cine_from.interpolate_with(_cine_to, tt)
+		if _cine_t >= 1.0 and _drift_left > 0.0:
+			var step := minf(_drift_left, delta * _drift.length())
+			_drift_left -= step
+			_cine_to.origin += _drift.normalized() * step
 		return
 	if target and is_instance_valid(target):
 		var want := target.global_position + Vector3(0, 1.3, 0)
@@ -142,31 +154,93 @@ func basis_flat() -> Array[Vector3]:
 
 
 ## Cinematic over-the-shoulder framing: camera behind `listener`, looking at
-## `speaker`'s face.
+## `speaker`'s face. (Kept for callers that want the classic shot.)
 func frame(speaker_pos: Vector3, listener_pos: Vector3) -> void:
+	frame_shot(speaker_pos, listener_pos, "ots", 1.0, true)
+
+
+## Conversation shots. `side` (+1/-1) keeps the camera on one side of the
+## line between the two characters for a whole conversation.
+##   ots    over the listener's shoulder onto the speaker's face
+##   close  head-and-shoulders on the speaker, from the listener's side
+##   two    both characters in profile, from the side of the line
+## `blend` eases from the current view (the first shot); later shots cut.
+func frame_shot(speaker_pos: Vector3, listener_pos: Vector3, shot: String = "ots", side: float = 1.0, blend: bool = false,
+		speaker_h: float = 1.55, listener_h: float = 1.55) -> void:
 	if not cinematic:
 		_cine_from = cam.global_transform
+		blend = true
 	else:
 		_cine_from = cine_cam.global_transform
 	cinematic = true
 	cine_cam.current = true
-	var head := speaker_pos + Vector3(0, 1.55, 0)
-	var dir := (speaker_pos - listener_pos)
+	var head := speaker_pos + Vector3(0, speaker_h, 0)
+	var dir := speaker_pos - listener_pos
 	dir.y = 0
 	if dir.length() < 0.2:
 		dir = Vector3(0, 0, 1)
 	dir = dir.normalized()
-	var side := Vector3(-dir.z, 0, dir.x)
-	# Far enough back and to the side that the listener's shoulder frames the
-	# shot instead of filling it.
-	var eye := listener_pos - dir * 2.3 + side * 1.25 + Vector3(0, 1.95, 0)
+	var sidev := Vector3(-dir.z, 0, dir.x) * side
+	var eye: Vector3
+	var look := head
+	match shot:
+		"close":
+			# Head and shoulders; aimed a little low so the face sits in the
+			# upper part of the frame, clear of the subtitles.
+			eye = head - dir * 2.1 + sidev * 0.55 + Vector3(0, 0.02, 0)
+			look = head - Vector3(0, 0.24, 0)
+		"two":
+			var mid := (speaker_pos + listener_pos) * 0.5
+			var gap := maxf(3.0, speaker_pos.distance_to(listener_pos) * 1.55)
+			eye = mid + sidev * gap - dir * 0.4 + Vector3(0, 1.7, 0)
+			look = mid + Vector3(0, 1.2, 0)
+		_:
+			# Behind and beside the listener at shoulder height; the speaker
+			# sits a little off-centre, towards the open side of the frame.
+			eye = listener_pos - dir * 1.9 + sidev * 1.15 + Vector3(0, listener_h + 0.2, 0)
+			look = head - sidev * 0.3 - Vector3(0, 0.18, 0)
+	eye = safe_eye(look, eye, sidev)
 	var t := Transform3D(Basis(), eye)
-	_cine_to = t.looking_at(head, Vector3.UP)
-	_cine_t = 0.0
+	_cine_to = t.looking_at(look, Vector3.UP)
+	_cine_t = 0.0 if blend else 1.0
+	_cine_speed = 1.8
+	if not blend:
+		cine_cam.global_transform = _cine_to
+	# A slow push-in towards the subject, like a dolly on the cut.
+	_drift = (look - eye).normalized() * 0.05
+	_drift_left = 0.35
+
+
+## Pulls a camera position in front of any wall between it and what it looks
+## at; if that leaves it too close, tries the mirrored side.
+func safe_eye(look: Vector3, eye: Vector3, sidev: Vector3 = Vector3.ZERO) -> Vector3:
+	if not is_inside_tree():
+		return eye
+	var space := get_world_3d().direct_space_state
+	if space == null:
+		return eye
+	var res := _clear_eye(space, look, eye)
+	if res.distance_to(look) < 1.0 and sidev != Vector3.ZERO:
+		var mirrored := eye - sidev * 2.0 * sidev.dot(eye - look) / maxf(0.0001, sidev.length_squared())
+		var alt := _clear_eye(space, look, mirrored)
+		if alt.distance_to(look) > res.distance_to(look):
+			return alt
+	return res
+
+
+func _clear_eye(space: PhysicsDirectSpaceState3D, look: Vector3, eye: Vector3) -> Vector3:
+	var q := PhysicsRayQueryParameters3D.create(look, eye, arm.collision_mask | 1)
+	var hit := space.intersect_ray(q)
+	if hit.is_empty():
+		return eye
+	var hp: Vector3 = hit["position"]
+	return hp + (look - hp).normalized() * 0.3
 
 
 func end_cinematic() -> void:
 	cinematic = false
+	scripted = false
+	_drift_left = 0.0
 	cam.current = true
 	_apply()
 

@@ -134,12 +134,31 @@ func _debug_open(what: String) -> void:
 			pu.main = self
 			push_panel(pu)
 		_:
-			open_game_menu(what)
+			# --open=dialogue:<id> and --open=cinematic:<id> (screenshots).
+			if what.begins_with("dialogue:"):
+				var did := what.substr(9)
+				var npc_id := String(args.get("npc", ""))
+				var ctx := {"object": String(args["obj"])} if args.has("obj") else {}
+				world.start_dialogue(did, null, npc_id, ctx)
+				# --advance=N steps through N lines (choosing the first option).
+				for i in int(args.get("advance", "0")):
+					await get_tree().process_frame
+					if world.dialogue == null or not world.dialogue.active:
+						break
+					if world.dialogue.choices().is_empty():
+						world.dialogue.advance()
+					else:
+						world.dialogue.choose(int(world.dialogue.choices()[0]["index"]))
+			elif what.begins_with("cinematic:"):
+				Cinematics.play(self, what.substr(10))
+			else:
+				open_game_menu(what)
 
 
 func _intro() -> void:
 	if world != null:
-		world.start_dialogue("intro_wake")
+		# An establishing flythrough of the ship, then the first conversation.
+		Cinematics.play(self, "prologue", "intro_wake")
 
 
 func unload_world() -> void:

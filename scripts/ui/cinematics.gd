@@ -1,26 +1,22 @@
 class_name Cinematics
 extends Control
-## Short in-engine cinematics: letterbox bars, captions and a scripted camera
-## path on the World's cinematic camera, while the world is modal
-## ("cinematic") so nothing simulates and saving is blocked. Any key or click
-## skips. When it ends, the follow-up dialogue (if any) starts.
-
-const SHOTS := {
-	"petrel_escape": [
-		{"from": [156.0, 5.5, 20.0], "to": [158.0, 4.0, 17.0], "look": [166.0, 1.6, 8.0], "dur": 3.0,
-			"caption": "The docking clamps let go with a sound like a held breath released."},
-		{"from": [170.0, 3.0, 18.0], "to": [176.0, 3.5, 16.0], "look": [178.0, 2.0, 8.0], "dur": 3.5, "fly": true,
-			"caption": "The Petrel slides out through Bay 2's shimmering field, into the dark above Haldis Reach."},
-	],
-}
+## Short in-engine cinematics from data/cinematics.json: letterbox bars,
+## captions, title cards, fades and a scripted camera path on the World's
+## cinematic camera, while the world is modal ("cinematic") so nothing
+## simulates and saving is blocked. A shot with a `speaker` babbles its
+## caption in that voice. Any key or click skips. When it ends, the follow-up
+## dialogue (the `then` argument, or the cinematic's own `then`) starts.
 
 var main: Node
 var id := ""
 var then_dialogue := ""
+var _def: Dictionary = {}
 var _shots: Array = []
 var _i := -1
 var _t := 0.0
 var _caption: Label
+var _title: Label
+var _fade: ColorRect
 var _bars: Array[ColorRect] = []
 var _craft: Node3D
 var _craft_start := Vector3.ZERO
@@ -30,7 +26,10 @@ var _hidden: Array[Node3D] = []
 
 static func play(m: Node, cid: String, then: String = "") -> void:
 	var w: World = Game.world
-	if w == null or not SHOTS.has(cid):
+	var def: Dictionary = DB.cinematics.get(cid, {})
+	if then == "":
+		then = String(def.get("then", ""))
+	if w == null or def.is_empty():
 		if w != null and then != "":
 			w.start_dialogue(then)
 		return
@@ -45,6 +44,11 @@ func _ready() -> void:
 	UIKit.full_rect(self)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	theme = UIKit.theme()
+	_fade = ColorRect.new()
+	_fade.color = Color(0, 0, 0, 0)
+	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	UIKit.full_rect(_fade)
+	add_child(_fade)
 	for i in 2:
 		var b := ColorRect.new()
 		b.color = Color.BLACK
@@ -54,6 +58,11 @@ func _ready() -> void:
 			UIKit.anchor(b, Vector4(0, 1, 1, 1), Vector4(0, -150, 0, 0))
 		add_child(b)
 		_bars.append(b)
+	_title = UIKit.label("", 64, UIKit.ACCENT2)
+	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	UIKit.anchor(_title, Vector4(0, 0.5, 1, 0.5), Vector4(0, -90, 0, -10))
+	add_child(_title)
 	_caption = UIKit.label("", 26, UIKit.TEXT, true)
 	_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	UIKit.anchor(_caption, Vector4(0.1, 1, 0.9, 1), Vector4(0, -130, 0, -40))
@@ -61,7 +70,8 @@ func _ready() -> void:
 	var skip := UIKit.label("Press any key to skip", 14, UIKit.DIM)
 	UIKit.anchor(skip, Vector4(1, 0, 1, 0), Vector4(-260, 40, -20, 80))
 	add_child(skip)
-	_shots = SHOTS[id]
+	_def = DB.cinematics.get(id, {})
+	_shots = _def.get("shots", [])
 	visible = false
 
 
@@ -80,17 +90,33 @@ func _process(delta: float) -> void:
 		return
 	_t += delta
 	var sh: Dictionary = _shots[_i]
-	var k := clampf(_t / float(sh["dur"]), 0.0, 1.0)
+	var dur := float(sh["dur"])
+	var k := clampf(_t / dur, 0.0, 1.0)
 	var e := smoothstep(0.0, 1.0, k)
-	var from := _v3(sh["from"])
-	var to := _v3(sh["to"])
-	var look := _v3(sh["look"])
-	var cam := w.cam.cine_cam
-	cam.global_position = from.lerp(to, e)
-	if bool(sh.get("fly", false)) and _craft != null:
-		_craft.position = _craft_start + Vector3(e * e * 30.0, e * 2.5, 0.0)
-		look = _craft.position + Vector3(0, 1.6, 0)
-	cam.look_at(look, Vector3.UP)
+	# Fades: in over the first second of a title card, out at a shot's end.
+	var fade := 0.0
+	if bool(sh.get("black", false)):
+		fade = 1.0
+		_title.modulate.a = clampf(_t / 1.0, 0.0, 1.0) * clampf((dur - _t) / 0.8, 0.0, 1.0)
+		_caption.modulate.a = _title.modulate.a
+	else:
+		var fo := float(sh.get("fade_out", 0.0))
+		if fo > 0.0:
+			fade = clampf((_t - (dur - fo)) / fo, 0.0, 1.0)
+		if _i > 0 and bool(_shots[_i - 1].get("black", false)):
+			fade = maxf(fade, clampf(1.0 - _t / 1.0, 0.0, 1.0))
+		_caption.modulate.a = clampf(_t / 0.5, 0.0, 1.0)
+	_fade.color.a = fade
+	if not bool(sh.get("black", false)):
+		var from := _v3(sh["from"])
+		var to := _v3(sh["to"])
+		var look := _v3(sh["look"])
+		var cam := w.cam.cine_cam
+		cam.global_position = from.lerp(to, e)
+		if bool(sh.get("fly", false)) and _craft != null:
+			_craft.position = _craft_start + Vector3(e * e * 30.0, e * 2.5, 0.0)
+			look = _craft.position + Vector3(0, 1.6, 0)
+		cam.look_at(look, Vector3.UP)
 	if k >= 1.0:
 		_next(w)
 
@@ -99,17 +125,27 @@ func _begin(w: World) -> void:
 	visible = true
 	w.set_modal("cinematic", true)
 	w.cam.cinematic = true
+	w.cam.scripted = true
 	w.cam.cine_cam.current = true
-	_craft = w.find_child("Petrel", true, false) as Node3D
-	if _craft != null:
-		_craft_start = _craft.position
-	# The party is aboard.
-	for p in w.party_actors():
-		var a: Actor = p
-		if a.visible:
-			a.visible = false
-			_hidden.append(a)
-	GameAudio.play("door", -4.0)
+	var craft := String(_def.get("craft", ""))
+	if craft != "":
+		_craft = w.find_child(craft, true, false) as Node3D
+		if _craft != null:
+			_craft_start = _craft.position
+	if bool(_def.get("hide_party", false)):
+		for p in w.party_actors():
+			var a: Actor = p
+			if a.visible:
+				a.visible = false
+				_hidden.append(a)
+	if bool(_def.get("hide_enemies", false)):
+		for o in w.actors.values():
+			var e: Actor = o
+			if e.role == "enemy" and e.visible:
+				e.visible = false
+				_hidden.append(e)
+	if String(_def.get("sound", "")) != "":
+		GameAudio.play(String(_def["sound"]), -4.0)
 	_i = -1
 	_next(w)
 
@@ -120,13 +156,22 @@ func _next(w: World) -> void:
 	if _i >= _shots.size():
 		_finish(w)
 		return
-	_caption.text = String(_shots[_i].get("caption", ""))
+	var sh: Dictionary = _shots[_i]
+	_title.text = String(sh.get("title", ""))
+	_caption.text = String(sh.get("caption", ""))
+	var sp := String(sh.get("speaker", ""))
+	_caption.add_theme_color_override("font_color", Color("#ff8a7a") if sp == "warden" else UIKit.TEXT)
+	GameAudio.voice_stop("dialogue")
+	if sp != "":
+		GameAudio.voice_line("dialogue", _caption.text, DB.voice_for(sp), hash(id + str(_i)))
 
 
 func _finish(w: World) -> void:
 	if _done:
 		return
 	_done = true
+	GameAudio.voice_stop("dialogue")
+	w.cam.scripted = false
 	w.cam.end_cinematic()
 	w.set_modal("cinematic", false)
 	for a in _hidden:

@@ -47,6 +47,22 @@ var down_amt := 0.0
 var crouch := 0.0
 var _mats: Array[StandardMaterial3D] = []
 var _glows: Array[StandardMaterial3D] = []
+var _glow_base: Array[float] = []
+
+# Conversation staging (see present()). Real-time and visual-only.
+var pres_on := false
+var pres_look := Vector3.ZERO
+var pres_has_look := false
+var pres_talk := 0.0
+var pres_gesture := ""
+var pres_gesture_t := 0.0
+var pres_gesture_len := 1.0
+var _pt := 0.0
+var _pres_yaw := 0.0
+var _head_yaw := 0.0
+var _glow_boost := 0.0
+
+const GESTURE_LEN := {"nod": 0.8, "shake": 0.9, "shrug": 0.9, "gesture": 1.2, "point": 1.0, "look_away": 1.8}
 
 
 func build(model_id: String, app: Dictionary, sheet: CharacterSheet = null) -> void:
@@ -56,6 +72,7 @@ func build(model_id: String, app: Dictionary, sheet: CharacterSheet = null) -> v
 		c.queue_free()
 	_mats.clear()
 	_glows.clear()
+	_glow_base.clear()
 	spider_legs.clear()
 	body = Node3D.new()
 	add_child(body)
@@ -117,6 +134,7 @@ func _m(col: Color, rough: float = 0.6, metal: float = 0.1, emit: float = 0.0) -
 		m.emission = col
 		m.emission_energy_multiplier = emit
 		_glows.append(m)
+		_glow_base.append(emit)
 	_mats.append(m)
 	return m
 
@@ -460,6 +478,11 @@ func animate(dt: float, speed: float) -> void:
 		if one_shot_t >= one_shot_len:
 			one_shot = ""
 	down_amt = move_toward(down_amt, 1.0 if downed else 0.0, dt * 2.5)
+	_pose()
+
+
+## Applies the pose for the current animation state (no time advance).
+func _pose() -> void:
 	match model:
 		"humanoid", "synthetic":
 			_anim_humanoid()
@@ -471,6 +494,130 @@ func animate(dt: float, speed: float) -> void:
 			_anim_turret()
 		"sentinel":
 			_anim_humanoid()
+
+
+# ------------------------------------------------------------ presentation
+## Conversation staging, ticked in real time while the simulation is frozen
+## (DialogueStage), and the finish of a knock-down fall during a pause. Only
+## this node and its child pivots move: never the Actor's position or
+## facing, and nothing the simulation reads. `idle` keeps the breathing and
+## one-shot clocks running (conversations); without it only a fall settles.
+## Returns whether it still needs ticks.
+func present(dt: float, idle: bool = true) -> bool:
+	_pt += dt
+	if idle:
+		animate(dt, 0.0)
+	else:
+		down_amt = move_toward(down_amt, 1.0 if downed else 0.0, dt * 2.5)
+		_pose()
+	var bodied := model in ["humanoid", "synthetic", "sentinel"]
+	var want_body := 0.0
+	var want_head := 0.0
+	if pres_has_look and is_inside_tree() and down_amt < 0.05 and model != "turret":
+		var par := get_parent() as Node3D
+		var d := pres_look - (par.global_position if par != null else global_position)
+		var local: Vector3 = (par.global_transform.basis.inverse() * d) if par != null else d
+		var ang := rad_to_deg(atan2(local.x, local.z))
+		if absf(ang) > 25.0 or not bodied:
+			want_body = clampf(ang, -100.0, 100.0)
+		want_head = clampf(ang - want_body, -45.0, 45.0) if bodied else 0.0
+	_pres_yaw = move_toward(_pres_yaw, want_body, dt * 220.0)
+	_head_yaw = move_toward(_head_yaw, want_head, dt * 260.0)
+	rotation.y = deg_to_rad(_pres_yaw)
+	var hx := 0.0
+	var hy := _head_yaw
+	var hz := 0.0
+	var talking := pres_talk > 0.0
+	pres_talk = maxf(0.0, pres_talk - dt)
+	if talking and bodied and down_amt < 0.05:
+		hx += sin(_pt * 7.5) * 3.0
+		hz += sin(_pt * 3.1) * 2.0
+		if arm_r != null:
+			# A beat gesture every 1.6 s while the line lasts.
+			var beat := fmod(_pt, 1.6) / 1.6
+			if beat < 0.45:
+				var a := sin(beat / 0.45 * PI)
+				arm_r.rotation_degrees.x -= 32.0 * a
+				arm_r.rotation_degrees.z += 14.0 * a
+				if torso != null:
+					torso.rotation_degrees.y += 4.0 * a
+	if pres_gesture != "":
+		pres_gesture_t += dt
+		var p := clampf(pres_gesture_t / pres_gesture_len, 0.0, 1.0)
+		var s := sin(p * PI)
+		if bodied and down_amt < 0.05:
+			match pres_gesture:
+				"nod":
+					hx += 12.0 * absf(sin(p * TAU))
+				"shake":
+					hy += 20.0 * sin(p * PI * 3.0) * s
+				"shrug":
+					hz += 6.0 * s
+					if arm_l != null and arm_r != null:
+						arm_l.rotation_degrees += Vector3(-12.0 * s, 0, -16.0 * s)
+						arm_r.rotation_degrees += Vector3(-12.0 * s, 0, 16.0 * s)
+				"gesture":
+					if arm_l != null and arm_r != null:
+						arm_l.rotation_degrees += Vector3(-45.0 * s, 0, -10.0 * s)
+						arm_r.rotation_degrees += Vector3(-45.0 * s, 0, 10.0 * s)
+				"point":
+					if arm_r != null:
+						arm_r.rotation_degrees.x = lerpf(arm_r.rotation_degrees.x, -85.0, s)
+				"look_away":
+					hy += -40.0 * s
+					hx += 8.0 * s
+		if p >= 1.0:
+			pres_gesture = ""
+	if bodied and head != null:
+		head.rotation_degrees = Vector3(hx, hy, hz)
+	if _glow_boost > 0.0:
+		_glow_boost = maxf(0.0, _glow_boost - dt * 6.0)
+		_apply_glow()
+	return pres_on or (downed and down_amt < 0.999)
+
+
+func look_at_point(p: Vector3) -> void:
+	pres_look = p
+	pres_has_look = true
+
+
+func talk(sec: float) -> void:
+	pres_talk = maxf(pres_talk, sec)
+
+
+func gesture(kind: String) -> void:
+	if not GESTURE_LEN.has(kind):
+		return
+	pres_gesture = kind
+	pres_gesture_t = 0.0
+	pres_gesture_len = float(GESTURE_LEN[kind])
+
+
+## A synthetic's accent lights brighten with each syllable it speaks.
+func pulse_glow(amp: float) -> void:
+	_glow_boost = maxf(_glow_boost, clampf(amp, 0.0, 1.0) * 1.5)
+	_apply_glow()
+
+
+func _apply_glow() -> void:
+	for i in mini(_glows.size(), _glow_base.size()):
+		_glows[i].emission_energy_multiplier = _glow_base[i] * (1.0 + _glow_boost)
+
+
+## Ends conversation staging and returns to the simulation's pose.
+func clear_presentation() -> void:
+	pres_on = false
+	pres_has_look = false
+	pres_talk = 0.0
+	pres_gesture = ""
+	_pres_yaw = 0.0
+	_head_yaw = 0.0
+	_glow_boost = 0.0
+	rotation.y = 0.0
+	if model in ["humanoid", "synthetic", "sentinel"] and head != null:
+		head.rotation_degrees = Vector3.ZERO
+	_apply_glow()
+	_pose()
 
 
 func _os_phase() -> float:

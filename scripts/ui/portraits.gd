@@ -65,9 +65,11 @@ func texture_for(sheet: CharacterSheet, size: int = 96) -> Texture2D:
 	root.add_child(env)
 	_cache[key] = vp
 	# Render a few frames then freeze to save GPU time.
+	var ref: WeakRef = weakref(vp)
 	get_tree().create_timer(0.3).timeout.connect(func() -> void:
-		if is_instance_valid(vp):
-			vp.render_target_update_mode = SubViewport.UPDATE_ONCE)
+		var v: SubViewport = ref.get_ref()
+		if v != null:
+			v.render_target_update_mode = SubViewport.UPDATE_ONCE)
 	return vp.get_texture()
 
 

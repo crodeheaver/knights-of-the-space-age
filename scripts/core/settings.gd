@@ -33,6 +33,7 @@ var values := {
 	"reduce_flash": false, "difficulty": "standard", "autopause_combat_start": true, "autopause_member_down": true,
 	"autopause_queue_empty": false, "autopause_target_dead": false, "tutorials": true, "hold_on_stealth": true,
 	"fullscreen": false, "damage_numbers": true, "dev_mode": false, "edge_pan": false, "auto_attack": true,
+	"voice_volume": 0.8, "text_speed": 45.0,
 }
 var bindings: Dictionary = {}
 
@@ -136,6 +137,6 @@ func apply_one(key: String) -> void:
 		"fullscreen":
 			if DisplayServer.get_name() != "headless":
 				DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if values["fullscreen"] else DisplayServer.WINDOW_MODE_WINDOWED)
-		"master_volume", "music_volume", "sfx_volume", "ambience_volume", "ui_volume":
+		"master_volume", "music_volume", "sfx_volume", "ambience_volume", "ui_volume", "voice_volume":
 			if has_node("/root/GameAudio"):
 				get_node("/root/GameAudio").apply_volumes()

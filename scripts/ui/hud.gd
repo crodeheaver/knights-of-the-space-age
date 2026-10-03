@@ -52,6 +52,10 @@ var stealth_btn: Button
 var hover_target: Node = null
 var ally_popup: PopupMenu
 var _pending_ally_action: Dictionary = {}
+## Toasts raised while the HUD is hidden (conversations, cinematics,
+## activities) wait here and appear once it is back.
+var _held: Array = []
+var _held_t := 0.0
 
 
 func setup(w: World, m: Node) -> void:
@@ -257,7 +261,17 @@ func _process(delta: float) -> void:
 		var a := clampf(banner_t, 0.0, 1.0) if banner_t < 1.0 else clampf((3.5 - banner_t) * 2.0, 0.0, 1.0)
 		area_banner.modulate.a = a
 		area_sub.modulate.a = a
-	visible = not world.modal.has("dialogue") and not world.modal.has("cinematic") and not world.modal.has("minigame")
+	visible = not _hidden_by_modal()
+	if visible and not _held.is_empty():
+		_held_t -= delta
+		if _held_t <= 0.0:
+			_held_t = 0.25
+			var h: Array = _held.pop_front()
+			_show_toast(String(h[0]), String(h[1]))
+
+
+func _hidden_by_modal() -> bool:
+	return world != null and (world.modal.has("dialogue") or world.modal.has("cinematic") or world.modal.has("minigame"))
 
 
 func _rebuild() -> void:
@@ -642,16 +656,33 @@ func _on_form(idx: int) -> void:
 
 # ------------------------------------------------------------ messages
 func _on_toast(text: String, kind: String) -> void:
+	if _hidden_by_modal():
+		_held.append([text, kind])
+		while _held.size() > 6:
+			_held.pop_front()
+		return
+	_show_toast(text, kind)
+
+
+func _show_toast(text: String, kind: String) -> void:
 	var col := UIKit.TEXT
 	match kind:
 		"warn":
 			col = UIKit.WARN
 		"danger", "alert":
 			col = UIKit.BAD
-		"success", "reward", "quest":
+		"success", "reward", "quest", "approve":
 			col = UIKit.GOOD
 		"discovery", "story":
 			col = UIKit.ACCENT2
+		"disapprove":
+			col = Color("#ff8a7a")
+		"mercy":
+			col = UIKit.MERCY
+		"dominion":
+			col = UIKit.DOMINION
+		"xp":
+			col = Color("#b9a7ff")
 	var caption := kind == "story" and bool(Settings.get_v("subtitles"))
 	var l := UIKit.label(text, 21 if caption else 17, col, true)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

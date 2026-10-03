@@ -867,6 +867,192 @@ def step(rng):
     return add(thump, scale(scuff, 0.6), scale(tick, 0.25))
 
 
+# ---- conversation reactions ------------------------------------------------------
+@sound("infl_up", "UI", "Companion approves: two warm rising FM chimes (E5, B5) over a soft sine fifth.")
+def infl_up(rng):
+    n = ns(0.6)
+    out = [0.0] * n
+    for start, f, tau in ((0.0, 659.25, 0.18), (0.09, 987.77, 0.3)):
+        st = ns(start)
+        place(out, fm_bell(f, n - st, ratio=2.0, index=0.9, tau=tau), st, 0.8)
+    pad = mul(add(osc("sine", 329.63, n), scale(osc("sine", 493.88, n), 0.5)), env_pts([(0, 0), (0.05, 0.3), (0.6, 0)], n))
+    return reverb(add(out, scale(pad, 0.4)), room=0.4, damp=0.45, wet=0.2)
+
+
+@sound("infl_down", "UI", "Companion disapproves: two muted falling triangle notes (D5, A4), low-passed.")
+def infl_down(rng):
+    n = ns(0.55)
+    out = [0.0] * n
+    for start, f in ((0.0, 587.33), (0.13, 440.0)):
+        m = ns(0.32)
+        t = mul(add(osc("tri", f, m), scale(osc("tri", f * 1.006, m, 0.3), 0.6)), env_exp(m, 0.09, 0.004))
+        place(out, lp1(t, 1800.0), ns(start), 0.8)
+    return reverb(out, room=0.35, damp=0.5, wet=0.15)
+
+
+@sound("align_mercy", "UI", "Mercy shift: bright major FM bell chord (G5 B5 D6) blooming upward, airy reverb.")
+def align_mercy(rng):
+    n = ns(0.95)
+    out = [0.0] * n
+    for k, name in enumerate(("G5", "B5", "D6")):
+        st = ns(0.04 * k)
+        place(out, fm_bell(hz(name), n - st, ratio=3.0, index=1.1, tau=0.45), st, 0.6)
+    shimmer = mul(svf(white(n, rng), 7000.0, 0.8, "hp"), env_pts([(0, 0), (0.15, 1.0), (0.9, 0)], n))
+    return reverb(add(out, scale(shimmer, 0.04)), room=0.7, damp=0.3, wet=0.35)
+
+
+@sound("align_dominion", "UI", "Dominion shift: low minor saw sting (C3 Eb3 G3) under a closing filter with a sub thud.")
+def align_dominion(rng):
+    n = ns(0.9)
+    chord = [0.0] * n
+    for name in ("C3", "Eb3", "G3"):
+        f = hz(name)
+        chord = add(chord, osc("saw", f * 0.996, n, rng.random()), osc("saw", f * 1.004, n, rng.random()))
+    chord = svf(chord, sweep_exp(2400.0, 380.0, n, 0.25), 1.2)
+    chord = mul(chord, env_pts([(0, 0), (0.01, 1.0), (0.3, 0.6), (0.9, 0)], n))
+    sub = mul(osc_sweep("sine", sweep_exp(90.0, 45.0, n, 0.1)), env_exp(n, 0.18, 0.002))
+    return reverb(add(scale(chord, 0.5), scale(sub, 0.7)), room=0.5, damp=0.5, wet=0.2)
+
+
+# ---- alien-language voices -----------------------------------------------------
+# Conversations are "voiced" like the old d20 space RPGs: lines are babbled in a
+# made-up language from banks of short synthesised syllables. Each syllable is
+# a consonant onset (noise burst, plosive, nasal, liquid glide or nothing) into
+# a vowel or diphthong, made by running a glottal source (band-limited saw or
+# pulse with a pitch contour, jitter and breath noise) through three band-pass
+# formant filters. GameAudio strings syllables together at the line's pace and
+# varies their pitch, so no two lines repeat a pattern.
+#   hlo  human, low voice         hhi  human, high voice
+#   syn  Tav-7 (stepped pitch, sample-and-hold, bit-crush, servo chirps)
+#   wrd  WARDEN (monotone, sub-octave, ring-modulated, metallic comb + room)
+VOWELS = {"a": (730, 1220, 2600), "e": (420, 2000, 2560), "i": (300, 2280, 3000),
+          "o": (480, 820, 2700), "u": (330, 760, 2450), "y": (360, 1650, 2400)}
+VOICE_BANKS = {
+    # count, f0 range, syllable length range, formant scale, vowel pool, onset pool
+    "hlo": (14, (105.0, 125.0), (0.13, 0.22), 1.0, "aaoouei", ["k", "g", "r", "m", "d", "h", "", "", "sh", "t", "n", "b"]),
+    "hhi": (14, (190.0, 230.0), (0.11, 0.19), 1.15, "aeeiiyo", ["s", "t", "l", "n", "", "", "k", "m", "r", "sh", "f", "d"]),
+    "syn": (12, (140.0, 140.0), (0.09, 0.16), 1.08, "eeiiay", ["t", "k", "p", "d", "", "s", "t", "k", "b", "n"]),
+    "wrd": (12, (82.0, 82.0), (0.18, 0.28), 0.92, "ooaauu", ["m", "n", "d", "g", "", "k", "r", "", "h", "b"]),
+}
+
+
+def _formants(src, f1, f2, f3, q=(8.0, 10.0, 9.0), gains=(1.0, 0.5, 0.25)):
+    out = add(scale(svf(src, f1, q[0], "bp"), gains[0]), scale(svf(src, f2, q[1], "bp"), gains[1]),
+              scale(svf(src, f3, q[2], "bp"), gains[2]))
+    return add(out, scale(lp1(src, 300.0), 0.12))
+
+
+def voice_syllable(rng, bank, i):
+    count, f0r, dur_r, fscale, vpool, opool = VOICE_BANKS[bank]
+    dur = dur_r[0] + (dur_r[1] - dur_r[0]) * rng.random()
+    tail = 0.05 if bank == "wrd" else 0.02
+    n = ns(dur + tail)
+    nv = ns(dur)
+    onset = opool[i % len(opool)] if i < len(opool) else opool[int(rng.random() * len(opool))]
+    v0 = vpool[int(rng.random() * len(vpool))]
+    v1 = vpool[int(rng.random() * len(vpool))] if rng.random() < 0.35 else v0
+    # --- pitch: a gentle fall, sometimes a rise; jitter and a slow wobble
+    f0 = f0r[0] + (f0r[1] - f0r[0]) * rng.random()
+    rise = rng.random() < 0.25
+    c0, c1 = (0.97, 1.04) if rise else (1.03, 0.95)
+    if bank == "wrd":
+        c0, c1 = 1.0, 0.99
+    if bank == "syn":
+        # three stepped pitch levels per syllable, like a vocoder slip
+        steps = [f0 * s for s in (1.0, 1.12 if rise else 0.9, 1.06)]
+        f = [steps[min(2, j * 3 // nv)] for j in range(nv)]
+    else:
+        f = [f0 * (c0 + (c1 - c0) * j / nv) * (1.0 + 0.008 * math.sin(TAU * 5.3 * j / SR)) for j in range(nv)]
+    src = osc_sweep("square" if bank == "syn" else "saw", f, rng.random())
+    if bank == "wrd":
+        src = add(src, scale(osc_sweep("square", [v * 0.5 for v in f], rng.random()), 0.6))
+    src = add(src, scale(white(nv, rng), 0.06))
+    # --- formant glide (diphthong), with liquid onsets bending the start
+    a, b = VOWELS[v0], VOWELS[v1]
+    fa = [v * fscale for v in a]
+    fb = [v * fscale for v in b]
+    if onset == "l":
+        fa = [320 * fscale, 1050 * fscale, fa[2]]
+    elif onset == "r":
+        fa = [fa[0], fa[1] * 0.85, 1650 * fscale]
+    gl = min(nv - 1, ns(0.06 if onset in ("l", "r") else 0.03))
+    def track(k):
+        # onset formant -> vowel target over gl samples, then glide to the
+        # second vowel (a diphthong) over the rest
+        mid = a[k] * fscale
+        lst = [0.0] * nv
+        for j in range(nv):
+            if j < gl:
+                lst[j] = fa[k] + (mid - fa[k]) * (j / max(1, gl))
+            else:
+                lst[j] = mid + (fb[k] - mid) * ((j - gl) / max(1, nv - gl))
+        return lst
+    vowel = _formants(src, track(0), track(1), track(2))
+    att = 0.012 if onset in ("", "h", "l", "r", "m", "n") else 0.006
+    vowel = mul(vowel, env_pts([(0.0, 0.0), (att, 1.0), (dur * 0.6, 0.85), (dur, 0.0)], nv))
+    out = [0.0] * n
+    # --- consonant onset
+    con_len = 0.0
+    if onset in ("s", "sh", "f", "h"):
+        con_len = {"s": 0.055, "sh": 0.06, "f": 0.045, "h": 0.04}[onset]
+        m = ns(con_len)
+        if onset == "h":
+            c = _formants(white(m, rng), fa[0], fa[1], fa[2], q=(3.0, 4.0, 4.0))
+            g = 0.35
+        else:
+            fc = {"s": 5200.0, "sh": 2900.0, "f": 3800.0}[onset]
+            c = svf(white(m, rng), fc * fscale, 2.2 if onset != "f" else 0.9, "bp")
+            g = {"s": 0.32, "sh": 0.38, "f": 0.15}[onset]
+        c = mul(c, env_pts([(0, 0), (con_len * 0.3, 1.0), (con_len, 0.2)], m))
+        place(out, c, 0, g)
+    elif onset in ("t", "k", "p"):
+        con_len = 0.025
+        m = ns(0.018)
+        fc = {"t": 4000.0, "k": 1900.0, "p": 900.0}[onset]
+        c = mul(svf(white(m, rng), fc, 1.6, "bp"), env_exp(m, 0.006, 0.0005))
+        place(out, c, 0, 0.55)
+    elif onset in ("b", "d", "g"):
+        con_len = 0.015
+        m = ns(0.03)
+        thump = mul(osc_sweep("sine", sweep_exp(180.0, 110.0, m, 0.01)), env_exp(m, 0.01, 0.001))
+        burst = mul(svf(white(m, rng), {"b": 700.0, "d": 3000.0, "g": 1600.0}[onset], 1.4, "bp"), env_exp(m, 0.004, 0.0005))
+        place(out, add(thump, scale(burst, 0.5)), 0, 0.5)
+    elif onset in ("m", "n"):
+        con_len = 0.045
+        m = ns(con_len)
+        hum = lp1(osc_sweep("saw", [f[0]] * m, 0.0), 380.0 if onset == "m" else 520.0)
+        place(out, mul(hum, env_pts([(0, 0), (0.01, 1.0), (con_len, 0.6)], m)), 0, 0.9)
+    place(out, vowel, ns(max(0.0, con_len - 0.008)))
+    out = out[:n]
+    # --- character processing
+    if bank == "syn":
+        held = out[:]
+        for j in range(len(held)):
+            held[j] = out[j - (j % 3)]
+        out = [round(v * 16.0) / 16.0 for v in scale(held, 1.0 / peak(held))]
+        if rng.random() < 0.4:
+            m = ns(0.03)
+            chirp = mul(osc_sweep("sine", glide(2400.0, 3200.0, m)), env_pts([(0, 0), (0.005, 1), (0.03, 0)], m))
+            place(out, chirp, len(out) - m - ns(0.01), 0.12)
+    elif bank == "wrd":
+        out = [v * (0.4 + 0.6 * math.sin(TAU * 47.0 * j / SR)) for j, v in enumerate(out)]
+        out = echo(out, 1.0 / 82.0, fb=0.55, wet=0.5, damp=0.25)
+        out = reverb(out, room=0.45, damp=0.3, wet=0.2)
+    return out
+
+
+def _voice_entry(bank, i):
+    sid = "vox_%s_%02d" % (bank, i + 1)
+    names = {"hlo": "low human voice", "hhi": "high human voice", "syn": "synthetic voice (Tav-7)", "wrd": "WARDEN voice"}
+    desc = "Babble syllable %d, %s: glottal source through three gliding formant filters with a consonant onset." % (i + 1, names[bank])
+    sound(sid, "Voice", desc, rate=LOOP_RATE, peak_db=-4.0)(lambda rng: voice_syllable(rng, bank, i))
+
+
+for _bank, _spec in VOICE_BANKS.items():
+    for _i in range(_spec[0]):
+        _voice_entry(_bank, _i)
+
+
 # ================================================================= loop engine
 class Loop:
     """Circular multi-bus buffer measured in bars and beats (4/4)."""

@@ -9,9 +9,41 @@ const SFX := [
 	"alert", "alarm", "door", "loot", "bash", "blaster", "rifle", "ion", "drone", "heavy_blaster",
 	"blade", "lumen", "punch", "baton", "heavy", "spider", "hit", "crit", "miss", "deflect",
 	"explosion", "cast", "heal", "downed", "step",
+	"infl_up", "infl_down", "align_mercy", "align_dominion",
 ]
 const AMBIENT := ["amb_ship"]
 const MUSIC := ["music_menu", "music_explore", "music_tension", "music_combat", "music_ending"]
+
+
+## Babble syllables for conversation voices (see data/voices.json).
+func _voice_ids() -> Array[String]:
+	var out: Array[String] = []
+	var banks: Dictionary = DB.voices.get("banks", {})
+	for b in banks.keys():
+		for i in int(banks[b]):
+			out.append("vox_%s_%02d" % [b, i + 1])
+	return out
+
+
+func test_voice_banks() -> void:
+	var ids := _voice_ids()
+	assert_gte(ids.size(), 40, "four voice banks")
+	var total := 0
+	for id in ids:
+		assert_true(ResourceLoader.exists(_path(id)), "exists " + id)
+		var s: AudioStream = load(_path(id))
+		if s == null:
+			fail("loads " + id)
+			continue
+		assert_gte(s.get_length(), 0.06, id + " has a syllable")
+		assert_lte(s.get_length(), 0.45, id + " is one syllable")
+		assert_ne((s as AudioStreamWAV).loop_mode, AudioStreamWAV.LOOP_FORWARD, id + " does not loop")
+		total += FileAccess.get_file_as_bytes(_path(id)).size()
+	assert_lte(total, 700 * 1024, "voice banks stay small (%d bytes)" % total)
+	for sid in DB.voices.get("speakers", {}).keys():
+		var v := DB.voice_for(String(sid))
+		if String(v["bank"]) != "":
+			assert_gte(int(v["count"]), 1, String(sid) + " has a bank")
 
 
 func _path(id: String) -> String:

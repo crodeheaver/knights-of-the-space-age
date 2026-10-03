@@ -38,6 +38,8 @@ var _auto_solo := false
 var _pending_interact: Dictionary = {}
 var dialogue: DialogueEngine = null
 var dialogue_npc: Actor = null
+var stage: DialogueStage = null
+var _present: Dictionary = {}  # ActorVisual -> true, ticked in real time
 var bash_jobs: Array = []
 var _pending_corpses: Array = []
 
@@ -67,6 +69,7 @@ func _ready() -> void:
 		cam.distance = float(cp[2])
 		cam._apply()
 	Events.event.connect(_on_event)
+	GameAudio.voice_syllable.connect(_on_voice_syllable)
 	_restore_combat_state()
 	_area_check(true)
 	refresh_markers()
@@ -79,6 +82,8 @@ func _exit_tree() -> void:
 		Game.world = null
 	if Events.event.is_connected(_on_event):
 		Events.event.disconnect(_on_event)
+	if GameAudio.voice_syllable.is_connected(_on_voice_syllable):
+		GameAudio.voice_syllable.disconnect(_on_voice_syllable)
 
 
 # ================================================================ spawning
@@ -462,6 +467,8 @@ func set_modal(key: String, on: bool) -> void:
 	else:
 		modal.erase(key)
 	Game.block_ui(key, on)
+	if key == "dialogue" or key == "cinematic":
+		refresh_markers()
 	hud_changed.emit()
 
 
@@ -2212,6 +2219,9 @@ func start_dialogue(did: String, npc: Actor = null, npc_id: String = "", ctx: Di
 		c["actor"] = Game.state.controlled
 	dialogue = DialogueEngine.new(Game.state)
 	dialogue_npc = npc
+	if stage != null:
+		stage.clear()
+	stage = DialogueStage.new(self, npc, c)
 	dialogue.ended.connect(func(_id: String) -> void: call_deferred("_after_dialogue_engine_end"))
 	set_modal("dialogue", true)
 	if not dialogue.start(did, c):
@@ -2222,25 +2232,48 @@ func start_dialogue(did: String, npc: Actor = null, npc_id: String = "", ctx: Di
 	return true
 
 
+## Frames a line with the default shot (kept for callers without staging data).
 func dialogue_frame(speaker: String) -> void:
-	var lead := controlled()
-	if lead == null:
-		return
-	var sp: Actor = null
-	if speaker == "player":
-		sp = actors.get("player", lead)
-	elif actors.has(speaker):
-		sp = actors[speaker]
-	elif dialogue_npc != null:
-		sp = dialogue_npc
-	if sp == null:
-		return
-	var listener := dialogue_npc if speaker == "player" and dialogue_npc != null else lead
-	if listener == sp:
-		listener = lead if sp != lead else (dialogue_npc if dialogue_npc != null else lead)
-	if listener == sp:
-		return
-	cam.frame(sp.position, listener.position)
+	dialogue_present(speaker, 0.0, "", "")
+
+
+## Stages a conversation line: gaze, talking animation for `dur` seconds, an
+## optional gesture and the camera shot (see DialogueStage). Visual-only.
+func dialogue_present(speaker: String, dur: float, anim: String = "", shot: String = "") -> void:
+	if stage == null and dialogue != null:
+		stage = DialogueStage.new(self, dialogue_npc, dialogue.ctx)
+	if stage != null:
+		stage.present(speaker, dur, anim, shot)
+
+
+## A companion nods or shakes their head at an influence change.
+func dialogue_react(uid: String, delta: int) -> void:
+	if stage != null:
+		stage.react(uid, delta)
+
+
+func _on_voice_syllable(channel: String, amp: float) -> void:
+	if channel == "dialogue" and stage != null and stage.speaking != null and is_instance_valid(stage.speaking):
+		stage.speaking.visual.pulse_glow(amp)
+
+
+## Real-time presentation: conversation staging and visuals that settle
+## while the simulation is frozen (a fall finishing during a pause). Never
+## touches simulation state.
+func _process(delta: float) -> void:
+	if stage != null:
+		stage.tick(delta)
+	if not _present.is_empty():
+		for v in _present.keys():
+			var av: ActorVisual = v
+			if not is_instance_valid(av) or not av.present(delta, false):
+				_present.erase(v)
+
+
+## Lets a visual finish settling (e.g. a fall) even while paused.
+func present_visual(v: ActorVisual) -> void:
+	if v != null:
+		_present[v] = true
 
 
 func _after_dialogue_engine_end() -> void:
@@ -2252,6 +2285,9 @@ func _after_dialogue_engine_end() -> void:
 func end_dialogue() -> void:
 	if dialogue != null and dialogue.active:
 		dialogue.finish()
+	if stage != null:
+		stage.clear()
+		stage = null
 	cam.end_cinematic()
 	set_modal("dialogue", false)
 	dialogue = null
@@ -2527,10 +2563,14 @@ func _npc_effect(nid: String, setd: Dictionary) -> void:
 # ================================================================ markers & picking
 func refresh_markers() -> void:
 	var lead := controlled()
+	# Conversations and cinematics are staged without selection rings.
+	var staged := modal.has("dialogue") or modal.has("cinematic")
 	for o in actors.values():
 		var a: Actor = o
 		var k := ""
-		if a.role == "party":
+		if staged:
+			pass
+		elif a.role == "party":
 			k = "controlled" if a == lead else "ally"
 		elif lead != null and a.uid == lead.target_uid:
 			k = "hostile" if hostile(lead, a) else "neutral"

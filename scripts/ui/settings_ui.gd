@@ -164,10 +164,36 @@ func _display() -> void:
 	_body.add_child(UIKit.header("Text and interface"))
 	_slider("ui_scale", "Interface & text scale", 0.75, 1.6, 0.05)
 	_check("subtitles", "Captions for ambient speech", "Lines spoken outside conversations (radio calls, companions) are shown larger and stay on screen longer, scaled to their length.")
+	_body.add_child(UIKit.header("Conversations"))
+	_text_speed()
 	_check("fullscreen", "Fullscreen")
 	_body.add_child(UIKit.header("Comfort"))
 	_check("reduce_shake", "Reduce camera shake", "Removes shake from explosions and critical hits.")
 	_check("reduce_flash", "Reduce flashes", "Softens hit flashes, explosion bursts and alarm lights.")
+
+
+## Conversation text speed: characters per second, with 0 meaning instant.
+func _text_speed() -> void:
+	var row := UIKit.hbox(10)
+	var l := UIKit.label("Text speed", 17)
+	l.custom_minimum_size = Vector2(300, 0)
+	row.add_child(l)
+	var s := HSlider.new()
+	s.min_value = 0
+	s.max_value = 120
+	s.step = 5
+	s.value = float(Settings.get_v("text_speed"))
+	s.custom_minimum_size = Vector2(420, 28)
+	s.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var fmt := func(v: float) -> String: return "Instant" if v <= 0.0 else "%d characters/s" % int(v)
+	var val := UIKit.label(fmt.call(s.value), 17, UIKit.ACCENT2)
+	s.value_changed.connect(func(v: float) -> void:
+		val.text = fmt.call(v)
+		Settings.set_v("text_speed", v))
+	row.add_child(s)
+	row.add_child(val)
+	_body.add_child(row)
+	_body.add_child(UIKit.label("Lines appear at this speed; Space or a click shows the whole line at once.", 14, UIKit.DIM, true))
 
 
 func _audio() -> void:
@@ -177,4 +203,6 @@ func _audio() -> void:
 	_slider("sfx_volume", "Effects", 0.0, 1.0, 0.05)
 	_slider("ambience_volume", "Ambience", 0.0, 1.0, 0.05)
 	_slider("ui_volume", "Interface", 0.0, 1.0, 0.05)
+	_slider("voice_volume", "Voices", 0.0, 1.0, 0.05)
+	_body.add_child(UIKit.label("Characters speak in their own languages, as voiced babble under the subtitles.", 14, UIKit.DIM, true))
 	_body.add_child(UIKit.button("Play a test sound", func() -> void: GameAudio.play("ui_confirm", 0.0)))
