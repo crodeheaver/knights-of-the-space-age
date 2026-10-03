@@ -100,8 +100,11 @@ func start_new_game(build: Dictionary, difficulty: String) -> void:
 	call_deferred("_intro")
 
 
-## --pos=x,z[,rot] places the party; --cam=yaw,pitch,distance frames the view.
+## --pos=x,z[,rot] places the party; --cam=yaw,pitch,distance frames the view;
+## --camera=follow|tactical picks the camera mode for this run.
 func _apply_debug_view() -> void:
+	if args.has("camera"):
+		Settings.set_v("camera_mode", String(args["camera"]), false)
 	if args.has("pos"):
 		var pp := String(args["pos"]).split(",")
 		var rot := float(pp[2]) if pp.size() > 2 else 90.0
@@ -213,6 +216,7 @@ func load_from_slot(slot: String) -> void:
 		e.saved = true
 		screen.add_child(e)
 		GameAudio.music("music_ending")
+		GameAudio.ambient("")
 		return
 	load_world()
 	if String(r.get("reason", "")) != "":
@@ -232,6 +236,7 @@ func show_ending() -> void:
 	e.saved = bool(r["ok"])
 	screen.add_child(e)
 	GameAudio.music("music_ending")
+	GameAudio.ambient("")
 
 
 # ================================================================ panels

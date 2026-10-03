@@ -65,6 +65,9 @@ var _glow_boost := 0.0
 ## "cards", "work", "guard", "fidget". Phase keeps a crowd out of step.
 var idle_style := ""
 var idle_phase := 0.0
+## Party members' feet are heard (Actor.setup sets it).
+var footsteps := false
+var _step_phase := false
 
 const GESTURE_LEN := {"nod": 0.8, "shake": 0.9, "shrug": 0.9, "gesture": 1.2, "point": 1.0, "look_away": 1.8}
 
@@ -634,6 +637,11 @@ func _anim_humanoid() -> void:
 	var walk := clampf(move_speed / 4.5, 0.0, 1.4)
 	var cyc := t * (4.0 + walk * 6.0)
 	var swing := sin(cyc) * 38.0 * walk
+	if footsteps and walk > 0.25 and down_amt <= 0.0:
+		var ph := sin(cyc) >= 0.0
+		if ph != _step_phase:
+			_step_phase = ph
+			GameAudio.step(-19.0 + walk * 4.0 - crouch * 8.0)
 	var bob := absf(sin(cyc)) * 0.04 * walk
 	var breathe := sin(t * 2.0) * 0.01
 	hips.position.y = (1.1 if model == "sentinel" else 0.95) + bob + breathe - crouch * 0.18

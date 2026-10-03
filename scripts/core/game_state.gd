@@ -61,7 +61,16 @@ func flag(name: String, default_value: Variant = null) -> Variant:
 
 func has_flag(name: String) -> bool:
 	var v: Variant = flags.get(name, null)
-	return v != null and v != false and not (typeof(v) in [TYPE_INT, TYPE_FLOAT] and float(v) == 0.0)
+	match typeof(v):
+		TYPE_NIL:
+			return false
+		TYPE_BOOL:
+			return v
+		TYPE_INT, TYPE_FLOAT:
+			return float(v) != 0.0
+		TYPE_STRING:
+			return String(v) != ""
+	return true
 
 
 func set_flag(name: String, value: Variant = true) -> void:

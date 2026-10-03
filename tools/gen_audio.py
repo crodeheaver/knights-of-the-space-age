@@ -1302,6 +1302,71 @@ def amb_ship(rng):
     return mixdown(lp, spec, room=0.75, damp=0.5, rv_level=0.5, drive_k=1.0)
 
 
+@sound("amb_deep", "Ambience loop",
+       "Lower decks: loop-locked 41 Hz drive hum with harmonics, heavy rumble, metal groans bending down, "
+       "coolant hiss bursts, distant thuds and slow drips.",
+       rate=LOOP_RATE, loop=True)
+def amb_deep(rng):
+    lp = Loop(60.0, 6, rng)  # 24 s
+    n = lp.n
+    hum = [0.0] * n
+    for f, a in ((41.0, 1.0), (82.0, 0.5), (123.0, 0.25), (164.0, 0.12), (41.25, 0.6), (246.0, 0.05)):
+        hum = add(hum, scale(loop_osc("sine", f, n, rng.random()), a))
+    hum = mul(hum, lfo(n, 3, 0.7, 1.0))
+    lp.put("hum", hum, 0)
+    rumble = loop_apply(white(n, rng), lambda b: svf(svf(b, 90.0, 0.8), 90.0, 0.8), 2.0)
+    lp.put("rumble", mul(rumble, lfo(n, 2, 0.5, 1.0, 0.7)), 0)
+    for t0, f0 in ((2.5, 180.0), (11.0, 140.0), (18.5, 210.0)):
+        m = ns(2.2)
+        groan = svf(osc_sweep("saw", glide(f0, f0 * 0.62, m)), 420.0, 2.5, "bp")
+        lp.put("events", mul(groan, env_pts([(0, 0), (0.4, 1.0), (1.6, 0.7), (2.2, 0.0)], m)), lp.at(1, t0), 0.35)
+    for t0 in (6.0, 15.0, 21.5):
+        m = ns(1.6)
+        hiss = svf(white(m, rng), 3200.0, 1.2, "bp")
+        lp.put("events", mul(hiss, env_pts([(0, 0), (0.08, 1.0), (1.0, 0.6), (1.6, 0.0)], m)), lp.at(1, t0), 0.22)
+    for t0 in (4.2, 9.1, 16.7):
+        m = ns(0.6)
+        thud = add(mul(osc_sweep("sine", sweep_exp(70.0, 35.0, m, 0.08)), env_exp(m, 0.18, 0.002)),
+                   scale(mul(svf(white(m, rng), 300.0, 0.7), env_exp(m, 0.06, 0.002)), 0.6))
+        lp.put("events", thud, lp.at(1, t0), 0.6)
+    for _ in range(5):
+        m = ns(0.5)
+        drip = mul(osc_sweep("sine", sweep_exp(1900.0, 1300.0, m, 0.03)), env_exp(m, 0.05, 0.001))
+        lp.put("events", drip, lp.at(1, rng.random() * 23.0), 0.12)
+    spec = {"hum": (0.28, 0.0, 0), "rumble": (0.09, 0.3, 0), "events": (0.06, 0.65, 0)}
+    return mixdown(lp, spec, room=0.85, damp=0.55, rv_level=0.6, drive_k=1.0)
+
+
+@sound("loop_reactor", "Loop FX", "Reactor hum for the drive ring: 41/82/123 Hz with a 2 Hz throb and a beating 492 Hz shimmer.",
+       rate=LOOP_RATE, loop=True)
+def loop_reactor(rng):
+    n = ns(4.0)
+    out = [0.0] * n
+    for f, a in ((41.0, 1.0), (82.0, 0.6), (123.0, 0.35), (492.0, 0.05), (493.0, 0.05)):
+        out = add(out, scale(loop_osc("sine", f, n, rng.random()), a))
+    return mul(out, lfo(n, 8, 0.7, 1.0))
+
+
+@sound("loop_sparks", "Loop FX", "Sparking cable: sparse band-passed crackle over a faint 120 Hz electrical buzz.",
+       rate=LOOP_RATE, loop=True)
+def loop_sparks(rng):
+    n = ns(2.0)
+    crackle = loop_apply(sparse(n, rng, 60.0), lambda b: svf(b, 4200.0, 1.3, "bp"), 0.5)
+    buzz = loop_apply(loop_osc("square", 120.0, n), lambda b: svf(b, 900.0, 0.8), 0.5)
+    return add(scale(crackle, 3.0), scale(buzz, 0.12))
+
+
+@sound("loop_machine", "Loop FX", "Archive cores: cold 220/330 Hz hum with slow beating and soft filtered air.",
+       rate=LOOP_RATE, loop=True)
+def loop_machine(rng):
+    n = ns(3.0)
+    out = [0.0] * n
+    for f, a in ((220.0, 0.7), (221.0, 0.5), (330.0, 0.35), (660.0, 0.08)):
+        out = add(out, scale(loop_osc("sine", f, n, rng.random()), a))
+    air = loop_apply(white(n, rng), lambda b: svf(b, 1800.0, 1.0, "bp"), 0.5)
+    return add(mul(out, lfo(n, 3, 0.75, 1.0)), scale(air, 0.08))
+
+
 # ===================================================================== music
 @sound("music_menu", "Music loop",
        "66 bpm D minor, 16 bars: slow detuned-saw pad with breathing filter, soft triangle bass, gapped FM-bell "

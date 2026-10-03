@@ -1,15 +1,32 @@
 class_name CameraRig
 extends Node3D
-## Third-person orbit camera: right/middle-drag to orbit, wheel to zoom, Q/T to
-## rotate. A SpringArm3D keeps the camera out of walls. Works while the
-## simulation is paused. Also frames dialogue shots (cinematic mode).
+## Third-person camera in two modes (Settings → Controls → Camera):
+## * follow (default): low behind the leader, swinging round behind them as
+##   they walk forward or follow a click path, like the classic d20 space
+##   RPGs. Strafing or backing up never swings it, and orbiting by hand
+##   holds it for a moment.
+## * tactical: the high free orbit for reading a fight.
+## Right/middle-drag orbits, the wheel zooms, Q/T rotate. A SpringArm3D keeps
+## the camera out of walls (and, following, out of tall props). Works while
+## the simulation is paused. Also frames dialogue shots (cinematic mode).
+
+const PROFILES := {
+	"follow": {"pitch": -17.0, "distance": 5.0, "fov": 62.0, "min": 2.2, "max": 9.0, "pmin": -50.0, "pmax": -4.0, "focus": 1.55, "mask": 3},
+	"tactical": {"pitch": -38.0, "distance": 8.5, "fov": 55.0, "min": 3.0, "max": 18.0, "pmin": -80.0, "pmax": -8.0, "focus": 1.3, "mask": 1},
+}
 
 var target: Node3D
+var mode := "tactical"
 var yaw := 0.0
 var pitch := -38.0
 var distance := 8.5
 var min_dist := 3.0
 var max_dist := 18.0
+var focus_h := 1.3
+var _pmin := -80.0
+var _pmax := -8.0
+var _manual_hold := 0.0
+var _move_t := 0.0
 var arm: SpringArm3D
 var cam: Camera3D
 var cine_cam: Camera3D
@@ -47,12 +64,56 @@ func _ready() -> void:
 	cine_cam.fov = 45.0
 	cine_cam.top_level = true
 	add_child(cine_cam)
+	set_mode(String(Settings.get_v("camera_mode")), true)
+	Settings.changed.connect(_on_setting)
 	_apply()
+
+
+func _exit_tree() -> void:
+	if Settings.changed.is_connected(_on_setting):
+		Settings.changed.disconnect(_on_setting)
+
+
+func _on_setting(key: String) -> void:
+	if key == "camera_mode":
+		set_mode(String(Settings.get_v("camera_mode")), true)
+
+
+## Switches between "follow" and "tactical". `reset` puts pitch and
+## distance at the mode's defaults (and swings behind the leader).
+func set_mode(m: String, reset: bool = false) -> void:
+	if not PROFILES.has(m):
+		m = "follow"
+	mode = m
+	var pr: Dictionary = PROFILES[m]
+	cam.fov = float(pr["fov"])
+	min_dist = float(pr["min"])
+	max_dist = float(pr["max"])
+	_pmin = float(pr["pmin"])
+	_pmax = float(pr["pmax"])
+	focus_h = float(pr["focus"])
+	arm.collision_mask = int(pr["mask"])
+	if reset:
+		pitch = float(pr["pitch"])
+		distance = float(pr["distance"])
+		if m == "follow":
+			face_behind()
+	pitch = clampf(pitch, _pmin, _pmax)
+	distance = clampf(distance, min_dist, max_dist)
+	_apply()
+
+
+## Turns the camera to look the way the target faces.
+func face_behind() -> void:
+	var a := target as Actor
+	if a != null and is_instance_valid(a):
+		yaw = rad_to_deg(atan2(a.facing.x, a.facing.y)) + 180.0
+		_apply()
 
 
 func snap() -> void:
 	if target:
-		_focus = target.global_position + Vector3(0, 1.3, 0)
+		_focus = target.global_position + Vector3(0, focus_h, 0)
 		global_position = _focus
 
 
@@ -66,7 +127,8 @@ func orbit(dx: float, dy: float) -> void:
 	var sens := float(Settings.get_v("mouse_sensitivity"))
 	var inv := -1.0 if bool(Settings.get_v("invert_y")) else 1.0
 	yaw -= dx * 0.25 * sens
-	pitch = clampf(pitch - dy * 0.2 * sens * inv, -80.0, -8.0)
+	pitch = clampf(pitch - dy * 0.2 * sens * inv, _pmin, _pmax)
+	_manual_hold = 1.5
 	_apply()
 
 
@@ -94,9 +156,10 @@ func _process(delta: float) -> void:
 			_cine_to.origin += _drift.normalized() * step
 		return
 	if target and is_instance_valid(target):
-		var want := target.global_position + Vector3(0, 1.3, 0)
+		var want := target.global_position + Vector3(0, focus_h, 0)
 		_focus = _focus.lerp(want, clampf(delta * 8.0, 0.0, 1.0))
 		global_position = _focus
+	_follow_swing(delta)
 	var rot := 0.0
 	if Input.is_action_pressed("camera_left"):
 		rot += 1.0
@@ -111,6 +174,7 @@ func _process(delta: float) -> void:
 			rot -= 1.0
 	if rot != 0.0 and not Game.ui_blocked():
 		yaw += rot * 90.0 * delta
+		_manual_hold = 1.5
 		_apply()
 	if shake > 0.0:
 		shake = maxf(0.0, shake - delta * 2.5)
@@ -119,6 +183,34 @@ func _process(delta: float) -> void:
 	else:
 		cam.h_offset = 0.0
 		cam.v_offset = 0.0
+
+
+## Follow mode: ease round behind the leader while they walk forward (W) or
+## along a click path. Never on strafe or backing up (no circling), and not
+## for a moment after the player orbits by hand.
+func _follow_swing(delta: float) -> void:
+	_manual_hold = maxf(0.0, _manual_hold - delta)
+	if mode != "follow" or dragging or _manual_hold > 0.0 or not bool(Settings.get_v("camera_swing")):
+		_move_t = 0.0
+		return
+	var a := target as Actor
+	var w := Game.world as World
+	if a == null or not is_instance_valid(a) or w == null or not w.sim_running():
+		return
+	var fwd := Input.is_action_pressed("move_forward") and not Input.is_action_pressed("move_back")
+	var keys := fwd or Input.is_action_pressed("move_back") or Input.is_action_pressed("move_left") or Input.is_action_pressed("move_right")
+	var moving := a.speed_now > 0.5 and (fwd or (a.is_moving() and not keys))
+	_move_t = _move_t + delta if moving else 0.0
+	if _move_t < 0.2:
+		return
+	var want := rad_to_deg(atan2(a.facing.x, a.facing.y)) + 180.0
+	var d := wrapf(want - yaw, -180.0, 180.0)
+	var rate := 110.0 * clampf(absf(d) / 60.0, 0.25, 1.0)
+	if not fwd and absf(d) > 150.0:
+		rate = 40.0  # walking back towards the camera: turn slowly
+	yaw += signf(d) * minf(absf(d), rate * delta)
+	pitch = move_toward(pitch, float(PROFILES["follow"]["pitch"]), 8.0 * delta) if pitch > -30.0 else pitch
+	_apply()
 
 
 func handle_input(event: InputEvent) -> bool:

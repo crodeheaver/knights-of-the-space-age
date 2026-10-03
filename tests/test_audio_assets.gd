@@ -11,7 +11,8 @@ const SFX := [
 	"explosion", "cast", "heal", "downed", "step",
 	"infl_up", "infl_down", "align_mercy", "align_dominion", "pa_chime",
 ]
-const AMBIENT := ["amb_ship"]
+const AMBIENT := ["amb_ship", "amb_deep"]
+const LOOP_FX := ["loop_reactor", "loop_sparks", "loop_machine"]
 const MUSIC := ["music_menu", "music_explore", "music_tension", "music_combat", "music_ending"]
 
 
@@ -75,7 +76,7 @@ func _wav_frames(id: String) -> int:
 
 
 func test_every_id_loads() -> void:
-	for id in SFX + AMBIENT + MUSIC:
+	for id in SFX + AMBIENT + MUSIC + LOOP_FX:
 		assert_true(ResourceLoader.exists(_path(id)), "exists " + id)
 		var s: AudioStream = load(_path(id))
 		assert_true(s != null, "loads " + id)
@@ -90,9 +91,14 @@ func test_lengths_within_budget() -> void:
 		if s != null:
 			assert_lte(s.get_length(), 1.25, id + " is a short effect")
 			assert_ne((s as AudioStreamWAV).loop_mode, AudioStreamWAV.LOOP_FORWARD, id + " does not loop")
-	var amb: AudioStream = load(_path("amb_ship"))
-	assert_gte(amb.get_length(), 20.0, "ambience loop length")
-	assert_lte(amb.get_length(), 30.1, "ambience loop length")
+	for aid in AMBIENT:
+		var amb: AudioStream = load(_path(aid))
+		assert_gte(amb.get_length(), 20.0, aid + " ambience loop length")
+		assert_lte(amb.get_length(), 30.1, aid + " ambience loop length")
+	for lid in LOOP_FX:
+		var lp: AudioStream = load(_path(lid))
+		assert_gte(lp.get_length(), 1.5, lid + " prop loop length")
+		assert_lte(lp.get_length(), 8.0, lid + " prop loop length")
 	for id in MUSIC:
 		var m: AudioStream = load(_path(id))
 		assert_gte(m.get_length(), 40.0, id + " length")
@@ -108,6 +114,7 @@ func test_data_sound_ids_resolve() -> void:
 	var areas: Dictionary = DB.dict(DB.layout, "areas")
 	for a in areas.keys():
 		ids[String(areas[a].get("music", "music_explore"))] = true
+		ids[String(areas[a].get("ambience", "amb_ship"))] = true
 	assert_gte(ids.size(), 12, "data names weapon sounds and area music")
 	for id in ids.keys():
 		assert_true(GameAudio.stream(String(id)) != null, "GameAudio resolves " + String(id))
@@ -154,6 +161,22 @@ func test_music_and_ambient_loop() -> void:
 	assert_false(GameAudio._music.playing, "music stopped")
 	assert_false(amb.playing, "ambience stopped")
 	await _wait(0.2)  # let the mixer drop the stopped playbacks
+
+
+func test_music_crossfades() -> void:
+	GameAudio.stop_music()
+	GameAudio.music("music_explore")
+	var first := GameAudio._music
+	GameAudio.music("music_combat")
+	assert_true(GameAudio._music != first, "the new track gets the other player")
+	assert_true(GameAudio._music.stream == GameAudio.stream("music_combat"), "combat on the active player")
+	assert_true(first.playing, "the old track fades rather than cutting")
+	GameAudio.music("music_explore")
+	GameAudio.music("music_tension")
+	assert_true(GameAudio._music.stream == GameAudio.stream("music_tension"), "rapid switches end on the last track")
+	GameAudio.stop_music()
+	assert_false(GameAudio._music.playing, "stopped")
+	assert_false(GameAudio._music2.playing, "both stopped")
 
 
 ## Plays a stream on a private bus and returns what the mixer produced: at
@@ -216,7 +239,7 @@ func test_loop_seam_is_continuous_in_mixer() -> void:
 	assert_lte(step, 0.01, "no discontinuity at the synthetic loop seam (max step %.4f)" % step)
 	# Real loops: start 0.15 s before the end; the jump across the seam must
 	# be no worse than the material's own transients nearby.
-	for id in AMBIENT + MUSIC:
+	for id in AMBIENT + MUSIC + LOOP_FX:
 		var st := GameAudio.stream(id) as AudioStreamWAV
 		GameAudio.make_looping(st)
 		var b: PackedVector2Array = await _capture(st, 0.4, st.get_length() - 0.15)

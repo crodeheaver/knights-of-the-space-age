@@ -25,7 +25,16 @@ var _music2: AudioStreamPlayer
 var _ambient: AudioStreamPlayer
 var _music_id := ""
 var _ambient_id := ""
-var _fade := 0.0
+var _ambient2: AudioStreamPlayer
+var _music_tw: Tween
+var _amb_tw: Tween
+## Where each track was when it faded out, so exploration music picks up
+## where it left off after a fight instead of restarting.
+var _music_pos: Dictionary = {}
+var _steps: Array[AudioStreamPlayer] = []
+var _step_i := 0
+var _loops: Array[AudioStreamPlayer3D] = []
+const MAX_LOOPS := 12
 var enabled := true
 
 
@@ -51,6 +60,15 @@ func _ready() -> void:
 	_ambient = AudioStreamPlayer.new()
 	_ambient.bus = "Ambience"
 	add_child(_ambient)
+	_ambient2 = AudioStreamPlayer.new()
+	_ambient2.bus = "Ambience"
+	add_child(_ambient2)
+	# Footsteps get their own players so they never crowd out combat sounds.
+	for i in 2:
+		var sp := AudioStreamPlayer.new()
+		sp.bus = "SFX"
+		add_child(sp)
+		_steps.append(sp)
 	_setup_voice()
 	apply_volumes()
 	Events.event.connect(_on_event)
@@ -140,51 +158,124 @@ func play_at(id: String, pos: Vector3, parent: Node, volume_db: float = 0.0) -> 
 	p.play()
 
 
+## Crossfades to a music track (two players: the old one fades out while
+## the new one fades in). A track that was interrupted resumes where it was.
 func music(id: String) -> void:
 	if id == _music_id:
 		return
+	if _music_id != "" and _music.playing:
+		_music_pos[_music_id] = _music.get_playback_position()
 	_music_id = id
+	if _music_tw != null and _music_tw.is_valid():
+		_music_tw.kill()
+	var old := _music
+	_music = _music2
+	_music2 = old
 	var s := stream(id)
-	if s == null:
-		_music.stop()
-		return
-	make_looping(s)
-	var tw := create_tween()
-	if _music.playing:
-		tw.tween_property(_music, "volume_db", -40.0, 1.2)
-	tw.tween_callback(func() -> void:
+	_music_tw = create_tween().set_parallel(true)
+	if s != null:
+		make_looping(s)
 		_music.stream = s
 		_music.volume_db = -40.0
-		_music.play()
-	)
-	tw.tween_property(_music, "volume_db", -6.0, 1.5)
+		var from := float(_music_pos.get(id, 0.0))
+		_music.play(from if from < s.get_length() - 1.0 else 0.0)
+		_music_tw.tween_property(_music, "volume_db", -6.0, 1.6)
+	else:
+		_music.stop()
+	if old.playing:
+		_music_tw.tween_property(old, "volume_db", -40.0, 1.6)
+		_music_tw.chain().tween_callback(old.stop)
 
 
 func stop_music() -> void:
 	_music_id = ""
+	if _music_tw != null and _music_tw.is_valid():
+		_music_tw.kill()
 	_music.stop()
+	_music2.stop()
+	_music_pos.clear()
 
 
 ## Silences everything (music, ambience, pooled one-shots), e.g. before quit.
 func stop_all() -> void:
 	stop_music()
 	ambient("")
+	_ambient.stop()
+	_ambient2.stop()
 	for p in _pool:
 		p.stop()
+	for ch in VOICE_CHANNELS:
+		voice_stop(ch)
 
 
+## Crossfades the ambience bed ("" fades it out).
 func ambient(id: String) -> void:
 	if id == _ambient_id:
 		return
 	_ambient_id = id
+	if _amb_tw != null and _amb_tw.is_valid():
+		_amb_tw.kill()
 	var s := stream(id)
 	if s == null:
+		# Silence (menus, the ending): stop at once.
 		_ambient.stop()
+		_ambient2.stop()
 		return
+	var old := _ambient
+	_ambient = _ambient2
+	_ambient2 = old
 	make_looping(s)
 	_ambient.stream = s
-	_ambient.volume_db = -8.0
+	_ambient.volume_db = -30.0 if old.playing else -8.0
 	_ambient.play()
+	if old.playing:
+		_amb_tw = create_tween().set_parallel(true)
+		_amb_tw.tween_property(_ambient, "volume_db", -8.0, 1.2)
+		_amb_tw.tween_property(old, "volume_db", -40.0, 1.2)
+		_amb_tw.chain().tween_callback(old.stop)
+
+
+## A looping positional sound on a prop (reactor hum, sparking cable...).
+## Capped; returns null when the cap is reached or the sound is missing.
+func loop_at(id: String, pos: Vector3, parent: Node, max_dist: float = 20.0, volume_db: float = 0.0) -> AudioStreamPlayer3D:
+	var live: Array[AudioStreamPlayer3D] = []
+	for lp in _loops:
+		if is_instance_valid(lp):
+			live.append(lp)
+	_loops = live
+	if not enabled or parent == null or _loops.size() >= MAX_LOOPS:
+		return null
+	var s := stream(id)
+	if s == null:
+		return null
+	make_looping(s)
+	var p := AudioStreamPlayer3D.new()
+	p.stream = s
+	p.bus = "Ambience"
+	p.volume_db = volume_db
+	p.unit_size = 4.0
+	p.max_distance = max_dist
+	p.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
+	parent.add_child(p)
+	p.global_position = pos
+	p.play(randf() * maxf(0.0, s.get_length() - 0.1))
+	_loops.append(p)
+	return p
+
+
+## A footstep (its own small pool, quiet, slightly varied).
+func step(volume_db: float = -16.0) -> void:
+	if not enabled:
+		return
+	var s := stream("step")
+	if s == null:
+		return
+	var p := _steps[_step_i]
+	_step_i = (_step_i + 1) % _steps.size()
+	p.stream = s
+	p.volume_db = volume_db
+	p.pitch_scale = randf_range(0.9, 1.1)
+	p.play()
 
 
 ## WAVs import without loop points; music and ambience beds loop forward

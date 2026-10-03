@@ -257,3 +257,160 @@ func test_hud_holds_toasts_during_conversations() -> void:
 	assert_eq(hud.toast_box.get_child_count(), n0 + 2, "shown once the HUD is back")
 	assert_true(hud._held.is_empty())
 	await _free([fm, w])
+
+
+# ---------------------------------------------------------------- atmosphere and camera
+var _saved_cam: Variant = null
+
+
+func _cam_world(mode: String) -> World:
+	_saved_cam = Settings.get_v("camera_mode")
+	Settings.set_v("camera_mode", mode, false)
+	var w: World = await _world()
+	return w
+
+
+func _cam_done(w: World) -> void:
+	Settings.set_v("camera_mode", _saved_cam, false)
+	await _free([w])
+
+
+func _press(action: String, on: bool) -> void:
+	if on:
+		Input.action_press(action)
+	else:
+		Input.action_release(action)
+
+
+func test_follow_camera_swings_behind() -> void:
+	var w: World = await _cam_world("follow")
+	var cam := w.cam
+	assert_eq(cam.mode, "follow")
+	var p: Actor = w.controlled()
+	p.set_facing_deg(90.0)
+	p.speed_now = 3.0
+	_press("move_forward", true)
+	for i in 180:
+		cam._follow_swing(1.0 / 60.0)
+	_press("move_forward", false)
+	var want := 90.0 + 180.0
+	assert_lte(absf(wrapf(cam.yaw - want, -180.0, 180.0)), 3.0, "behind the leader: yaw %.1f" % cam.yaw)
+	# Strafing never swings it (no running in circles).
+	p.set_facing_deg(0.0)
+	var y0 := cam.yaw
+	_press("move_left", true)
+	for i in 120:
+		cam._follow_swing(1.0 / 60.0)
+	_press("move_left", false)
+	assert_eq(cam.yaw, y0, "no swing on strafe")
+	# Orbiting by hand holds the swing for a moment.
+	cam.orbit(40.0, 0.0)
+	var y1 := cam.yaw
+	_press("move_forward", true)
+	for i in 30:
+		cam._follow_swing(1.0 / 60.0)
+	assert_eq(cam.yaw, y1, "manual orbit holds")
+	for i in 180:
+		cam._follow_swing(1.0 / 60.0)
+	_press("move_forward", false)
+	assert_ne(cam.yaw, y1, "and then it eases back behind")
+	p.speed_now = 0.0
+	await _cam_done(w)
+
+
+func test_tactical_camera_holds_still() -> void:
+	var w: World = await _cam_world("tactical")
+	var cam := w.cam
+	assert_eq(cam.mode, "tactical")
+	assert_eq(cam.pitch, -38.0, "the high orbit")
+	var p: Actor = w.controlled()
+	p.set_facing_deg(90.0)
+	p.speed_now = 3.0
+	var y0 := cam.yaw
+	_press("move_forward", true)
+	for i in 120:
+		cam._follow_swing(1.0 / 60.0)
+	_press("move_forward", false)
+	assert_eq(cam.yaw, y0, "tactical never swings")
+	w.sync_to_state()
+	var c: Array = Game.state.positions["_cam"]
+	assert_eq(String(c[3]), "tactical", "mode saved with the camera")
+	p.speed_now = 0.0
+	await _cam_done(w)
+
+
+func test_ceilings_face_down() -> void:
+	var w: World = await _world()
+	var ceil := w.find_child("Ceilings", true, false) as MeshInstance3D
+	assert_true(ceil != null, "ceilings built")
+	var arr := ceil.mesh.surface_get_arrays(0)
+	var normals: PackedVector3Array = arr[Mesh.ARRAY_NORMAL]
+	var verts: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+	assert_gte(normals.size(), 100, "covers the ship")
+	var all_down := true
+	for n in normals:
+		if n.y > -0.99:
+			all_down = false
+	assert_true(all_down, "only downward faces: invisible from the tactical camera above")
+	for v in verts:
+		if v.y < LevelBuilder.WALL_H - 0.1 or v.y > LevelBuilder.WALL_H + 0.001:
+			fail("ceiling vertex at height %.2f" % v.y)
+			break
+	await _free([w])
+
+
+func test_door_slides_but_grid_opens_at_once() -> void:
+	var w: World = await _world()
+	var d: WorldObject = w.objects["d_cabin"]
+	var cell: Array = d.cells[0]
+	var c := Vector2i(int(cell[0]), int(cell[1]))
+	var p0 := d.panels[0].position
+	d.st()["open"] = true
+	d.refresh()
+	assert_true(w.grid.walk[w.grid.idx(w.grid.cell_of(Vector3(c.x + 0.5, 0, c.y + 0.5)))] == 1, "passable immediately")
+	assert_eq(d.panels[0].position, p0, "panel starts where it was and slides")
+	await _tree().create_timer(0.6).timeout
+	assert_ne(d.panels[0].position, p0, "panel has slid open")
+	await _free([w])
+
+
+func test_sparks_and_props_freeze_on_pause() -> void:
+	var r := DevTools.apply_preset("jump_checkpoint")
+	assert_true(bool(r["ok"]))
+	var w := World.new()
+	w.manual_step = true
+	_tree().root.add_child(w)
+	await _tree().process_frame
+	assert_gte(w.atmosphere.sparks.size(), 1, "spark emitters registered")
+	w.set_paused(true)
+	for p in w.atmosphere.sparks:
+		assert_eq((p as CPUParticles3D).speed_scale, 0.0, "sparks hold still on pause")
+	var t0 := w.atmosphere._anim_t
+	w.atmosphere._process(0.5)
+	assert_eq(w.atmosphere._anim_t, t0, "props freeze")
+	w.set_paused(false)
+	for p in w.atmosphere.sparks:
+		assert_eq((p as CPUParticles3D).speed_scale, 1.0)
+	await _free([w])
+
+
+func test_alert_lighting_after_the_emergency() -> void:
+	var r := DevTools.apply_preset("jump_checkpoint")
+	assert_true(bool(r["ok"]))
+	var w := World.new()
+	w.manual_step = true
+	_tree().root.add_child(w)
+	await _tree().process_frame
+	var area := w.current_area
+	assert_true(bool(DB.dict(DB.dict(DB.layout, "areas"), area).get("alert", false)), "%s is an alert area" % area)
+	assert_true(Game.state.has_flag("emergency_started"))
+	w.atmosphere._process(0.3)
+	var trim: StandardMaterial3D = w.atmosphere.trims[area]
+	assert_true(trim.albedo_color.g < 0.95, "trims wash red: %s" % str(trim.albedo_color))
+	# The calm commons stays as built.
+	assert_eq((w.atmosphere.trims["cabin"] as StandardMaterial3D).albedo_color, Color.WHITE)
+	# Announcement pulses go through the same trims.
+	w.pulse_trims(Color("#ff4a3a"), 1.0)
+	w._process(0.5)
+	assert_gte(w.trim_pulse_amount(), 0.5, "pulse at its peak")
+	await _free([w])

@@ -40,6 +40,7 @@ var dialogue: DialogueEngine = null
 var dialogue_npc: Actor = null
 var stage: DialogueStage = null
 var ship_life: ShipLife = null  # set by Main; absent in tests and bots
+var atmosphere: Atmosphere = null
 ## Materials of the wall trims (shipwide pulses for announcements and alerts).
 var trim_materials: Array[StandardMaterial3D] = []
 var _trim_pulse := 0.0
@@ -54,10 +55,11 @@ func _ready() -> void:
 	Game.world = self
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	grid.setup(DB.layout)
-	LevelBuilder.build(self, DB.layout, grid)
-	trim_materials = [MeshKit.glow_material()]
-	for m in trim_materials:
-		m.albedo_color = Color.WHITE
+	var level_info := LevelBuilder.build(self, DB.layout, grid)
+	atmosphere = Atmosphere.new()
+	atmosphere.name = "Atmosphere"
+	add_child(atmosphere)
+	trim_materials = atmosphere.trim_materials()
 	fx = FX.new()
 	add_child(fx)
 	_restore_explored()
@@ -74,15 +76,20 @@ func _ready() -> void:
 	if Game.state.positions.has("_cam"):
 		var cp: Array = Game.state.positions["_cam"]
 		cam.yaw = float(cp[0])
-		cam.pitch = float(cp[1])
-		cam.distance = float(cp[2])
-		cam._apply()
+		# Pitch and zoom only carry over when saved in the current mode.
+		if cp.size() < 4 or String(cp[3]) == cam.mode:
+			cam.pitch = float(cp[1])
+			cam.distance = float(cp[2])
+		cam.set_mode(cam.mode)
+	elif cam.mode == "follow":
+		cam.face_behind()
 	Events.event.connect(_on_event)
 	GameAudio.voice_syllable.connect(_on_voice_syllable)
 	_restore_combat_state()
 	_area_check(true)
+	atmosphere.setup(self, level_info)
 	refresh_markers()
-	GameAudio.ambient("amb_ship")
+	GameAudio.ambient(area_ambience())
 	GameAudio.music(area_music())
 
 
@@ -457,11 +464,17 @@ func area_music() -> String:
 	return String(DB.dict(DB.dict(DB.layout, "areas"), current_area).get("music", "music_explore"))
 
 
+func area_ambience() -> String:
+	return String(DB.dict(DB.dict(DB.layout, "areas"), current_area).get("ambience", "amb_ship"))
+
+
 # ================================================================ pause & modal
 func set_paused(on: bool, reason: String = "") -> void:
 	if game_over:
 		on = true
 	paused = on
+	if atmosphere != null:
+		atmosphere.set_paused(on)
 	pause_reason = reason if on else ""
 	Events.post("pause_changed", {"paused": on, "reason": reason})
 	hud_changed.emit()
@@ -1057,9 +1070,14 @@ func _area_check(initial: bool) -> void:
 	if first:
 		st.areas_visited.append(aid)
 	Events.post("area_entered", {"area": aid, "first": first})
-	ui_request.emit("area_banner", {"name": String(ad.get("name", aid)), "sub": String(ad.get("subtitle", ""))})
+	# The area's title card on a first visit, or on coming back after a while.
+	var now_t := Time.get_ticks_msec() / 1000.0
+	if first or now_t - float(_banner_shown.get(aid, -1000.0)) > 45.0:
+		_banner_shown[aid] = now_t
+		ui_request.emit("area_banner", {"name": String(ad.get("name", aid)), "sub": String(ad.get("subtitle", ""))})
 	if not combat.active:
 		GameAudio.music(area_music())
+	GameAudio.ambient(area_ambience())
 	if first and not initial:
 		if int(ad.get("discover_xp", 0)) > 0:
 			st.grant_xp(int(ad["discover_xp"]), "area:" + aid, "Explored " + String(ad.get("name", aid)))
@@ -1069,6 +1087,7 @@ func _area_check(initial: bool) -> void:
 
 
 var _pending_autosave := ""
+var _banner_shown: Dictionary = {}
 
 
 func _checkpoint(label: String) -> void:
@@ -2275,10 +2294,6 @@ func _process(delta: float) -> void:
 		stage.tick(delta)
 	if _trim_pulse > 0.0:
 		_trim_pulse = maxf(0.0, _trim_pulse - delta)
-		var k := sin(PI * (1.0 - _trim_pulse / _trim_pulse_len))
-		var amp := 0.45 if bool(Settings.get_v("reduce_flash")) else 1.0
-		for m in trim_materials:
-			m.albedo_color = Color.WHITE.lerp(_trim_pulse_col, k * amp) if _trim_pulse > 0.0 else Color.WHITE
 	if not _present.is_empty():
 		var live := sim_running()
 		for v in _present.keys():
@@ -2293,11 +2308,16 @@ func _process(delta: float) -> void:
 				_present.erase(v)
 
 
-## Washes the ship's wall trims in a colour for a moment (announcements).
+## Washes the ship's wall trims in a colour for a moment (announcements);
+## the Atmosphere applies it.
 func pulse_trims(col: Color, dur: float) -> void:
 	_trim_pulse_col = col
 	_trim_pulse_len = maxf(0.1, dur)
 	_trim_pulse = _trim_pulse_len
+
+
+func trim_pulse_amount() -> float:
+	return sin(PI * (1.0 - _trim_pulse / _trim_pulse_len)) if _trim_pulse > 0.0 else 0.0
 
 
 ## Lets a visual finish settling (e.g. a fall) even while paused.
@@ -2716,7 +2736,7 @@ func sync_to_state() -> void:
 		var a: Actor = p
 		st.positions[a.uid] = [snappedf(a.position.x, 0.01), snappedf(a.position.z, 0.01), snappedf(a.rotation_degrees.y, 0.1)]
 		st.queues[a.uid] = a.queue.to_array()
-	st.positions["_cam"] = [cam.yaw, cam.pitch, cam.distance]
+	st.positions["_cam"] = [cam.yaw, cam.pitch, cam.distance, cam.mode]
 	for o in actors.values():
 		var a: Actor = o
 		if a.role == "enemy" or (a.role == "npc" and Game.state.enemies.has(a.uid)):

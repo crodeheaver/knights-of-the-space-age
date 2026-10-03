@@ -77,7 +77,9 @@
    "wall": "#363d50",
    "accent": "#8a6ad8",
    "light": "#c8c0ff",
-   "discover_xp": 25
+   "discover_xp": 25,
+   "ambient": "#4a4a78",
+   "ambient_energy": 0.5
   },
   "corridor": {
    "name": "Transit Corridor C-3",
@@ -102,7 +104,12 @@
    "light": "#ffb08a",
    "discover_xp": 10,
    "checkpoint": true,
-   "light_energy": 0.9
+   "light_energy": 0.9,
+   "alert": true,
+   "flicker": true,
+   "fog": "#4a3a34",
+   "fog_density": 0.018,
+   "ambient": "#5a4a48"
   },
   "checkpoint": {
    "name": "Security Checkpoint",
@@ -125,7 +132,10 @@
     {
      "bark": "an_warden_checkpoint"
     }
-   ]
+   ],
+   "alert": true,
+   "fog": "#2e3a48",
+   "fog_density": 0.008
   },
   "armory": {
    "name": "Security Armory",
@@ -142,7 +152,8 @@
    "wall": "#323c48",
    "accent": "#3fb6b0",
    "light": "#cfe6ff",
-   "discover_xp": 25
+   "discover_xp": 25,
+   "alert": true
   },
   "crawlway": {
    "name": "Maintenance Crawlway",
@@ -180,7 +191,11 @@
      73,
      26
     ]
-   ]
+   ],
+   "ambience": "amb_deep",
+   "fog": "#2a3424",
+   "fog_density": 0.02,
+   "ambient_energy": 0.42
   },
   "storage": {
    "name": "Medical Storage",
@@ -238,7 +253,10 @@
    "wall": "#40463d",
    "accent": "#e0b03a",
    "light": "#fff0c0",
-   "discover_xp": 20
+   "discover_xp": 20,
+   "flicker": true,
+   "fog": "#5a6a5a",
+   "fog_density": 0.03
   },
   "engineering": {
    "name": "Engineering Loop",
@@ -280,7 +298,12 @@
     {
      "bark": "an_warden_engineering"
     }
-   ]
+   ],
+   "alert": true,
+   "flicker": true,
+   "ambience": "amb_deep",
+   "fog": "#3a4048",
+   "fog_density": 0.022
   },
   "workshop": {
    "name": "Engineering Workshop",
@@ -297,7 +320,8 @@
    "wall": "#463d33",
    "accent": "#7fd0ff",
    "light": "#ffe2c0",
-   "discover_xp": 15
+   "discover_xp": 15,
+   "ambience": "amb_deep"
   },
   "duct": {
    "name": "Maintenance Duct",
@@ -335,7 +359,11 @@
      114,
      28
     ]
-   ]
+   ],
+   "ambience": "amb_deep",
+   "fog": "#2a3424",
+   "fog_density": 0.02,
+   "ambient_energy": 0.42
   },
   "archive": {
    "name": "Archive Cargo Hold",
@@ -368,7 +396,12 @@
     {
      "bark": "an_warden_archive"
     }
-   ]
+   ],
+   "alert": true,
+   "ambience": "amb_deep",
+   "fog": "#1f4040",
+   "fog_density": 0.015,
+   "ambient": "#3a5a60"
   },
   "coldstore": {
    "name": "Cold Storage",
@@ -385,7 +418,10 @@
    "wall": "#37424d",
    "accent": "#7fd0ff",
    "light": "#d0f0ff",
-   "discover_xp": 15
+   "discover_xp": 15,
+   "ambience": "amb_deep",
+   "fog": "#7a90a0",
+   "fog_density": 0.025
   },
   "command": {
    "name": "Command Chamber",
@@ -409,7 +445,8 @@
     {
      "bark": "an_warden_command"
     }
-   ]
+   ],
+   "ambient": "#6a5a4a"
   },
   "bay": {
    "name": "Evacuation Bay 2",
@@ -434,7 +471,11 @@
     {
      "bark": "an_warden_bay"
     }
-   ]
+   ],
+   "alert": true,
+   "flicker": true,
+   "fog": "#4a3a30",
+   "fog_density": 0.012
   }
  },
  "doors": [

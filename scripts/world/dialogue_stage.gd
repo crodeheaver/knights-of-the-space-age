@@ -138,7 +138,9 @@ func present(sid: String, dur: float, anim: String, shot: String) -> void:
 		_last_speaker = sid
 		return
 	if s == "":
-		if first and npc != null:
+		# A two-shot only when they stand close; across a room, start over
+		# the shoulder.
+		if first and npc != null and sp.position.distance_to(listen_pos) < 4.5:
 			s = "two"
 		elif sid == _last_speaker:
 			# A run of lines from one speaker alternates close-up and
@@ -172,7 +174,8 @@ func _present_offstage(sid: String, shot: String, first: bool) -> void:
 	# conversation that opens with narration still gets an establishing view.
 	if first and shot != "keep":
 		if npc != null:
-			world.cam.frame_shot(npc.position, lead.position, "two", side, true, head_height(npc), head_height(lead))
+			var near := npc.position.distance_to(lead.position) < 4.5
+			world.cam.frame_shot(npc.position, lead.position, "two" if near else "ots", side, true, head_height(npc), head_height(lead))
 		elif has_object:
 			world.cam.frame_shot(object_pos, lead.position, "ots", side, true, 1.3, head_height(lead))
 

@@ -17,6 +17,8 @@ var cells: Array = []
 var reach := 2.2
 var center := Vector3.ZERO
 var _anim := 0.0
+var _door_shown := -1  # last open state drawn (-1: not yet)
+var _eye_mat: StandardMaterial3D
 
 
 func setup(d: Dictionary, w: World) -> void:
@@ -117,11 +119,19 @@ func _apply_door() -> void:
 	var open := is_open()
 	world.grid.set_door(cells, open, is_locked())
 	var span := float(cells.size())
+	# Panels slide apart when a door opens (the grid opens at once, so
+	# movement and the simulation never wait on the animation).
+	var slide := _door_shown != -1 and int(open) != _door_shown and is_inside_tree()
+	_door_shown = int(open)
 	for i in panels.size():
 		var pn: Node3D = panels[i]
 		var side := -1.0 if i == 0 else 1.0
 		var off := side * (span * 0.25 + (span * 0.47 if open else 0.0))
-		pn.position = Vector3(off, 0, 0) if _axis() == "x" else Vector3(0, 0, off)
+		var to := Vector3(off, 0, 0) if _axis() == "x" else Vector3(0, 0, off)
+		if slide:
+			create_tween().tween_property(pn, "position", to, 0.45).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+		else:
+			pn.position = to
 	if label:
 		label.text = display_name() + (" [LOCKED]" if is_locked() else "")
 
@@ -229,6 +239,17 @@ func _build_visual() -> void:
 			mesh_root.add_child(MeshKit.cyl(0.45, 0.45, 2.4, MeshKit.unshaded(Color("#e8823a"))))
 			mesh_root.get_child(mesh_root.get_child_count() - 1).position = Vector3(0, 1.3, 0)
 			mesh_root.get_child(mesh_root.get_child_count() - 1).scale = Vector3(1.02, 1, 0.3)
+			# WARDEN's eye, watching from the core while it is awake.
+			_eye_mat = StandardMaterial3D.new()
+			_eye_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			_eye_mat.albedo_color = Color(1.6, 0.22, 0.15)
+			var eye := MeshKit.sphere(0.17, _eye_mat, 14)
+			eye.position = Vector3(0, 2.05, 0.6)
+			mesh_root.add_child(eye)
+			var ring := MeshKit.torus(0.22, 0.27, _eye_mat)
+			ring.rotation_degrees = Vector3(90, 0, 0)
+			ring.position = Vector3(0, 2.05, 0.6)
+			mesh_root.add_child(ring)
 			indicator = null
 		"launch_console":
 			_box(Vector3(2.2, 1.0, 0.8), Vector3(0, 0.5, 0), mid)
@@ -295,6 +316,11 @@ func _process(delta: float) -> void:
 	if kind == "mine" and indicator and mesh_root.visible:
 		_anim += delta
 		indicator.visible = fmod(_anim, 1.0) < 0.5
+	if _eye_mat != null:
+		_anim += delta
+		var awake := not (Game.state.has_flag("warden_neutralized") or Game.state.has_flag("warden_fate"))
+		var k := 0.5 + 0.5 * sin(_anim * 1.6)
+		_eye_mat.albedo_color = Color(1.1 + 0.9 * k, 0.18, 0.12) if awake else Color(0.18, 0.05, 0.04)
 
 
 # ------------------------------------------------------------ interaction

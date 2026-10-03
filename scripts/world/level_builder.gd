@@ -1,17 +1,23 @@
 class_name LevelBuilder
 extends RefCounted
 ## Builds the ship's static geometry from data/ship_layout.json: floors,
-## merged wall meshes with glowing trim, camera-collision bodies, lights,
-## props (which also block grid cells) and landmark signage.
+## ceilings, merged wall meshes with glowing trim, camera-collision bodies,
+## lights, props (which also block grid cells) and landmark signage.
+## Returns what the Atmosphere animates: the environment, per-area lights,
+## lamp and trim materials, spark emitters and animated props.
 
 const WALL_H := 3.2
+## Camera collision layers: walls (1) and tall props (2, follow camera only).
+const LAYER_WALLS := 1
+const LAYER_PROPS := 2
 
 
-static func build(world: Node3D, layout: Dictionary, grid: ShipGrid) -> void:
+static func build(world: Node3D, layout: Dictionary, grid: ShipGrid) -> Dictionary:
+	var info := {"env": null, "lights": {}, "lamps": {}, "trims": {}, "sparks": [], "reactor": [], "cores": [], "windows": []}
 	var root := Node3D.new()
 	root.name = "Level"
 	world.add_child(root)
-	_environment(world, layout)
+	info["env"] = _environment(world, layout)
 	var areas: Dictionary = layout.get("areas", {})
 	# Floors per area.
 	for aid in areas.keys():
@@ -39,15 +45,47 @@ static func build(world: Node3D, layout: Dictionary, grid: ShipGrid) -> void:
 	dmi.mesh = dst.commit()
 	dmi.material_override = MeshKit.floor_material()
 	root.add_child(dmi)
-	_walls(root, layout, grid)
-	_lights(root, layout)
+	_ceilings(root, layout)
+	_walls(root, layout, grid, info)
+	_lights(root, layout, info)
 	for p in layout.get("props", []):
-		_prop(root, p, grid)
+		_prop(root, p, grid, info)
 	for s in layout.get("signs", []):
 		_sign(root, s)
+	return info
 
 
-static func _environment(world: Node3D, layout: Dictionary) -> void:
+## Ceilings over every area and doorway, with darker beams every 4 m. They
+## face down only, so the tactical camera above sees straight through them.
+static func _ceilings(root: Node3D, layout: Dictionary) -> void:
+	var areas: Dictionary = layout.get("areas", {})
+	var st := MeshKit.st_begin()
+	for aid in areas.keys():
+		var a: Dictionary = areas[aid]
+		var col := Color(String(a.get("wall", "#3a4150"))).darkened(0.15)
+		for r in a.get("rects", []):
+			var x0 := float(r[0])
+			var z0 := float(r[1])
+			var x1 := float(r[2])
+			var z1 := float(r[3])
+			MeshKit.add_down_quad(st, x0, z0, x1, z1, WALL_H, col)
+			var bx := x0 + 2.0
+			while bx < x1 - 0.5:
+				MeshKit.add_down_quad(st, bx - 0.18, z0, bx + 0.18, z1, WALL_H - 0.09, col.darkened(0.45))
+				bx += 4.0
+	for d in layout.get("doors", []):
+		var col2 := Color(String(DB.dict(areas, String(d.get("a", ""))).get("wall", "#3a4150"))).darkened(0.3)
+		for c in d.get("cells", []):
+			MeshKit.add_down_quad(st, float(c[0]), float(c[1]), float(c[0]) + 1.0, float(c[1]) + 1.0, WALL_H, col2)
+	var mi := MeshInstance3D.new()
+	mi.name = "Ceilings"
+	mi.mesh = st.commit()
+	mi.material_override = MeshKit.vc_material()
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(mi)
+
+
+static func _environment(world: Node3D, layout: Dictionary) -> Environment:
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = Color("#05070b")
@@ -57,9 +95,15 @@ static func _environment(world: Node3D, layout: Dictionary) -> void:
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_exposure = 1.05
 	env.glow_enabled = true
-	env.glow_intensity = 0.6
+	env.glow_intensity = 0.7
 	env.glow_bloom = 0.05
-	env.glow_hdr_threshold = 1.1
+	env.glow_hdr_threshold = 0.95
+	# Haze per area (Atmosphere blends density and colour on area changes).
+	env.fog_enabled = true
+	env.fog_mode = Environment.FOG_MODE_EXPONENTIAL
+	env.fog_density = 0.0
+	env.fog_light_color = Color("#3a4250")
+	env.fog_sky_affect = 0.0
 	var we := WorldEnvironment.new()
 	we.environment = env
 	world.add_child(we)
@@ -69,9 +113,10 @@ static func _environment(world: Node3D, layout: Dictionary) -> void:
 	sun.light_color = Color("#b9c6e0")
 	sun.shadow_enabled = false
 	world.add_child(sun)
+	return env
 
 
-static func _walls(root: Node3D, layout: Dictionary, grid: ShipGrid) -> void:
+static func _walls(root: Node3D, layout: Dictionary, grid: ShipGrid, info: Dictionary) -> void:
 	var areas: Dictionary = layout.get("areas", {})
 	var per_area := {}
 	var trim_st := {}
@@ -114,8 +159,11 @@ static func _walls(root: Node3D, layout: Dictionary, grid: ShipGrid) -> void:
 		root.add_child(mi)
 		var ti := MeshInstance3D.new()
 		ti.mesh = (trim_st[aid] as SurfaceTool).commit()
-		ti.material_override = MeshKit.glow_material()
+		# Each area's trim has its own material so alerts can tint it alone.
+		var tm := MeshKit.glow_material().duplicate() as StandardMaterial3D
+		ti.material_override = tm
 		root.add_child(ti)
+		info["trims"][aid] = tm
 	# Camera collision: merge horizontal runs of wall cells.
 	var body := StaticBody3D.new()
 	body.collision_layer = 1
@@ -138,11 +186,16 @@ static func _walls(root: Node3D, layout: Dictionary, grid: ShipGrid) -> void:
 				x += 1
 
 
-static func _lights(root: Node3D, layout: Dictionary) -> void:
+static func _lights(root: Node3D, layout: Dictionary, info: Dictionary) -> void:
 	var areas: Dictionary = layout.get("areas", {})
 	for aid in areas.keys():
 		var a: Dictionary = areas[aid]
 		var lcol := Color(String(a.get("light", "#ffe2b8")))
+		var area_lights: Array = []
+		# One lamp material per area, so alerts and flicker change it alone.
+		var lamp_mat := MeshKit.unshaded(lcol.lightened(0.3)).duplicate() as StandardMaterial3D
+		info["lights"][aid] = area_lights
+		info["lamps"][aid] = lamp_mat
 		var energy := float(a.get("light_energy", 1.1))
 		var lights: Array = a.get("lights", [])
 		if lights.is_empty():
@@ -166,12 +219,13 @@ static func _lights(root: Node3D, layout: Dictionary) -> void:
 			ol.omni_attenuation = 1.2
 			ol.shadow_enabled = false
 			root.add_child(ol)
-			var lamp := MeshKit.box(Vector3(0.6, 0.06, 0.6), MeshKit.unshaded(ol.light_color.lightened(0.3)))
+			area_lights.append(ol)
+			var lamp := MeshKit.box(Vector3(0.6, 0.06, 0.6), lamp_mat if not l.has("color") else MeshKit.unshaded(ol.light_color.lightened(0.3)))
 			lamp.position = ol.position + Vector3(0, 0.25, 0)
 			root.add_child(lamp)
 
 
-static func _prop(root: Node3D, p: Dictionary, grid: ShipGrid) -> void:
+static func _prop(root: Node3D, p: Dictionary, grid: ShipGrid, info: Dictionary = {}) -> void:
 	var t := String(p.get("t", "crate"))
 	var pos: Array = p.get("p", [0, 0])
 	var sz: Array = p.get("s", [1, 1])
@@ -220,6 +274,8 @@ static func _prop(root: Node3D, p: Dictionary, grid: ShipGrid) -> void:
 			var core := MeshKit.cyl(w * 0.22, w * 0.22, h * 0.82, MeshKit.mat(Color(String(p.get("g", "#3fb6b0"))), 0.3, 0.0, 2.2), 10)
 			core.position = Vector3(0, h * 0.5, 0)
 			n.add_child(core)
+			if info.has("cores"):
+				info["cores"].append(core)
 			var cap := MeshKit.cyl(w * 0.5, w * 0.5, 0.12, dark, 14)
 			cap.position = Vector3(0, h, 0)
 			n.add_child(cap)
@@ -230,23 +286,31 @@ static func _prop(root: Node3D, p: Dictionary, grid: ShipGrid) -> void:
 			var rc := MeshKit.cyl(w * 0.5, w * 0.5, h, MeshKit.mat(Color("#20262d"), 0.3, 0.8), 24)
 			rc.position = Vector3(0, h * 0.5, 0)
 			n.add_child(rc)
+			var band_mat := MeshKit.unshaded(Color(String(p.get("g", "#e8823a")))).duplicate() as StandardMaterial3D
 			for i in 3:
-				var band := MeshKit.torus(w * 0.48, w * 0.54, MeshKit.unshaded(Color(String(p.get("g", "#e8823a")))))
+				var band := MeshKit.torus(w * 0.48, w * 0.54, band_mat)
 				band.position = Vector3(0, 1.0 + i * 1.2, 0)
 				n.add_child(band)
+				if info.has("reactor"):
+					info["reactor"].append(band)
+			_collider(n, Vector3(w, h, d), Vector3(0, h * 0.5, 0))
 		"debris":
 			for i in 3:
 				var b := _pb(n, Vector3(w * (0.6 - i * 0.12), 0.3 + i * 0.1, d * (0.5 + i * 0.1)), Vector3((i - 1) * 0.3, 0.2 + i * 0.12, (i - 1) * 0.2), dark if i % 2 == 0 else m)
 				b.rotation_degrees = Vector3(i * 9.0, i * 31.0, i * -7.0)
 		"window":
 			_pb(n, Vector3(w, h, 0.1), Vector3(0, float(p.get("y", 1.6)), 0), MeshKit.unshaded(Color("#0d1a33")))
+			var stars: Array = []
 			for i in 12:
 				var star := _pb(n, Vector3(0.04, 0.04, 0.02), Vector3(-w * 0.45 + fmod(i * 0.73, 1.0) * w * 0.9, float(p.get("y", 1.6)) - h * 0.4 + fmod(i * 0.37, 1.0) * h * 0.8, 0.06), MeshKit.unshaded(Color("#e8eefc")))
 				star.scale = Vector3.ONE
+				stars.append(star)
 			var planet := MeshKit.sphere(h * 0.3, MeshKit.unshaded(Color("#c9773a")), 16)
 			planet.position = Vector3(w * 0.25, float(p.get("y", 1.6)), 0.07)
 			planet.scale = Vector3(1, 1, 0.1)
 			n.add_child(planet)
+			if info.has("windows"):
+				info["windows"].append({"stars": stars, "w": w})
 		"craft":
 			n.name = "Petrel"
 			_craft(n, w, d, col)
@@ -293,6 +357,8 @@ static func _prop(root: Node3D, p: Dictionary, grid: ShipGrid) -> void:
 			ps.mesh = qm
 			ps.position = Vector3(0, h, 0)
 			n.add_child(ps)
+			if info.has("sparks"):
+				info["sparks"].append(ps)
 		_:
 			_pb(n, Vector3(w, h, d), Vector3(0, h * 0.5, 0), m)
 	if bool(p.get("solid", not (t in ["pipe", "window", "glow", "railing", "sparks", "crane"]))):
@@ -308,6 +374,22 @@ static func _prop(root: Node3D, p: Dictionary, grid: ShipGrid) -> void:
 			for z in range(floori(float(pos[1]) - hd + 0.01), ceili(float(pos[1]) + hd - 0.01)):
 				cells.append([x, z])
 		grid.set_blocked(cells, true, bool(p.get("los", h >= 1.4)))
+		# Tall props keep the close follow camera out of them.
+		if h >= 1.4 and t != "reactor":
+			_collider(n, Vector3(w, h, d), Vector3(0, h * 0.5, 0))
+
+
+static func _collider(n: Node3D, size: Vector3, pos: Vector3) -> void:
+	var body := StaticBody3D.new()
+	body.collision_layer = LAYER_PROPS
+	body.collision_mask = 0
+	var cs := CollisionShape3D.new()
+	var bs := BoxShape3D.new()
+	bs.size = size
+	cs.shape = bs
+	cs.position = pos
+	body.add_child(cs)
+	n.add_child(body)
 
 
 static func _pb(n: Node3D, size: Vector3, pos: Vector3, m: Material) -> MeshInstance3D:

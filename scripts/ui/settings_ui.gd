@@ -136,6 +136,10 @@ func _gameplay() -> void:
 
 
 func _controls() -> void:
+	_body.add_child(UIKit.header("Camera"))
+	_choice("camera_mode", "Camera", [["follow", "Close follow"], ["tactical", "Tactical"]],
+		"Close follow sits low behind your character and swings round behind them as you walk. Tactical is a high free orbit for reading a fight.")
+	_check("camera_swing", "Follow camera swings behind you", "Turn off to orbit the follow camera only by hand (right-drag, Q/T).")
 	_body.add_child(UIKit.header("Mouse"))
 	_slider("mouse_sensitivity", "Camera sensitivity", 0.2, 3.0, 0.05, "%.2f×", 1.0)
 	_check("invert_y", "Invert camera pitch")

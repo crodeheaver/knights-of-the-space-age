@@ -60,6 +60,12 @@ static func add_box(st: SurfaceTool, c: Vector3, s: Vector3, col: Color, skip_bo
 	_quad(st, Vector3(x1, y1, z0), Vector3(x0, y1, z0), Vector3(x0, y0, z0), Vector3(x1, y0, z0), Vector3.FORWARD, col)
 
 
+## One downward-facing quad at height y over [x0,x1]×[z0,z1] (ceilings): seen
+## from below, culled from above so the high camera looks straight in.
+static func add_down_quad(st: SurfaceTool, x0: float, z0: float, x1: float, z1: float, y: float, col: Color) -> void:
+	_quad(st, Vector3(x0, y, z1), Vector3(x1, y, z1), Vector3(x1, y, z0), Vector3(x0, y, z0), Vector3.DOWN, col)
+
+
 static func floor_material() -> ShaderMaterial:
 	if _floor_mat == null:
 		_floor_mat = ShaderMaterial.new()
