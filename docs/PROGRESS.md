@@ -19,6 +19,15 @@ increment, where the result departs from the plan, and what is still open.
 | 10 | Performance tooling and fixes, export presets and builds, screenshots, documentation | `d9ccc4c` and its neighbours |
 | 11 | Follow-ups: keyboard movement drives the walk animation; auto-attack at combat start | `9f41655`, `a4c7e4b`, `2f3da3c` |
 
+Immersion pass (branch `claude/wonderful-wozniak-62qtg1`), aiming at the feel of the classic d20 space RPGs:
+
+| # | Increment | Commit |
+|---|---|---|
+| 12 | Dialogue and voice: babbled voices, text reveal, staged conversations and camera coverage, reactions, prologue cinematic | `50c10ed` |
+| 13 | Living companions and ship: barks, banter, announcements, companion hooks, NPC idles | `05aa537` |
+| 14 | Atmosphere and the follow camera: ceilings, alert lighting, haze, living props, layered audio | `d1eb65b` |
+| 15 | Combat feel and feedback: stances, reactions, sparks, Lumen Edge, bodies, health bars, HUD feedback, alignment look | `00bcfee` |
+
 ## Departures from the plan
 
 - **Audio** is synthesized offline by `tools/gen_audio.py` into committed WAV files. The plan said runtime
@@ -36,6 +45,17 @@ increment, where the result departs from the plan, and what is still open.
 - **Equipment.** Upgrades sit on weapon and armor instances; there are 10 equipment slots (two weapon sets).
 - **Developer presets.** They start from world-state snapshots captured during a real bot playthrough
   (`data/dev_stages.json`) instead of hand-written states, so jumps match real play.
+
+- **Immersion pass (12–15).**
+  - **Conversations:** facing during a conversation is applied to the actor's visual only, never to the
+    `Actor`, because party following and stealth read `facing`.
+  - **Companion hooks** prompt the player (a "wants to talk" badge, E beside them) instead of starting a
+    conversation themselves.
+  - **Prologue:** an in-engine flythrough with captions, not a scrolling crawl (too close to the source
+    genre's signature).
+  - **Combat:** no hit-stop or slow motion, since both would change combat timing.
+  - **Footsteps** play for the party only.
+  - **Babble:** generated per syllable at run time from four banks, not recorded lines.
 
 ## Balance notes (from bot runs and the seed sweep)
 
@@ -55,12 +75,19 @@ increment, where the result departs from the plan, and what is still open.
 - **No human playtest yet.** Pacing, difficulty and readability need real players.
 - **Performance on real GPUs has not been measured.** The container only has software rendering. The
   simulation's CPU cost is measured: see `docs/TEST_RESULTS.md`.
-- **Audio is unheard.** It was checked by analysis only.
+- **Audio is unheard.** It was checked by analysis only. That includes the four voice banks: pitch and
+  brightness were measured per bank, but nobody has listened to the babble.
 - **Art and animation:** procedural primitive models with code-driven animation, no textures. Readable, but far
   from production quality.
-- **No gamepad support**, no localization, no voice.
+- **No gamepad support**, no localization, no recorded voice (lines are babbled from synthesised syllables).
+- **Follow camera** constants (swing rate, hold after a manual orbit, lift over walls) were tuned from screenshots
+  only. They need tuning in hands-on play. With the leader's back against a wall it rises over the room, and
+  tactical mode remains one setting away.
+- **Presentation cost:** the combat presentation (stances, sparks, flourishes) adds roughly 10–15% to the
+  simulation step means, a fraction of a millisecond in absolute terms; see `docs/TEST_RESULTS.md`.
 - **Visual nits:**
   - The area sign above the commons muster point overlaps the quest tracker at some camera angles.
+  - Haze and red alert are tuned for llvmpipe screenshots and may read differently on a real GPU.
   - The reactor ring can fill the view in engineering at high pitch.
 - **Exit warnings.** Headless runs print "ObjectDB instances leaked at exit" from sounds or tweens still alive
   at quit. They are harmless, but noisy.

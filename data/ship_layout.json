@@ -77,7 +77,9 @@
    "wall": "#363d50",
    "accent": "#8a6ad8",
    "light": "#c8c0ff",
-   "discover_xp": 25
+   "discover_xp": 25,
+   "ambient": "#4a4a78",
+   "ambient_energy": 0.5
   },
   "corridor": {
    "name": "Transit Corridor C-3",
@@ -102,7 +104,12 @@
    "light": "#ffb08a",
    "discover_xp": 10,
    "checkpoint": true,
-   "light_energy": 0.9
+   "light_energy": 0.9,
+   "alert": true,
+   "flicker": true,
+   "fog": "#4a3a34",
+   "fog_density": 0.018,
+   "ambient": "#5a4a48"
   },
   "checkpoint": {
    "name": "Security Checkpoint",
@@ -120,7 +127,15 @@
    "accent": "#3fb6b0",
    "light": "#cfe6ff",
    "discover_xp": 20,
-   "checkpoint": true
+   "checkpoint": true,
+   "on_enter": [
+    {
+     "bark": "an_warden_checkpoint"
+    }
+   ],
+   "alert": true,
+   "fog": "#2e3a48",
+   "fog_density": 0.008
   },
   "armory": {
    "name": "Security Armory",
@@ -137,7 +152,8 @@
    "wall": "#323c48",
    "accent": "#3fb6b0",
    "light": "#cfe6ff",
-   "discover_xp": 25
+   "discover_xp": 25,
+   "alert": true
   },
   "crawlway": {
    "name": "Maintenance Crawlway",
@@ -175,7 +191,11 @@
      73,
      26
     ]
-   ]
+   ],
+   "ambience": "amb_deep",
+   "fog": "#2a3424",
+   "fog_density": 0.02,
+   "ambient_energy": 0.42
   },
   "storage": {
    "name": "Medical Storage",
@@ -211,7 +231,12 @@
    "light": "#e6fff2",
    "discover_xp": 20,
    "checkpoint": true,
-   "music": "music_tension"
+   "music": "music_tension",
+   "on_enter": [
+    {
+     "bark": "an_warden_medical"
+    }
+   ]
   },
   "ward": {
    "name": "Sealed Passenger Ward",
@@ -228,7 +253,10 @@
    "wall": "#40463d",
    "accent": "#e0b03a",
    "light": "#fff0c0",
-   "discover_xp": 20
+   "discover_xp": 20,
+   "flicker": true,
+   "fog": "#5a6a5a",
+   "fog_density": 0.03
   },
   "engineering": {
    "name": "Engineering Loop",
@@ -265,7 +293,17 @@
    "light": "#ffc890",
    "discover_xp": 20,
    "checkpoint": true,
-   "music": "music_tension"
+   "music": "music_tension",
+   "on_enter": [
+    {
+     "bark": "an_warden_engineering"
+    }
+   ],
+   "alert": true,
+   "flicker": true,
+   "ambience": "amb_deep",
+   "fog": "#3a4048",
+   "fog_density": 0.022
   },
   "workshop": {
    "name": "Engineering Workshop",
@@ -282,7 +320,8 @@
    "wall": "#463d33",
    "accent": "#7fd0ff",
    "light": "#ffe2c0",
-   "discover_xp": 15
+   "discover_xp": 15,
+   "ambience": "amb_deep"
   },
   "duct": {
    "name": "Maintenance Duct",
@@ -320,7 +359,11 @@
      114,
      28
     ]
-   ]
+   ],
+   "ambience": "amb_deep",
+   "fog": "#2a3424",
+   "fog_density": 0.02,
+   "ambient_energy": 0.42
   },
   "archive": {
    "name": "Archive Cargo Hold",
@@ -348,7 +391,17 @@
      -1
     ]
    ],
-   "light_energy": 0.85
+   "light_energy": 0.85,
+   "on_enter": [
+    {
+     "bark": "an_warden_archive"
+    }
+   ],
+   "alert": true,
+   "ambience": "amb_deep",
+   "fog": "#1f4040",
+   "fog_density": 0.015,
+   "ambient": "#3a5a60"
   },
   "coldstore": {
    "name": "Cold Storage",
@@ -365,7 +418,10 @@
    "wall": "#37424d",
    "accent": "#7fd0ff",
    "light": "#d0f0ff",
-   "discover_xp": 15
+   "discover_xp": 15,
+   "ambience": "amb_deep",
+   "fog": "#7a90a0",
+   "fog_density": 0.025
   },
   "command": {
    "name": "Command Chamber",
@@ -384,7 +440,13 @@
    "light": "#ffe0b8",
    "discover_xp": 20,
    "checkpoint": true,
-   "music": "music_tension"
+   "music": "music_tension",
+   "on_enter": [
+    {
+     "bark": "an_warden_command"
+    }
+   ],
+   "ambient": "#6a5a4a"
   },
   "bay": {
    "name": "Evacuation Bay 2",
@@ -404,7 +466,16 @@
    "discover_xp": 20,
    "checkpoint": true,
    "music": "music_tension",
-   "light_energy": 1.0
+   "light_energy": 1.0,
+   "on_enter": [
+    {
+     "bark": "an_warden_bay"
+    }
+   ],
+   "alert": true,
+   "flicker": true,
+   "fog": "#4a3a30",
+   "fog_density": 0.012
   }
  },
  "doors": [
@@ -3631,7 +3702,8 @@
     "accent": "a1"
    },
    "armor_look": "padded_vest",
-   "dialogue": "steward"
+   "dialogue": "steward",
+   "idle": "fidget"
   },
   "dalia": {
    "name": "Dalia Venn",
@@ -3650,7 +3722,8 @@
     "accent": "a3"
    },
    "armor_look": "travel_jacket",
-   "dialogue": "venn_family"
+   "dialogue": "venn_family",
+   "idle": "talk"
   },
   "ilo": {
    "name": "Ilo Venn",
@@ -3669,7 +3742,8 @@
     "accent": "a3"
    },
    "armor_look": "travel_jacket",
-   "dialogue": "venn_family"
+   "dialogue": "venn_family",
+   "idle": "fidget"
   },
   "ketterick": {
    "name": "Brann Ketterick",
@@ -3688,7 +3762,8 @@
     "accent": "a4"
    },
    "armor_look": "travel_jacket",
-   "dialogue": "ketterick"
+   "dialogue": "ketterick",
+   "idle": "cards"
   },
   "iona_npc": {
    "name": "Iona Rell",
@@ -3745,7 +3820,8 @@
     "accent": "a4"
    },
    "armor_look": "operator_coat",
-   "dialogue": "varga_triage"
+   "dialogue": "varga_triage",
+   "idle": "work"
   },
   "corin": {
    "name": "Corin Ashe",
@@ -3825,6 +3901,7 @@
    },
    "armor_look": "travel_jacket",
    "dialogue": "ward_patient",
+   "idle": "fidget",
    "if": [
     {
      "flag": "ward_open"
@@ -3849,6 +3926,7 @@
    },
    "armor_look": "travel_jacket",
    "dialogue": "ward_patient",
+   "idle": "fidget",
    "if": [
     {
      "flag": "ward_open"
@@ -3873,6 +3951,7 @@
    },
    "armor_look": "travel_jacket",
    "dialogue": "ward_patient",
+   "idle": "fidget",
    "if": [
     {
      "flag": "ward_open"
@@ -3897,6 +3976,7 @@
    },
    "armor_look": "travel_jacket",
    "dialogue": "ward_patient",
+   "idle": "fidget",
    "if": [
     {
      "flag": "ward_open"
@@ -3921,6 +4001,7 @@
    },
    "armor_look": "travel_jacket",
    "dialogue": "ward_patient",
+   "idle": "fidget",
    "if": [
     {
      "flag": "ward_open"
@@ -3973,7 +4054,8 @@
     "accent": "a2"
    },
    "armor_look": "security_weave",
-   "dialogue": "varr"
+   "dialogue": "varr",
+   "idle": "guard"
   }
  },
  "triggers": [

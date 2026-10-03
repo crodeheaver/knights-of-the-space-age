@@ -14,8 +14,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "data", "dialogue")
 
 
-def N(speaker, text, *choices, nxt=None, effects=None, end=False, repeat_effects=False):
-    """A line. Choices are C(...) dicts; nxt continues without choices."""
+def N(speaker, text, *choices, nxt=None, effects=None, end=False, repeat_effects=False, shot=None, anim=None):
+    """A line. Choices are C(...) dicts; nxt continues without choices.
+
+    Optional staging: shot = "ots" | "close" | "two" | "keep" (camera framing
+    for this line), anim = "nod" | "shake" | "shrug" | "gesture" | "point" |
+    "look_away" (a gesture the speaker plays while talking)."""
     n = {"speaker": speaker, "text": text}
     if choices:
         n["choices"] = list(choices)
@@ -27,6 +31,10 @@ def N(speaker, text, *choices, nxt=None, effects=None, end=False, repeat_effects
         n["end"] = True
     if repeat_effects:
         n["repeat_effects"] = True
+    if shot:
+        n["shot"] = shot
+    if anim:
+        n["anim"] = anim
     return n
 
 
@@ -100,16 +108,26 @@ TAV = [{"in_party": "tav7"}]
 def main():
     os.makedirs(OUT, exist_ok=True)
     count = 0
+    outputs = {}
     for path in sorted(glob.glob(os.path.join(HERE, "dialogues", "*.py"))):
         spec = importlib.util.spec_from_file_location(os.path.basename(path)[:-3], path)
         mod = importlib.util.module_from_spec(spec)
         mod.__dict__.update({k: v for k, v in globals().items() if not k.startswith("__")})
         spec.loader.exec_module(mod)
-        for d in mod.DIALOGUES:
+        for d in getattr(mod, "DIALOGUES", []):
             with open(os.path.join(OUT, d["id"] + ".json"), "w") as f:
                 json.dump(d, f, indent=1, ensure_ascii=False)
             count += 1
+        # Modules may also emit other data files: OUTPUTS = {"voices": {...}}
+        # writes data/voices.json. Dict outputs from several modules merge.
+        for name, data in getattr(mod, "OUTPUTS", {}).items():
+            outputs.setdefault(name, {}).update(data)
     print("wrote", count, "dialogues")
+    for name, data in sorted(outputs.items()):
+        path = os.path.join(OUT, "..", name + ".json")
+        with open(path, "w") as f:
+            json.dump(data, f, indent=1, ensure_ascii=False)
+        print("wrote data/%s.json" % name)
 
 
 if __name__ == "__main__":

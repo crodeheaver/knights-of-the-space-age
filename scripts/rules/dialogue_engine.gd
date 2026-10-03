@@ -106,7 +106,8 @@ func speaker_name(sid: String) -> String:
 
 func current() -> Dictionary:
 	return {"dialogue": dialogue_id, "node": node_id, "speaker": speaker_id(), "speaker_name": speaker_name(speaker_id()),
-		"text": text(), "choices": choices(), "can_continue": has_continue(), "check": last_check, "log": pending_log.duplicate()}
+		"text": text(), "choices": choices(), "can_continue": has_continue(), "check": last_check, "log": pending_log.duplicate(),
+		"shot": String(node.get("shot", "")), "anim": String(node.get("anim", ""))}
 
 
 func take_log() -> Array[String]:

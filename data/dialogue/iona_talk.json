@@ -32,6 +32,21 @@
      "next": "holding"
     },
     {
+     "text": "You wanted to talk. About Jessa Orrin?",
+     "next": "orrin",
+     "tag": "Iona wants to talk",
+     "if": [
+      {
+       "flag": "hook_iona_orrin"
+      },
+      {
+       "not": {
+        "flag": "iona_orrin_done"
+       }
+      }
+     ]
+    },
+    {
      "text": "About Ward 2...",
      "next": "ward",
      "if": [
@@ -148,6 +163,65 @@
    "speaker": "iona",
    "text": "Fine. Ask me later.",
    "end": true
+  },
+  "orrin": {
+   "speaker": "iona",
+   "text": "Jessa Orrin. Crewman, second class. She was in Corridor C-3 when the pickets came online. I was thirty metres away with a sidearm and a door I couldn't open.",
+   "choices": [
+    {
+     "text": "You couldn't have saved her from behind a sealed door.",
+     "next": "orrin2",
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": 2,
+       "key": "orrin",
+       "reason": "Didn't blame her for Jessa"
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "Tell me about her.",
+     "next": "orrin_about",
+     "effects": [
+      {
+       "influence": "iona",
+       "delta": 3,
+       "key": "orrin",
+       "reason": "Asked about Jessa"
+      }
+     ]
+    },
+    {
+     "text": "We can mourn her once we're off this ship.",
+     "next": "orrin2",
+     "tone": "pragmatic"
+    }
+   ],
+   "shot": "close"
+  },
+  "orrin_about": {
+   "speaker": "iona",
+   "text": "She played the worst Shards on the ship and bet like she was winning. She wanted to fly. She was going to put in for the Tessaly academy this rotation.",
+   "next": "orrin2",
+   "anim": "look_away"
+  },
+  "orrin2": {
+   "speaker": "iona",
+   "text": "I'm not asking you to fix it. I needed somebody besides the manifest to know her name. Thanks for listening.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "iona_orrin_done",
+     "value": true
+    },
+    {
+     "xp": 25,
+     "key": "iona_orrin",
+     "reason": "Listened to Iona"
+    }
+   ]
   },
   "ward": {
    "redirect": [

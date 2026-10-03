@@ -22,13 +22,13 @@ def populate(L, obj, npc, trigger):
     obj("commons_sim", "minigame", "commons", (25.5, 2.5), rot=180, model="booth", name="Slipstream Racing Sim", minigame="slipstream", verb="Race the Slipstream sim")
     obj("commons_muster", "muster", "commons", (13.5, 9.0), rot=0, model="muster", name="Muster Point B")
     npc("steward", "Purser Hollis Dray", "commons", (24.0, 7.5), rot=-90,
-        appearance={"body": "broad", "head": "round", "hair": "shaved", "skin": "s1", "hair_color": "h5", "accent": "a1"}, armor_look="padded_vest", dialogue="steward")
+        appearance={"body": "broad", "head": "round", "hair": "shaved", "skin": "s1", "hair_color": "h5", "accent": "a1"}, armor_look="padded_vest", dialogue="steward", idle="fidget")
     npc("dalia", "Dalia Venn", "commons", (14.6, 5.0), rot=60,
-        appearance={"body": "slight", "head": "long", "hair": "long", "skin": "s3", "hair_color": "h2", "accent": "a3"}, armor_look="travel_jacket", dialogue="venn_family")
+        appearance={"body": "slight", "head": "long", "hair": "long", "skin": "s3", "hair_color": "h2", "accent": "a3"}, armor_look="travel_jacket", dialogue="venn_family", idle="talk")
     npc("ilo", "Ilo Venn", "commons", (15.3, 4.4), rot=60,
-        appearance={"body": "slight", "head": "round", "hair": "crop", "skin": "s3", "hair_color": "h2", "accent": "a3"}, armor_look="travel_jacket", dialogue="venn_family")
+        appearance={"body": "slight", "head": "round", "hair": "crop", "skin": "s3", "hair_color": "h2", "accent": "a3"}, armor_look="travel_jacket", dialogue="venn_family", idle="fidget")
     npc("ketterick", "Brann Ketterick", "commons", (16.9, 8.9), rot=200,
-        appearance={"body": "broad", "head": "square", "hair": "crest", "skin": "s5", "hair_color": "h4", "accent": "a4"}, armor_look="travel_jacket", dialogue="ketterick")
+        appearance={"body": "broad", "head": "square", "hair": "crest", "skin": "s5", "hair_color": "h4", "accent": "a4"}, armor_look="travel_jacket", dialogue="ketterick", idle="cards")
     trigger("t_commons_tut", [11, 0, 28, 14], effects=[{"tutorial": "interaction"}])
 
     # ================================================================ LOUNGE
@@ -70,7 +70,7 @@ def populate(L, obj, npc, trigger):
     # ================================================================ MEDICAL
     npc("tav7_npc", "Tav-7", "medical", (75.5, 9.5), rot=-90, appearance=TAV_APP, armor_look="chassis_plating", kind="machine")
     npc("varga", "Dr. Ilse Varga", "medical", (69.0, 10.4), rot=180,
-        appearance={"body": "slight", "head": "angular", "hair": "tail", "skin": "s4", "hair_color": "h5", "accent": "a4"}, armor_look="operator_coat", dialogue="varga_triage")
+        appearance={"body": "slight", "head": "angular", "hair": "tail", "skin": "s4", "hair_color": "h5", "accent": "a4"}, armor_look="operator_coat", dialogue="varga_triage", idle="work")
     for nid, nm, x in [("corin", "Corin Ashe", 65.5), ("mae", "Mae Toller", 68.5), ("benedikt", "Benedikt Sorrow", 71.5)]:
         npc(nid, nm, "medical", (x, 13.6), rot=0, appearance={"body": "average", "head": "round", "hair": "crop", "skin": "s3", "hair_color": "h2", "accent": "a1"},
             armor_look="travel_jacket", downed=True, dialogue="wounded")
@@ -91,7 +91,7 @@ def populate(L, obj, npc, trigger):
                                          ("ward_d", "Ward Patient Tomas Lir", 74.0, -6.5)]):
         npc(nid, nm, "ward", (x, z), rot=180, appearance={"body": "average", "head": ["round", "long", "square", "angular", "round"][i], "hair": ["crop", "long", "swept", "tail", "shaved"][i],
             "skin": ["s1", "s3", "s5", "s2", "s6"][i], "hair_color": "h2", "accent": "a3"}, armor_look="travel_jacket",
-            if_=[{"flag": "ward_open"}], dialogue="ward_patient")
+            if_=[{"flag": "ward_open"}], dialogue="ward_patient", idle="fidget")
     trigger("t_medical", [63, 0, 70, 17], if_=[{"not": {"recruited": "tav7"}}],
             effects=[{"join_party": "tav7"}, {"set_flag": "tav7_recruited"}, {"start_encounter": "enc_medical"},
                      {"notify": "Tav-7: \"Assistance would be statistically welcome. Their cutters are aimed at my patients.\""}])
@@ -158,7 +158,7 @@ def populate(L, obj, npc, trigger):
 
     # ================================================================ COMMAND
     npc("varr", "Commander Ysolde Varr", "command", (145.0, 9.5), rot=-90, template="commander_varr", faction="crew",
-        appearance={"body": "average", "head": "long", "hair": "tail", "skin": "s1", "hair_color": "h5", "accent": "a2"}, armor_look="security_weave", dialogue="varr")
+        appearance={"body": "average", "head": "long", "hair": "tail", "skin": "s1", "hair_color": "h5", "accent": "a2"}, armor_look="security_weave", dialogue="varr", idle="guard")
     obj("cmd_core", "terminal", "command", (140.0, 3.0), model="core", name="Archive Master Core (WARDEN)", dialogue="warden_core", verb="Commune with the WARDEN")
     obj("cmd_console", "terminal", "command", (146.4, 3.6), rot=-90, model="launch_console", name="Launch Control", dialogue="launch_console", verb="Use launch control")
     obj("cmd_muster", "muster", "command", (137.6, 14.0), model="muster", name="Command Muster Point")

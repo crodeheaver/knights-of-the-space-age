@@ -100,8 +100,11 @@ func start_new_game(build: Dictionary, difficulty: String) -> void:
 	call_deferred("_intro")
 
 
-## --pos=x,z[,rot] places the party; --cam=yaw,pitch,distance frames the view.
+## --pos=x,z[,rot] places the party; --cam=yaw,pitch,distance frames the view;
+## --camera=follow|tactical picks the camera mode for this run.
 func _apply_debug_view() -> void:
+	if args.has("camera"):
+		Settings.set_v("camera_mode", String(args["camera"]), false)
 	if args.has("pos"):
 		var pp := String(args["pos"]).split(",")
 		var rot := float(pp[2]) if pp.size() > 2 else 90.0
@@ -134,12 +137,35 @@ func _debug_open(what: String) -> void:
 			pu.main = self
 			push_panel(pu)
 		_:
-			open_game_menu(what)
+			# --open=dialogue:<id> and --open=cinematic:<id> (screenshots).
+			if what.begins_with("dialogue:"):
+				var did := what.substr(9)
+				var npc_id := String(args.get("npc", ""))
+				var ctx := {"object": String(args["obj"])} if args.has("obj") else {}
+				world.start_dialogue(did, null, npc_id, ctx)
+				# --advance=N steps through N lines (choosing the first option).
+				for i in int(args.get("advance", "0")):
+					await get_tree().process_frame
+					if world.dialogue == null or not world.dialogue.active:
+						break
+					if world.dialogue.choices().is_empty():
+						world.dialogue.advance()
+					else:
+						world.dialogue.choose(int(world.dialogue.choices()[0]["index"]))
+			elif what.begins_with("cinematic:"):
+				Cinematics.play(self, what.substr(10))
+			elif what.begins_with("bark:") and world.ship_life != null:
+				world.ship_life.say_line(what.substr(5), true)
+			elif what == "banter" and world.ship_life != null:
+				world.ship_life.try_banter()
+			else:
+				open_game_menu(what)
 
 
 func _intro() -> void:
 	if world != null:
-		world.start_dialogue("intro_wake")
+		# An establishing flythrough of the ship, then the first conversation.
+		Cinematics.play(self, "prologue", "intro_wake")
 
 
 func unload_world() -> void:
@@ -165,6 +191,12 @@ func load_world() -> void:
 	dialogue_ui.main = self
 	screen.add_child(dialogue_ui)
 	dialogue_ui.visible = false
+	# Ambient voices: barks, banter, announcements, companions asking to talk.
+	var sl := ShipLife.new()
+	sl.name = "ShipLife"
+	world.add_child(sl)
+	sl.setup(world)
+	world.ship_life = sl
 	if Game.state.dev_mode or bool(Settings.get_v("dev_mode")):
 		pass
 
@@ -184,6 +216,7 @@ func load_from_slot(slot: String) -> void:
 		e.saved = true
 		screen.add_child(e)
 		GameAudio.music("music_ending")
+		GameAudio.ambient("")
 		return
 	load_world()
 	if String(r.get("reason", "")) != "":
@@ -203,6 +236,7 @@ func show_ending() -> void:
 	e.saved = bool(r["ok"])
 	screen.add_child(e)
 	GameAudio.music("music_ending")
+	GameAudio.ambient("")
 
 
 # ================================================================ panels
@@ -480,6 +514,12 @@ func _interact_nearest() -> void:
 		if aa.role == "npc" and not aa.sheet.dead and aa.position.distance_to(lead.position) < bd:
 			bd = aa.position.distance_to(lead.position)
 			best = aa
+	# A companion who has asked to talk, standing right here.
+	for uid in Game.state.party:
+		var ca: Actor = world.actors.get(uid, null)
+		if ca != null and ca != lead and not ShipLife.pending_hook(String(uid)).is_empty() and ca.position.distance_to(lead.position) < minf(bd, 2.5):
+			world.talk_companion(String(uid))
+			return
 	if best is WorldObject:
 		world.cmd_interact(lead, best, "")
 	elif best is Actor:

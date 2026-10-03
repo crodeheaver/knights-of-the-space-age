@@ -46,6 +46,7 @@ var stationary := false
 var flee_from := Vector3.ZERO
 var interaction: Dictionary = {}
 var anim_lock := 0.0
+var _shown_hp := -1
 
 
 func setup(s: CharacterSheet, r: String, w: World) -> void:
@@ -58,6 +59,8 @@ func setup(s: CharacterSheet, r: String, w: World) -> void:
 	add_child(visual)
 	var model := String(s.appearance.get("model", "humanoid"))
 	visual.build(model, s.appearance, s)
+	visual.idle_phase = float(absi(hash(uid)) % 628) / 100.0
+	visual.footsteps = r == "party"
 	stationary = bool(s.overrides.get("stationary", false))
 	label = Label3D.new()
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
@@ -182,6 +185,10 @@ func sim_step(dt: float) -> void:
 	if visual != null:
 		visual.crouch = move_toward(visual.crouch, 1.0 if stealth else 0.0, dt * 4.0)
 		visual.set_downed(sheet.is_downed() or sheet.dead)
+		visual.stance_target = 1.0 if in_combat and not sheet.dead and not sheet.is_downed() else 0.0
+		if sheet.hp != _shown_hp:  # max_hp() is not cheap: only on change
+			_shown_hp = sheet.hp
+			visual.hp_frac = float(sheet.hp) / float(maxi(1, sheet.max_hp()))
 		visual.animate(dt, speed_now)
 
 

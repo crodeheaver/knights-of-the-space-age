@@ -121,9 +121,35 @@ Unless noted otherwise, every test listed is in `tests/` and runs in `./tools/ru
 | Key rebinding with conflict handling, reset | ✅ | `core/settings.gd`, `ui/settings_ui.gd` | `test_ui::test_saveload_and_settings_ui` |
 | Mouse sensitivity, invert, edge pan | 🟡 | `camera_rig.gd` | inspection |
 | UI and text scale | 🟡 | `Settings` → `content_scale_factor` | inspection |
-| Captions for ambient speech | ⚠️ | HUD | There is no voice acting, so every line is already text. The setting enlarges ambient speech and keeps it on screen longer. |
+| Captions for ambient speech | ✅ | HUD, `ShipLife` | Ship announcements and radio calls become larger, longer captions; party remarks appear as speech bubbles and in the log. `test_ship_life::test_announcements_and_bark_effect` |
+| Text speed, voice volume, party chatter, camera mode, health bars | ✅ | `Settings`, `ui/settings_ui.gd` | `test_ui::test_saveload_and_settings_ui` renders every tab; behaviour in `test_presentation`, `test_ship_life` |
 | Reduced shake and flash; status symbols plus text, not colour alone | 🟡 | `camera_rig.gd`, `fx.gd`, `UIKit.status_chip` | inspection |
 | Story / Standard difficulty | ✅ | `CombatRules` story modifiers | `test_combat_rules::test_story_difficulty` |
+
+## Presentation and immersion
+
+Added in increments 12–15 (see `docs/PROGRESS.md`). Everything here is presentation. The default-seed bot
+logs, with every choice and the full combat log, are byte-identical with and without it.
+
+| Mechanic | Status | Implementation | Verification |
+|---|---|---|---|
+| Babbled voices: 4 synthesised syllable banks, a voice per speaker, word-stable syllables, question rise, radio bus | ✅ | `tools/gen_audio.py`, `GameAudio.voice_line/voice_schedule`, `data/voices.json` | `test_presentation::test_voice_schedule`, `test_audio_assets::test_voice_banks`; 🟡 never listened to |
+| Text reveal at the player's speed; first press completes, second advances | ✅ | `ui/dialogue_ui.gd` | `test_presentation::test_dialogue_reveal_and_escaping` |
+| Conversation staging: gaze, talk beats, gestures, two-shot / over-the-shoulder / close-up cuts on one side of the line, wall-safe | ✅ | `world/dialogue_stage.gd`, `ActorVisual.present`, `CameraRig.frame_shot` | `test_presentation::test_dialogue_staging_is_visual_only`, `test_camera_shots_avoid_walls`; screenshots |
+| Reactions in conversations (approval with a nod, Mercy/Dominion stings, XP, codex), choice tones | ✅ | `DialogueUI._on_game_event` | `test_presentation::test_reactions_replace_plain_effect_lines` |
+| Toasts raised during conversations are held and shown after | ✅ | `HUD._held` | `test_presentation::test_hud_holds_toasts_during_conversations` |
+| Data-driven cinematics; prologue flythrough | ✅ | `ui/cinematics.gd`, `data/cinematics.json` | `test_presentation::test_cinematic_from_data_then_dialogue`; screenshots |
+| Barks, banter, announcements, approval reactions, companion hooks | ✅ | `world/ship_life.gd`, `data/ship_life.json` | `test_ship_life` (9 tests) |
+| NPC idle habits | ✅ | layout `idle`, `ActorVisual._idle_humanoid` | `test_ship_life::test_npc_idle_styles_are_visual` |
+| Close follow camera (default) and tactical camera | ✅ | `world/camera_rig.gd` | `test_presentation::test_follow_camera_swings_behind`, `test_tactical_camera_holds_still`; 🟡 feel untested by hand |
+| Ceilings, alert lighting, haze, flicker, animated reactor/cores/stars, sliding doors | ✅ | `world/level_builder.gd`, `world/atmosphere.gd`, `WorldObject._apply_door` | `test_presentation::test_ceilings_face_down`, `test_alert_lighting_after_the_emergency`, `test_sparks_and_props_freeze_on_pause`, `test_door_slides_but_grid_opens_at_once` |
+| Music crossfades and resumes; ambience by area; prop loops; footsteps | ✅ | `core/game_audio.gd` | `test_audio_assets::test_music_crossfades`, loop budgets and seams |
+| Combat stance, flourishes, dodge/block, sparks, muzzle flashes, crit punch, Lumen Edge ignition | ✅ | `ActorVisual`, `World._apply_events`, `FX` | `test_presentation::test_stance_and_blade_follow_combat`, `test_misses_and_pushes_present_without_state_change` |
+| Falls finish during an auto-pause; bodies keep their fallen model | ✅ | `World.present_visual`, `WorldObject.adopt_visual` | `test_presentation::test_downed_fall_completes_while_paused`, `test_bodies_keep_their_fallen_model` |
+| Health bars over heads | ✅ | `world/overhead_bars.gd` | `test_presentation::test_overhead_bars_follow_the_setting` |
+| HUD feedback: XP, level up available, alignment, influence, codex, journal, combat over | ✅ | `HUD._on_event` | `test_presentation::test_hud_feedback_toasts` |
+| Alignment shows on the protagonist | ✅ | `ActorVisual.set_alignment`, `Portraits` | `test_presentation::test_alignment_changes_only_the_look` |
+| All player-facing text original | ✅ | | `test_data::test_content_is_original` |
 
 ## Persistence
 
@@ -137,10 +163,10 @@ Unless noted otherwise, every test listed is in `tests/` and runs in `./tools/ru
 
 | Item | Status | Notes |
 |---|---|---|
-| Automated tests | ✅ | 110 tests; see `docs/TEST_RESULTS.md` |
+| Automated tests | ✅ | 144 tests; see `docs/TEST_RESULTS.md` |
 | Playtest-style verification | ⚠️ | Three automated bot playthroughs and a seed sweep. **No human playtest** has been run. |
 | Runnable build | ✅ | Linux and Windows exports; the Linux export was launched headless and under Xvfb (see TEST_RESULTS) |
-| Screenshots | ✅ | `docs/screenshots/` (29 images) |
+| Screenshots | ✅ | `docs/screenshots/` (40 images) |
 | Performance | ⚠️ | Simulation CPU cost measured (`tools/godot/bench.tscn`). **GPU frame rate not measured on real hardware**: the container only has the llvmpipe software rasterizer (3–5 FPS, not representative). |
 | Art and animation | ⚠️ | Original procedural primitive models with code-driven animation. No skeletal or motion-captured animation and no textures. |
-| Audio | ⚠️ | Original synthesized SFX and music (`tools/gen_audio.py`); checked by level, seam and spectrum analysis, **not by listening**. No voice acting. |
+| Audio | ⚠️ | Original synthesized SFX, music, ambience and babbled voices (`tools/gen_audio.py`); checked by level, seam and spectrum analysis, **not by listening**. No recorded voice acting. |
