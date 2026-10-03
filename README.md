@@ -31,11 +31,12 @@ synthesized audio. See [docs/ASSETS.md](docs/ASSETS.md).
 
 ## Requirements
 
-- **Godot 4.4.1-stable** (pinned; the project uses `config/features = 4.4` and the GL Compatibility renderer).
+- **Godot 4.7.x** (the project uses `config/features = 4.7` and the GL Compatibility renderer).
   Download the standard (non-.NET) build from godotengine.org. The commands below assume it is on your `PATH` as
   `godot`.
 - A GPU with OpenGL 3.3, or a software rasterizer for testing (it runs, slowly, on Mesa llvmpipe).
-- Python 3 is needed only to regenerate content (`tools/*.py`). It is not needed to play or test.
+- Python 3 is needed to regenerate content (`tools/*.py`) or run the optional local web preview server.
+  It is not needed to play or test the native game.
 
 ## Run
 
@@ -98,15 +99,55 @@ Set `AOTC_DEBUG=1` to trace door openings, enemy alerts and move orders on stdou
 
 ## Export
 
-`export_presets.cfg` defines **Linux** and **Windows** (x86_64) presets. They export only resources, include the
-JSON data, and exclude `tests/`, `tools/` and `docs/`. With Godot 4.4.1 export templates installed:
+`export_presets.cfg` defines **Linux** and **Windows** (x86_64) presets and a **Web** preset. They export only
+resources, include the JSON data, and exclude `tests/`, `tools/`, `docs/` and `builds/`. Install export templates
+that match your exact Godot editor version through **Editor → Manage Export Templates** before exporting.
+
+Create the output directories first, then export:
 
 ```bash
+mkdir -p builds/linux builds/windows builds/web
 godot --headless --path . --export-release "Linux"   builds/linux/AshesOfTheConcord.x86_64
 godot --headless --path . --export-release "Windows" builds/windows/AshesOfTheConcord.exe
+godot --headless --path . --export-release "Web"     builds/web/index.html
 ```
 
-Each export is a binary plus `AshesOfTheConcord.pck` (about 4 MB). `builds/` is not committed.
+In PowerShell, create directories with `New-Item -ItemType Directory -Force builds/linux, builds/windows, builds/web`
+instead of `mkdir -p`.
+
+Desktop exports are a binary plus `AshesOfTheConcord.pck` (about 4 MB). The web export generates `index.html`
+with its JavaScript, WebAssembly, resource pack and icons in `builds/web/`. `builds/` is not committed.
+
+### Web preview and hosting
+
+In the editor, use **Project → Export → Web** to export, or the web run button to preview once templates are
+installed. The preset uses the existing GL Compatibility renderer, an adaptive canvas that fills the browser
+window, and no threads or GDExtensions, so it works on ordinary static hosting without cross-origin isolation
+headers. See [Godot's web export guide](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html).
+
+Opening `builds/web/index.html` directly with `file://` causes CORS/fetch errors when the browser loads
+`index.wasm` and the resource pack. To preview the export, run this from the project directory:
+
+```bash
+python tools/serve_web.py
+```
+
+This serves `builds/web/` at <http://127.0.0.1:8000/> and opens it in your default browser. Keep the terminal
+open while playing; press **Ctrl+C** to stop. Use `--port 8001` if port 8000 is already in use, or `--no-browser`
+to open the URL yourself. The script also works when launched from a different directory.
+
+Alternatively, start a basic server manually:
+
+```bash
+python -m http.server 8000 --bind 127.0.0.1 --directory builds/web
+```
+
+Open <http://127.0.0.1:8000/>. Serve the export over HTTP locally or HTTPS in production.
+Upload the entire contents of `builds/web/` together, keeping the generated
+filenames, and serve `.wasm` files as `application/wasm`.
+
+Players need a browser with WebAssembly and WebGL 2.0 support. Click or press a key in the game to enable audio.
+Saves and settings use browser storage for that site; private browsing or clearing site data can remove them.
 
 ## Developer presets
 
@@ -126,10 +167,10 @@ Preset games are tagged as developer games, and saves made from them show `[DEV]
 
 ```
 data/            JSON content: classes, skills, feats, powers, items, enemies, encounters, quests, dialogue/,
-                 ship_layout.json (generated), dev_presets.json, dev_stages.json (generated)
+				 ship_layout.json (generated), dev_presets.json, dev_stages.json (generated)
 scripts/core/    autoloads: Events, DB (+ DataValidator), Settings, GameAudio, Game (+ GameState), Saves, DevTools
 scripts/rules/   pure rules (no nodes): dice, combat, statuses, queue, inventory, equipment, crafting, vendor,
-                 progression, build validation, prestige, conditions, effects, quests, dialogue engine, stealth
+				 progression, build validation, prestige, conditions, effects, quests, dialogue engine, stealth
 scripts/world/   World (simulation driver), grid navigation, level builder, actors, AI, combat manager, camera, FX
 scripts/ui/      HUD and every screen; scripts/minigames/ Shards, Slipstream, turret
 tests/           headless test runner, suites, playthrough bot and routes
