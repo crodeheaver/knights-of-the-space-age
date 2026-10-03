@@ -20,17 +20,14 @@ one launch craft, fifteen seats, and decisions to make about who gets them.
 - **Story:** two optional quests, decisions whose consequences show up later, data-driven dialogue
   (28 conversations, about 430 nodes), opening on an in-engine prologue flythrough of the ship.
 - **Presentation in the style of the classic d20 space RPGs:**
-  - **Conversations:** characters speak in made-up languages, babbled from synthesised syllables with a voice
-    per character. Lines reveal at your text speed. Speakers turn and gesture, and the camera cuts between
-    over-the-shoulder, close-up and two-shot coverage. Approval and Mercy/Dominion shifts show as you make
-    them.
+  - **Conversations:** characters speak in made-up languages, babbled from synthesised syllables with a voice per character. Lines reveal at your text speed. Speakers turn and gesture, and the camera cuts between over-the-shoulder, close-up and two-shot coverage. Approval and Mercy/Dominion shifts show as you make them.
   - **Ambient talk:** companions banter, bark in combat and ask to talk when something is on their mind.
-    WARDEN and the purser make shipwide announcements.
+	WARDEN and the purser make shipwide announcements.
   - **The ship:** red alert lighting, haze, flickering damage, a turning reactor and breathing archive
-    cores, ceilings, and layered ambience.
+	cores, ceilings, and layered ambience.
   - **Camera:** a close follow camera by default, with the tactical orbit one setting away.
   - **Combat:** stances and flourishes, dodges and blocks, sparks, a Lumen Edge that ignites in a fight,
-    health bars over heads, and feedback for experience, level-ups, journal and codex updates.
+	health bars over heads, and feedback for experience, level-ups, journal and codex updates.
 - **Economy:** inventory and 10 equipment slots, a vendor, crafting with upgrades, and three minigames: Shards
   (cards), Slipstream (hover racing) and the Petrel's turret.
 - **Later-game systems,** reachable through developer presets: prestige specializations (3 families × Mercy and
