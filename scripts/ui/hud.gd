@@ -56,6 +56,14 @@ var _pending_ally_action: Dictionary = {}
 ## activities) wait here and appear once it is back.
 var _held: Array = []
 var _held_t := 0.0
+# Feedback state: experience batched into one toast, levels already
+# announced, experience earned in the current fight, last seen HP per card.
+var _xp_batch := 0
+var _xp_t := 0.0
+var _combat_xp := 0
+var _lv_seen: Dictionary = {}
+var _last_hp: Dictionary = {}
+var _journal_t: Dictionary = {}
 
 
 func setup(w: World, m: Node) -> void:
@@ -71,6 +79,10 @@ func setup(w: World, m: Node) -> void:
 	Events.notify.connect(_on_toast)
 	Events.combat_log.connect(_on_log)
 	Events.event.connect(_on_event)
+	for uid in Game.state.party:
+		var sh := Game.state.get_char(uid)
+		if sh != null:
+			_lv_seen[uid] = sh.levels_available()
 	_dirty = true
 
 
@@ -262,6 +274,11 @@ func _process(delta: float) -> void:
 		area_banner.modulate.a = a
 		area_sub.modulate.a = a
 	visible = not _hidden_by_modal()
+	if _xp_t > 0.0:
+		_xp_t -= delta
+		if _xp_t <= 0.0 and _xp_batch > 0:
+			Events.toast("+%d XP" % _xp_batch, "xp")
+			_xp_batch = 0
 	if visible and not _held.is_empty():
 		_held_t -= delta
 		if _held_t <= 0.0:
@@ -350,6 +367,12 @@ func _update_dynamic() -> void:
 		var hpb: ProgressBar = c["hp"]
 		hpb.max_value = s.max_hp()
 		hpb.value = s.hp
+		# The card flashes red when its character is hurt.
+		if s.hp < int(_last_hp.get(uid, s.hp)):
+			var cd: Control = c["card"]
+			cd.modulate = Color(1.0, 0.45, 0.4) if not bool(Settings.get_v("reduce_flash")) else Color(1.0, 0.8, 0.78)
+			cd.create_tween().tween_property(cd, "modulate", Color.WHITE, 0.4)
+		_last_hp[uid] = s.hp
 		(c["hpl"] as Label).text = "HP %d/%d%s" % [s.hp, s.max_hp(), ("   EN %d/%d" % [s.energy, s.max_energy()]) if s.max_energy() > 0 else ""]
 		var enb: ProgressBar = c["en"]
 		enb.max_value = maxi(1, s.max_energy())
@@ -694,6 +717,8 @@ func _show_toast(text: String, kind: String) -> void:
 			col = UIKit.DOMINION
 		"xp":
 			col = Color("#b9a7ff")
+		"levelup":
+			col = UIKit.ACCENT2
 	var caption := (kind in ["story", "bark", "warden", "intercom"]) and bool(Settings.get_v("subtitles"))
 	var l := UIKit.label(text, 21 if caption else 17, col, true)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -717,6 +742,19 @@ func _on_log(entry: Dictionary) -> void:
 	var detail := String(entry.get("detail", "")).replace("[", "(").replace("]", ")")
 	var col := "#e9e2d4"
 	match String(entry.get("kind", "")):
+		"attack":
+			# Outcome at a glance: criticals gold, hits red, misses grey,
+			# deflections blue.
+			if text.contains("CRITICAL"):
+				col = "#ffdf6a"
+			elif text.contains("DEFLECTED"):
+				col = "#9fd8ff"
+			elif text.contains("— HIT") or text.contains("HIT for"):
+				col = "#ffb3a8"
+			elif text.contains("MISS"):
+				col = "#9c958a"
+		"status":
+			col = "#f2c26b"
 		"system":
 			col = "#f2c26b"
 		"warn":
@@ -739,11 +777,74 @@ func _on_log(entry: Dictionary) -> void:
 
 
 func _on_event(name: String, data: Dictionary) -> void:
+	# During a conversation the dialogue screen shows approval, alignment,
+	# experience and discoveries itself.
+	var talking := world != null and world.modal.has("dialogue")
 	match name:
 		"tutorial":
 			show_tutorial(String(data.get("id", "")))
-		"inventory_changed", "equipment_changed", "level_up", "party_changed", "control_changed", "companion_recruited", "feat_granted":
+		"inventory_changed", "equipment_changed", "party_changed", "control_changed", "companion_recruited", "feat_granted":
 			_dirty = true
+		"level_up":
+			_dirty = true
+			_check_levels()
+		"xp_gained":
+			var amt := int(data.get("amount", 0))
+			if world != null and world.combat.active:
+				_combat_xp += amt  # summed in the end-of-fight toast
+			elif not talking and amt > 0:
+				_xp_batch += amt
+				_xp_t = 0.6
+			_check_levels()
+		"alignment_changed":
+			var d := int(data.get("delta", 0))
+			if not talking and d != 0:
+				Events.toast("%s +%d" % ["Mercy" if d > 0 else "Dominion", absi(d)], "mercy" if d > 0 else "dominion")
+				GameAudio.play("align_mercy" if d > 0 else "align_dominion", -8.0)
+		"influence_changed":
+			var di := int(data.get("delta", 0))
+			if not talking and di != 0:
+				var nm := String(DB.companions.get(String(data.get("companion", "")), {}).get("name", data.get("companion", "")))
+				Events.toast("%s %s (%s%d)" % [nm, "approves" if di > 0 else "disapproves", "+" if di > 0 else "", di], "approve" if di > 0 else "disapprove")
+				GameAudio.play("infl_up" if di > 0 else "infl_down", -8.0)
+		"discovery":
+			if not talking:
+				var title := String(DB.codex.get(String(data.get("id", "")), {}).get("title", ""))
+				if title != "":
+					Events.toast("Codex updated: " + title, "discovery")
+		"quest_updated":
+			# New stages and objectives (quest starts and ends have their own).
+			if data.has("stage") or data.has("objective"):
+				var qid := String(data.get("quest", ""))
+				var now := Time.get_ticks_msec() / 1000.0
+				if now - float(_journal_t.get(qid, -10.0)) > 2.0:
+					_journal_t[qid] = now
+					Events.toast("Journal updated: " + String(DB.quests.get(qid, {}).get("name", qid)), "quest")
+		"combat_started":
+			_combat_xp = 0
+		"combat_ended":
+			if world != null and not world.game_over:
+				Events.toast("Combat over%s" % ("  —  +%d XP" % _combat_xp if _combat_xp > 0 else ""), "success")
+				GameAudio.play("victory", -9.0)
+			_combat_xp = 0
+		"status_expired":
+			var who := Game.state.get_char(String(data.get("uid", "")))
+			if who != null and (Game.state.party.has(who.uid) or (world != null and world.combat.active)):
+				Events.log_combat("%s: %s wore off" % [who.display_name, String(DB.status(String(data.get("id", ""))).get("name", data.get("id", "")))], "", "status")
+
+
+## "Level up available" once per new level, for each party member.
+func _check_levels() -> void:
+	for uid in Game.state.party:
+		var sh := Game.state.get_char(uid)
+		if sh == null:
+			continue
+		var n := sh.levels_available()
+		if n > int(_lv_seen.get(uid, 0)):
+			Events.toast("Level up available: %s  —  Character (%s)" % [sh.display_name, Settings.key_label("menu_character")], "levelup")
+			GameAudio.play("level_up", -10.0)
+			_dirty = true
+		_lv_seen[uid] = n
 
 
 func show_banner(title: String, sub: String) -> void:

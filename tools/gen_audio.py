@@ -924,6 +924,44 @@ def pa_chime(rng):
     return reverb(lp1(out, 5000.0), room=0.75, damp=0.4, wet=0.35)
 
 
+@sound("lumen_on", "SFX", "Lumen Edge ignites: a saw hum sweeping up 60->95 Hz through an opening filter, with a crackle.")
+def lumen_on(rng):
+    n = ns(0.45)
+    f = sweep_exp(60.0, 95.0, n, 0.08)
+    hum = add(osc_sweep("saw", f), scale(osc_sweep("saw", [v * 1.01 for v in f]), 0.7))
+    hum = svf(hum, env_pts([(0, 300.0), (0.12, 2600.0), (0.45, 1400.0)], n), 1.2)
+    hum = mul(hum, env_pts([(0, 0), (0.03, 1.0), (0.25, 0.7), (0.45, 0.0)], n))
+    crackle = mul(svf(sparse(n, rng, 400.0), 5000.0, 1.0, "bp"), env_exp(n, 0.08, 0.001))
+    return add(hum, scale(crackle, 1.5))
+
+
+@sound("lumen_off", "SFX", "Lumen Edge retracts: the hum falls 95->45 Hz under a closing filter.")
+def lumen_off(rng):
+    n = ns(0.4)
+    f = sweep_exp(95.0, 45.0, n, 0.1)
+    hum = add(osc_sweep("saw", f), scale(osc_sweep("saw", [v * 1.01 for v in f]), 0.7))
+    hum = svf(hum, env_pts([(0, 2000.0), (0.4, 250.0)], n), 1.2)
+    return mul(hum, env_pts([(0, 0), (0.01, 1.0), (0.4, 0.0)], n))
+
+
+@sound("victory", "UI", "Fight won: a short rising brass-like fifth (D4-A4 to D5) on detuned saws with a soft timpani roll.")
+def victory(rng):
+    n = ns(1.2)
+    out = [0.0] * n
+    for start, names, dur in ((0.0, ("D4", "A4"), 0.22), (0.24, ("A4", "E5"), 0.22), (0.48, ("D5", "A5", "F#5"), 0.7)):
+        m = ns(dur)
+        ch = [0.0] * m
+        for name in names:
+            f0 = hz(name)
+            ch = add(ch, osc("saw", f0 * 0.997, m, rng.random()), osc("saw", f0 * 1.003, m, rng.random()))
+        ch = svf(ch, env_pts([(0, 900.0), (0.05, 2600.0), (dur, 1500.0)], m), 0.9)
+        ch = mul(ch, env_pts([(0, 0), (0.02, 1.0), (dur * 0.7, 0.75), (dur, 0.0)], m))
+        place(out, ch, ns(start), 0.35)
+    roll = mul(add(osc_sweep("sine", sweep_exp(110.0, 70.0, n, 0.3)), scale(svf(white(n, rng), 300.0, 0.8), 0.5)),
+               env_pts([(0, 0), (0.4, 0.6), (0.55, 1.0), (1.2, 0.0)], n))
+    return reverb(add(out, scale(roll, 0.3)), room=0.6, damp=0.4, wet=0.3)
+
+
 # ---- alien-language voices -----------------------------------------------------
 # Conversations are "voiced" like the old d20 space RPGs: lines are babbled in a
 # made-up language from banks of short synthesised syllables. Each syllable is

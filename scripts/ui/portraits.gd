@@ -7,7 +7,8 @@ var _cache: Dictionary = {}
 
 
 func texture_for(sheet: CharacterSheet, size: int = 96) -> Texture2D:
-	var key := "%s|%s|%d" % [sheet.uid, JSON.stringify(sheet.appearance) + str(sheet.equipment.get("body", {})), size]
+	var align := Game.state.alignment if Game.state != null and sheet.uid == "player" else 0
+	var key := "%s|%s|%d|%d" % [sheet.uid, JSON.stringify(sheet.appearance) + str(sheet.equipment.get("body", {})), size, _tier(align)]
 	if _cache.has(key):
 		return (_cache[key] as SubViewport).get_texture()
 	var vp := SubViewport.new()
@@ -22,6 +23,7 @@ func texture_for(sheet: CharacterSheet, size: int = 96) -> Texture2D:
 	root.add_child(vis)
 	var model := String(sheet.appearance.get("model", "humanoid"))
 	vis.build(model, sheet.appearance, sheet)
+	vis.set_alignment(align)
 	vis.animate(0.0, 0.0)
 	var cam := Camera3D.new()
 	var hy := 1.62
@@ -71,6 +73,10 @@ func texture_for(sheet: CharacterSheet, size: int = 96) -> Texture2D:
 		if v != null:
 			v.render_target_update_mode = SubViewport.UPDATE_ONCE)
 	return vp.get_texture()
+
+
+static func _tier(v: int) -> int:
+	return -2 if v <= -60 else (-1 if v <= -25 else (2 if v >= 60 else (1 if v >= 25 else 0)))
 
 
 func clear_cache() -> void:

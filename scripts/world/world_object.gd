@@ -18,6 +18,7 @@ var reach := 2.2
 var center := Vector3.ZERO
 var _anim := 0.0
 var _door_shown := -1  # last open state drawn (-1: not yet)
+var _pool: Node3D
 var _eye_mat: StandardMaterial3D
 
 
@@ -175,7 +176,8 @@ func _build_visual() -> void:
 			_box(Vector3(0.42, 0.22, 1.5), Vector3(0, 0.12, 0), cloth)
 			mesh_root.add_child(MeshKit.sphere(0.13, MeshKit.mat(Color("#9c8f86"))))
 			mesh_root.get_child(mesh_root.get_child_count() - 1).position = Vector3(0, 0.14, 0.88)
-			_box(Vector3(0.9, 0.01, 0.7), Vector3(0.1, 0.005, 0.2), MeshKit.mat(Color("#3a1414"), 0.3, 0.0))
+			_pool = _box(Vector3(0.9, 0.01, 0.7), Vector3(0.1, 0.005, 0.2), MeshKit.mat(Color("#3a1414"), 0.3, 0.0))
+			mesh_root.position.z = float(def.get("mesh_offset", 0.0))
 		"wreck":
 			_box(Vector3(0.7, 0.3, 0.6), Vector3(0, 0.15, 0), dark)
 			_box(Vector3(0.3, 0.2, 0.5), Vector3(0.3, 0.1, 0.2), mid)
@@ -321,6 +323,22 @@ func _process(delta: float) -> void:
 		var awake := not (Game.state.has_flag("warden_neutralized") or Game.state.has_flag("warden_fate"))
 		var k := 0.5 + 0.5 * sin(_anim * 1.6)
 		_eye_mat.albedo_color = Color(1.1 + 0.9 * k, 0.18, 0.12) if awake else Color(0.18, 0.05, 0.04)
+
+
+## A body keeps the model of whoever fell here (posed as they fell); the
+## stand-in boxes are hidden, the blood pool and wreck light stay.
+func adopt_visual(v: ActorVisual) -> void:
+	var gt := v.global_transform
+	for c in mesh_root.get_children():
+		if c != _pool and c != indicator:
+			(c as Node3D).visible = false
+	if _pool != null:
+		# The pool sits under the fallen chest.
+		_pool.global_position = gt.origin + gt.basis.z * -0.7 + Vector3(0, 0.005, 0)
+	v.get_parent().remove_child(v)
+	add_child(v)
+	v.global_transform = gt
+	v.set_selection("")
 
 
 # ------------------------------------------------------------ interaction

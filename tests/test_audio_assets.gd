@@ -9,7 +9,7 @@ const SFX := [
 	"alert", "alarm", "door", "loot", "bash", "blaster", "rifle", "ion", "drone", "heavy_blaster",
 	"blade", "lumen", "punch", "baton", "heavy", "spider", "hit", "crit", "miss", "deflect",
 	"explosion", "cast", "heal", "downed", "step",
-	"infl_up", "infl_down", "align_mercy", "align_dominion", "pa_chime",
+	"infl_up", "infl_down", "align_mercy", "align_dominion", "pa_chime", "lumen_on", "lumen_off", "victory",
 ]
 const AMBIENT := ["amb_ship", "amb_deep"]
 const LOOP_FX := ["loop_reactor", "loop_sparks", "loop_machine"]

@@ -69,6 +69,26 @@ var idle_phase := 0.0
 var footsteps := false
 var _step_phase := false
 
+# Combat presentation (sim clock, visual only).
+## 1 while fighting: a ready stance, the energy blade lit, idle flourishes.
+var stance_target := 0.0
+var stance := 0.0
+var hp_frac := 1.0
+var weapon_kind := ""  # "melee", "ranged" or "" (unarmed)
+var dodge_dir := 1.0
+var _flourish_t := 2.5
+var _slide := Vector3.ZERO
+var blade_nodes: Array[Node3D] = []
+var blade_amt := 0.0
+var _blade_lit := false
+var _blade_mats: Array[StandardMaterial3D] = []
+var _blade_cols: Array[Color] = []
+# Alignment on the player's face: Dominion pales the skin and lights the eyes.
+var _skin_mat: StandardMaterial3D
+var _eye_mats: Array[StandardMaterial3D] = []
+var _align_tier := 0
+var _align_glow := 1.0
+
 const GESTURE_LEN := {"nod": 0.8, "shake": 0.9, "shrug": 0.9, "gesture": 1.2, "point": 1.0, "look_away": 1.8}
 
 
@@ -166,6 +186,8 @@ func _build_humanoid(synthetic: bool) -> void:
 	var dark := _m(outfit.darkened(0.45), 0.85, 0.05)
 	var acc := _m(accent, 0.4, 0.3, 1.4)
 	var skin_m := _m(skin, 0.7, 0.0)
+	_skin_mat = skin_m
+	_eye_mats.clear()
 	var hair_m := _m(hair_col, 0.9, 0.0)
 	var metal := _m(Color("#9aa3ad"), 0.35, 0.8)
 	if synthetic:
@@ -233,6 +255,7 @@ func _build_head(synthetic: bool, skin_m: StandardMaterial3D, hair_m: StandardMa
 		_:
 			_add(head, MeshKit.sphere(0.125, skin_m, 14), Vector3(0, 0.13, 0))
 	var eye := _m(Color("#101216"), 0.3, 0.0)
+	_eye_mats.append(eye)
 	_add(head, MeshKit.box(Vector3(0.035, 0.022, 0.01), eye), Vector3(-0.045, 0.15, 0.115))
 	_add(head, MeshKit.box(Vector3(0.035, 0.022, 0.01), eye), Vector3(0.045, 0.15, 0.115))
 	match hair:
@@ -334,6 +357,10 @@ func _build_sentinel() -> void:
 
 # ------------------------------------------------------------ weapons
 func refresh_weapons(sheet: CharacterSheet) -> void:
+	blade_nodes.clear()
+	_blade_mats.clear()
+	_blade_cols.clear()
+	weapon_kind = ""
 	if weapon_r != null:
 		weapon_r.queue_free()
 		weapon_r = null
@@ -348,6 +375,9 @@ func refresh_weapons(sheet: CharacterSheet) -> void:
 	if wm != null:
 		weapon_r = _weapon_mesh(String(wm["id"]))
 		hand_r.add_child(weapon_r)
+		var wcat := String(DB.dict(DB.item(String(wm["id"])), "weapon").get("category", "melee"))
+		weapon_kind = "ranged" if wcat in ["pistol", "rifle"] else "melee"
+	_update_blade(0.0)
 	var wo: Variant = sheet.weapon_inst("off")
 	if wo != null and hand_l != null:
 		weapon_l = _weapon_mesh(String(wo["id"]))
@@ -361,12 +391,14 @@ func _weapon_mesh(id: String) -> Node3D:
 	var metal := MeshKit.mat(Color("#8b939c"), 0.3, 0.85)
 	var grip := MeshKit.mat(Color("#2a2d33"), 0.7, 0.2)
 	if bool(w.get("energy_blade", false)):
-		var a := MeshKit.unshaded(Color("#ffd27a"))
-		var core := MeshKit.unshaded(Color("#fff6e0"))
+		# The Lumen Edge: its own bright (bloom-range) materials so it can
+		# shimmer, and blade parts that extend from the emitter when it ignites.
+		var a := _blade_mat(Color(1.55, 1.05, 0.42))
+		var core := _blade_mat(Color(1.9, 1.75, 1.35))
 		_add(root, MeshKit.cyl(0.025, 0.025, 0.2, grip, 8), Vector3(0, 0, 0), Vector3(90, 0, 0))
 		_add(root, MeshKit.cyl(0.035, 0.035, 0.04, metal, 8), Vector3(0, 0, 0.1), Vector3(90, 0, 0))
-		_add(root, MeshKit.cyl(0.022, 0.03, 0.85, a, 8), Vector3(0, 0, 0.55), Vector3(90, 0, 0))
-		_add(root, MeshKit.cyl(0.01, 0.012, 0.85, core, 6), Vector3(0, 0, 0.55), Vector3(90, 0, 0))
+		blade_nodes.append(_add(root, MeshKit.cyl(0.022, 0.03, 0.85, a, 8), Vector3(0, 0, 0.55), Vector3(90, 0, 0)))
+		blade_nodes.append(_add(root, MeshKit.cyl(0.01, 0.012, 0.85, core, 6), Vector3(0, 0, 0.55), Vector3(90, 0, 0)))
 	elif cat == "melee":
 		var hands := int(w.get("hands", 1))
 		match id:
@@ -396,6 +428,77 @@ func _weapon_mesh(id: String) -> Node3D:
 		_add(root, MeshKit.box(Vector3(0.05, 0.12, 0.08), grip), Vector3(0, -0.05, 0.0))
 		_add(root, MeshKit.box(Vector3(0.05, 0.08, 0.2), grip), Vector3(0, 0, -0.15))
 	return root
+
+
+func _blade_mat(col: Color) -> StandardMaterial3D:
+	var m := StandardMaterial3D.new()
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.albedo_color = col
+	_blade_mats.append(m)
+	_blade_cols.append(col)
+	return m
+
+
+## Ignites the blade in combat and retracts it after, with a hum-on/off.
+func _update_blade(dt: float) -> void:
+	if blade_nodes.is_empty():
+		return
+	var want := 1.0 if stance_target > 0.5 and not downed else 0.0
+	blade_amt = move_toward(blade_amt, want, dt * 5.0) if dt > 0.0 else want
+	var lit := blade_amt > 0.5
+	if lit != _blade_lit:
+		_blade_lit = lit
+		if dt > 0.0 and is_inside_tree():
+			GameAudio.play("lumen_on" if lit else "lumen_off", -10.0, randf_range(0.95, 1.05))
+	for b in blade_nodes:
+		if not is_instance_valid(b):
+			continue
+		b.scale = Vector3(1.0, maxf(0.001, blade_amt), 1.0)
+		b.position.z = 0.12 + 0.425 * blade_amt
+		b.visible = blade_amt > 0.02
+	var sh := 1.0 + 0.06 * sin(t * 37.0)
+	for i in _blade_mats.size():
+		_blade_mats[i].albedo_color = _blade_cols[i] * sh
+
+
+## A push: the body slides from where it was instead of snapping (the
+## simulation already moved the actor; this is a decaying visual offset).
+func slide_from(local_offset: Vector3) -> void:
+	_slide = Vector3(local_offset.x, 0.0, local_offset.z)
+	position = _slide
+
+
+## Mercy/Dominion on the protagonist: Dominion pales the skin and lights the
+## eyes amber-red; Mercy warms their accent lights.
+func set_alignment(v: int) -> void:
+	var tier := 0
+	if v <= -60:
+		tier = -2
+	elif v <= -25:
+		tier = -1
+	elif v >= 60:
+		tier = 2
+	elif v >= 25:
+		tier = 1
+	if tier == _align_tier:
+		return
+	_align_tier = tier
+	if _skin_mat != null:
+		_skin_mat.albedo_color = skin.lerp(Color("#c4bfcf"), [0.0, 0.2, 0.42][maxi(0, -tier)])
+	for e in _eye_mats:
+		e.emission_enabled = tier != 0 and tier != 1
+		if tier < 0:
+			e.emission = Color("#ff6a2a")
+			e.emission_energy_multiplier = 0.7 if tier == -1 else 2.0
+		elif tier == 2:
+			e.emission = Color("#9fd8ff")
+			e.emission_energy_multiplier = 0.4
+	_align_glow = [1.0, 1.25, 1.55][maxi(0, tier)]
+	_apply_glow()
+
+
+func alignment_tier() -> int:
+	return _align_tier
 
 
 # ------------------------------------------------------------ markers
@@ -434,21 +537,40 @@ func set_stealth(on: bool) -> void:
 	if absf(a - stealth_alpha) < 0.01:
 		return
 	stealth_alpha = a
+	_apply_alpha()
+
+
+## The close follow camera fades the leader out when a wall pushes it in
+## against them (1 = solid).
+var camera_alpha := 1.0
+
+
+func set_camera_alpha(a: float) -> void:
+	a = snappedf(clampf(a, 0.15, 1.0), 0.05)
+	if absf(a - camera_alpha) < 0.01:
+		return
+	camera_alpha = a
+	_apply_alpha()
+
+
+func _apply_alpha() -> void:
+	var a := minf(stealth_alpha, camera_alpha)
 	for m in _mats:
 		var c := m.albedo_color
 		c.a = a
 		m.albedo_color = c
-		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA if on else BaseMaterial3D.TRANSPARENCY_DISABLED
+		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA if a < 0.99 else BaseMaterial3D.TRANSPARENCY_DISABLED
 
 
 func flash(col: Color) -> void:
+	var soft := bool(Settings.get_v("reduce_flash"))
 	for m in _mats:
-		if _glows.has(m):
+		if _glows.has(m) or _eye_mats.has(m):
 			continue
 		m.emission_enabled = true
 		m.emission = col
-		m.emission_energy_multiplier = 0.9
-	_flash_left = 0.12
+		m.emission_energy_multiplier = 0.35 if soft else 0.9
+	_flash_left = 0.08 if soft else 0.12
 
 
 var _flash_left := 0.0
@@ -460,7 +582,7 @@ func _update_flash(dt: float) -> void:
 	_flash_left -= dt
 	if _flash_left <= 0.0:
 		for m in _mats:
-			if not _glows.has(m):
+			if not _glows.has(m) and not _eye_mats.has(m):
 				m.emission_enabled = false
 
 
@@ -485,6 +607,17 @@ func animate(dt: float, speed: float) -> void:
 		if one_shot_t >= one_shot_len:
 			one_shot = ""
 	down_amt = move_toward(down_amt, 1.0 if downed else 0.0, dt * 2.5)
+	stance = move_toward(stance, stance_target if not downed else 0.0, dt * 3.0)
+	_update_blade(dt)
+	if _slide != Vector3.ZERO:
+		_slide = _slide.move_toward(Vector3.ZERO, dt * 6.0)
+		position = _slide
+	# Between blows a fighter shifts their grip, re-aims, rolls a shoulder.
+	if stance > 0.9 and move_speed < 0.3 and one_shot == "" and down_amt <= 0.0:
+		_flourish_t -= dt
+		if _flourish_t <= 0.0:
+			play("flourish", 0.9)
+			_flourish_t = randf_range(2.2, 3.4)
 	_pose()
 
 
@@ -608,7 +741,7 @@ func pulse_glow(amp: float) -> void:
 
 func _apply_glow() -> void:
 	for i in mini(_glows.size(), _glow_base.size()):
-		_glows[i].emission_energy_multiplier = _glow_base[i] * (1.0 + _glow_boost)
+		_glows[i].emission_energy_multiplier = _glow_base[i] * (1.0 + _glow_boost) * _align_glow
 
 
 ## Ends conversation staging and returns to the simulation's pose.
@@ -654,8 +787,52 @@ func _anim_humanoid() -> void:
 		arm_r.rotation_degrees = Vector3(swing * 0.7, 0, 6)
 	if torso:
 		torso.rotation_degrees = Vector3(walk * 6.0 + crouch * 18.0, 0, 0)
+	if hand_r and hand_r.rotation_degrees.z != 0.0:
+		hand_r.rotation_degrees.z = 0.0
+	# Combat stance, blended out while walking.
+	var st := stance * (1.0 - clampf(walk, 0.0, 1.0)) if down_amt <= 0.0 else 0.0
+	if st > 0.01 and arm_r != null and arm_l != null and torso != null:
+		match weapon_kind:
+			"ranged":
+				arm_r.rotation_degrees = arm_r.rotation_degrees.lerp(Vector3(-62.0, 0, 4.0), st)
+				arm_l.rotation_degrees = arm_l.rotation_degrees.lerp(Vector3(-50.0, 0, 24.0), st)
+				torso.rotation_degrees.y = lerpf(torso.rotation_degrees.y, -12.0, st)
+			"melee":
+				arm_r.rotation_degrees = arm_r.rotation_degrees.lerp(Vector3(-38.0, 0, 20.0), st)
+				arm_l.rotation_degrees = arm_l.rotation_degrees.lerp(Vector3(-22.0, 0, -14.0), st)
+				torso.rotation_degrees.y = lerpf(torso.rotation_degrees.y, 12.0, st)
+			_:
+				arm_r.rotation_degrees = arm_r.rotation_degrees.lerp(Vector3(-55.0, 0, -12.0), st)
+				arm_l.rotation_degrees = arm_l.rotation_degrees.lerp(Vector3(-55.0, 0, 12.0), st)
+		if leg_l:
+			leg_l.rotation_degrees.x -= 10.0 * st
+			leg_r.rotation_degrees.x += 8.0 * st
+		hips.position.y -= 0.05 * st
+		if hp_frac < 0.3:
+			torso.rotation_degrees.x += 14.0 * st  # wounded hunch
 	var p := _os_phase()
 	match one_shot:
+		"flourish":
+			var f := sin(p * PI)
+			match weapon_kind:
+				"melee":
+					if hand_r:
+						hand_r.rotation_degrees.z = 360.0 * p
+					arm_r.rotation_degrees.x -= 25.0 * f
+				"ranged":
+					arm_r.rotation_degrees.x -= 20.0 * f
+					torso.rotation_degrees.y -= 10.0 * f
+				_:
+					torso.rotation_degrees.y += 10.0 * sin(p * TAU)
+		"dodge":
+			var dg := sin(p * PI)
+			torso.rotation_degrees.z += 16.0 * dg * dodge_dir
+			hips.position.x += 0.14 * dg * dodge_dir
+		"block":
+			var bk := sin(p * PI)
+			if arm_r and arm_l:
+				arm_r.rotation_degrees = arm_r.rotation_degrees.lerp(Vector3(-105.0, 0, 25.0), bk)
+				arm_l.rotation_degrees = arm_l.rotation_degrees.lerp(Vector3(-70.0, 0, -15.0), bk)
 		"melee":
 			if arm_r:
 				var a := sin(p * PI)
@@ -691,12 +868,20 @@ func _anim_humanoid() -> void:
 func _idle_humanoid(walk: float) -> void:
 	if head == null or model == "sentinel" or pres_on:
 		return
-	if walk > 0.05 or one_shot != "" or down_amt > 0.0 or crouch > 0.1:
-		head.rotation_degrees = Vector3.ZERO
+	if walk > 0.05 or one_shot != "" or down_amt > 0.0 or crouch > 0.1 or stance > 0.1:
+		if head.rotation_degrees != Vector3.ZERO:
+			head.rotation_degrees = Vector3.ZERO
 		return
 	var tt := t + idle_phase
 	var glance := sin(tt * 0.31) * sin(tt * 0.17 + 1.3)
-	head.rotation_degrees = Vector3(sin(tt * 0.23) * 3.0, glance * (24.0 if idle_style != "" else 12.0), 0.0)
+	var hr := Vector3(sin(tt * 0.23) * 3.0, glance * (24.0 if idle_style != "" else 12.0), 0.0)
+	if idle_style == "":
+		# A slow glance: only touch the transform when it has visibly moved
+		# (every actor runs this each step).
+		if head.rotation_degrees.distance_squared_to(hr) > 0.09:
+			head.rotation_degrees = hr
+		return
+	head.rotation_degrees = hr
 	if arm_l == null or arm_r == null:
 		return
 	match idle_style:
@@ -729,6 +914,10 @@ func _anim_drone() -> void:
 		hips.rotation_degrees.x = -10.0 * sin(_os_phase() * PI)
 	elif one_shot == "hit":
 		hips.position.x = sin(_os_phase() * PI * 4.0) * 0.06
+	elif one_shot == "dodge":
+		hips.position.x = sin(_os_phase() * PI) * 0.3 * dodge_dir
+	else:
+		hips.position.x = 0.0
 
 
 func _anim_spider() -> void:
@@ -743,6 +932,7 @@ func _anim_spider() -> void:
 		hips.rotation_degrees.x = -20.0 * sin(_os_phase() * PI)
 	else:
 		hips.rotation_degrees.x = 0.0
+	hips.position.x = sin(_os_phase() * PI) * 0.25 * dodge_dir if one_shot == "dodge" else 0.0
 	hips.rotation_degrees.z = down_amt * 60.0
 
 

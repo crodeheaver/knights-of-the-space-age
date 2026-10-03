@@ -27,6 +27,11 @@ var _pmin := -80.0
 var _pmax := -8.0
 var _manual_hold := 0.0
 var _move_t := 0.0
+## Follow mode: extra downward tilt while a wall blocks the arm, so the camera
+## rises over it (ceilings are invisible from above) instead of pressing into
+## the leader's head.
+var _lift := 0.0
+var _faded: ActorVisual = null
 var arm: SpringArm3D
 var cam: Camera3D
 var cine_cam: Camera3D
@@ -42,6 +47,7 @@ var _cine_speed := 1.8
 var _drift := Vector3.ZERO
 var _drift_left := 0.0
 var shake := 0.0
+var _fov_punch := 0.0
 var _focus := Vector3.ZERO
 
 
@@ -119,7 +125,7 @@ func snap() -> void:
 
 func _apply() -> void:
 	rotation_degrees = Vector3(0, yaw, 0)
-	arm.rotation_degrees = Vector3(pitch, 0, 0)
+	arm.rotation_degrees = Vector3(clampf(pitch - _lift, -78.0, -4.0), 0, 0)
 	arm.spring_length = distance
 
 
@@ -143,8 +149,18 @@ func add_shake(amount: float) -> void:
 	shake = maxf(shake, amount)
 
 
+## A brief zoom-in on a big hit (off with reduced shake).
+func punch_fov(degrees: float) -> void:
+	if bool(Settings.get_v("reduce_shake")):
+		return
+	_fov_punch = maxf(_fov_punch, degrees)
+
+
 func _process(delta: float) -> void:
 	if cinematic:
+		# Conversations and cinematics always show the leader solid.
+		if _faded != null and is_instance_valid(_faded):
+			_faded.set_camera_alpha(1.0)
 		if scripted:
 			return
 		_cine_t = minf(1.0, _cine_t + delta * _cine_speed)
@@ -160,6 +176,7 @@ func _process(delta: float) -> void:
 		_focus = _focus.lerp(want, clampf(delta * 8.0, 0.0, 1.0))
 		global_position = _focus
 	_follow_swing(delta)
+	_follow_clearance(delta)
 	var rot := 0.0
 	if Input.is_action_pressed("camera_left"):
 		rot += 1.0
@@ -176,6 +193,9 @@ func _process(delta: float) -> void:
 		yaw += rot * 90.0 * delta
 		_manual_hold = 1.5
 		_apply()
+	if _fov_punch > 0.0:
+		_fov_punch = maxf(0.0, _fov_punch - delta * 14.0)
+		cam.fov = float(PROFILES[mode]["fov"]) - _fov_punch
 	if shake > 0.0:
 		shake = maxf(0.0, shake - delta * 2.5)
 		cam.h_offset = randf_range(-1, 1) * shake * 0.15
@@ -183,6 +203,29 @@ func _process(delta: float) -> void:
 	else:
 		cam.h_offset = 0.0
 		cam.v_offset = 0.0
+
+
+## Follow mode: when a wall shortens the arm, tilt up and over it; if the
+## camera still ends up close, fade the leader so they never fill the view.
+func _follow_clearance(delta: float) -> void:
+	var hl := arm.get_hit_length() if is_inside_tree() else distance
+	var nl := _lift
+	if mode != "follow":
+		nl = 0.0
+	elif hl < distance * 0.6:
+		nl = minf(58.0, _lift + 60.0 * delta)  # blocked: keep rising
+	elif hl > distance * 0.97:
+		nl = maxf(0.0, _lift - 15.0 * delta)  # clear: settle back down
+	if absf(nl - _lift) > 0.001:
+		_lift = nl
+		_apply()
+	var a := target as Actor
+	var vis: ActorVisual = a.visual if a != null and is_instance_valid(a) else null
+	if _faded != null and is_instance_valid(_faded) and _faded != vis:
+		_faded.set_camera_alpha(1.0)
+	_faded = vis
+	if vis != null:
+		vis.set_camera_alpha(1.0 if mode != "follow" else clampf((hl - 0.7) / 0.9, 0.15, 1.0))
 
 
 ## Follow mode: ease round behind the leader while they walk forward (W) or

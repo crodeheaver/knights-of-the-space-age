@@ -414,3 +414,191 @@ func test_alert_lighting_after_the_emergency() -> void:
 	w._process(0.5)
 	assert_gte(w.trim_pulse_amount(), 0.5, "pulse at its peak")
 	await _free([w])
+
+
+# ---------------------------------------------------------------- combat feel
+func _preset_world(preset: String) -> World:
+	var r := DevTools.apply_preset(preset)
+	assert_true(bool(r["ok"]), String(r.get("reason", "")))
+	Saves.save_root = "user://test_saves/"
+	var w := World.new()
+	w.manual_step = true
+	_tree().root.add_child(w)
+	await _tree().process_frame
+	return w
+
+
+func _sim_state(w: World) -> String:
+	var d := {"dice": Game.state.dice.to_dict(), "t": snappedf(Game.state.sim_time, 0.0001)}
+	for uid in w.actors.keys():
+		var a: Actor = w.actors[uid]
+		d[uid] = [snappedf(a.position.x, 0.0001), snappedf(a.position.z, 0.0001), a.sheet.hp, a.sheet.statuses.size(), snappedf(a.round_clock, 0.0001)]
+	return JSON.stringify(d)
+
+
+func test_downed_fall_completes_while_paused() -> void:
+	var ap: Variant = Settings.get_v("autopause_member_down")
+	Settings.set_v("autopause_member_down", true, false)
+	var w: World = await _preset_world("jump_checkpoint")
+	w.alert_encounter("enc_checkpoint")
+	for i in 5:
+		w.sim_step(0.05)
+	assert_true(w.combat.active, "fighting")
+	var iona: Actor = w.actors["iona"]
+	iona.sheet.hp = 0
+	w.on_downed(iona, "")
+	assert_true(w.paused, "auto-paused on the fall")
+	var before := _sim_state(w)
+	for i in 10:
+		w._process(0.1)
+	assert_gte(iona.visual.down_amt, 0.99, "the fall finishes on screen during the pause")
+	assert_eq(_sim_state(w), before, "while the simulation stays frozen")
+	Settings.set_v("autopause_member_down", ap, false)
+	await _free([w])
+
+
+func test_bodies_keep_their_fallen_model() -> void:
+	var w: World = await _preset_world("jump_checkpoint")
+	w.alert_encounter("enc_checkpoint")
+	var e: Actor = w.actors["chk_d1"]
+	var vis := e.visual
+	e.sheet.hp = 0
+	w.on_downed(e, "player")
+	for i in 40:
+		w.sim_step(0.05)
+	assert_false(w.actors.has("chk_d1"), "the actor is gone")
+	var co: WorldObject = w.objects.get("corpse_chk_d1", null)
+	assert_true(co != null, "a searchable wreck remains")
+	assert_true(is_instance_valid(vis) and vis.get_parent() == co, "the wreck is the fallen model itself")
+	# Reloaded bodies (no live model) lie the way the fall left them.
+	var stand_in := w._make_corpse("t_body", {"template": "reclaimer_breacher", "pos": [50.0, 7.0, 30.0]})
+	assert_eq(stand_in.rotation_degrees.y, 210.0, "turned to match the fall")
+	assert_eq(stand_in.mesh_root.position.z, 0.85, "and shifted so the feet stay put")
+	await _free([w])
+
+
+func test_misses_and_pushes_present_without_state_change() -> void:
+	var w: World = await _preset_world("jump_checkpoint")
+	var p: Actor = w.controlled()
+	var e: Actor = w.actors["chk_d1"]
+	var before := _sim_state(w)
+	w._apply_events(p, {"log": [], "events": [{"type": "attack", "target": e.uid, "ranged": false, "sound": "blade",
+		"dtype": "energy", "result": {"hit": false, "crit": false}, "text": p.sheet.display_name + " → test MISS"}]})
+	assert_eq(e.visual.one_shot, "dodge", "the target slips the blow")
+	assert_eq(_sim_state(w), before, "presentation only")
+	# A shove slides the body from where it stood.
+	var from := e.position
+	w._apply_events(p, {"log": [], "events": [{"type": "push", "target": e.uid, "from": p.uid, "distance": 1.0}]})
+	if e.position != from:
+		assert_gt_vec(e.visual.position.length(), 0.1, "visual offset back towards the old spot")
+		for i in 20:
+			e.visual.animate(0.05, 0.0)
+		assert_lte(e.visual.position.length(), 0.001, "then settles on the actor")
+	await _free([w])
+
+
+func assert_gt_vec(v: float, lo: float, msg: String) -> void:
+	assert_gte(v, lo, msg)
+
+
+func test_stance_and_blade_follow_combat() -> void:
+	var w: World = await _preset_world("jump_checkpoint")
+	var p: Actor = w.controlled()
+	assert_false(p.visual.blade_nodes.is_empty(), "the Lumen Edge has a blade")
+	assert_eq(p.visual.blade_amt, 0.0, "sheathed outside a fight")
+	w.alert_encounter("enc_checkpoint")
+	for i in 30:
+		w.sim_step(0.05)
+	assert_true(p.in_combat)
+	assert_gte(p.visual.stance, 0.9, "ready stance")
+	assert_gte(p.visual.blade_amt, 0.99, "blade lit")
+	await _free([w])
+
+
+func test_overhead_bars_follow_the_setting() -> void:
+	var mode: Variant = Settings.get_v("overhead_health")
+	Settings.set_v("overhead_health", "combat", false)
+	var w: World = await _preset_world("jump_checkpoint")
+	w.overhead._process(0.2)
+	assert_eq(w.overhead.count(), 0, "no bars out of combat")
+	w.alert_encounter("enc_checkpoint")
+	for i in 5:
+		w.sim_step(0.05)
+	w.overhead._process(0.2)
+	assert_gte(w.overhead.count(), 3, "bars over the combatants")
+	w.set_modal("dialogue", true)
+	w.overhead._process(0.2)
+	assert_false(w.overhead.visible, "hidden in conversations")
+	w.set_modal("dialogue", false)
+	Settings.set_v("overhead_health", "off", false)
+	w.overhead._process(0.2)
+	assert_false(w.overhead.visible, "off means off")
+	Settings.set_v("overhead_health", mode, false)
+	await _free([w])
+
+
+func test_alignment_changes_only_the_look() -> void:
+	var w: World = await _world()
+	var p: Actor = w.actors["player"]
+	var sheet := p.sheet
+	var stats := [sheet.defense(), sheet.max_hp(), sheet.skill_total("persuasion")]
+	var skin0: Color = p.visual._skin_mat.albedo_color
+	Game.state.add_alignment(-70, "_t_dom", "test")
+	assert_eq(p.visual.alignment_tier(), -2, "deep Dominion")
+	assert_ne(p.visual._skin_mat.albedo_color, skin0, "the skin pales")
+	assert_eq([sheet.defense(), sheet.max_hp(), sheet.skill_total("persuasion")], stats, "no rule changes")
+	Game.state.add_alignment(140, "_t_mer", "test")
+	assert_eq(p.visual.alignment_tier(), 2, "deep Mercy")
+	assert_eq(p.visual._skin_mat.albedo_color, p.visual.skin, "skin back to its own colour")
+	await _free([w])
+
+
+func _toast_texts(hud: HUD) -> String:
+	var out := PackedStringArray()
+	for c in hud.toast_box.get_children():
+		for l in c.find_children("*", "Label", true, false):
+			out.append((l as Label).text)
+	return " | ".join(out)
+
+
+func test_hud_feedback_toasts() -> void:
+	var w: World = await _world()
+	var fm := FakeMain.new()
+	_tree().root.add_child(fm)
+	var hud := HUD.new()
+	fm.screen.add_child(hud)
+	hud.setup(w, fm)
+	await _tree().process_frame
+	var s := Game.state.player()
+	Game.state.grant_xp(s.xp_for_level(s.level + 1) - s.xp, "_t_lv", "test")
+	hud._process(0.7)
+	var t := _toast_texts(hud)
+	assert_true(t.contains("XP"), t)
+	assert_true(t.contains("Level up available"), t)
+	Game.state.add_alignment(3, "_t_m", "test")
+	Events.post("quest_updated", {"quest": "q_main", "objective": "x", "state": "done"})
+	t = _toast_texts(hud)
+	assert_true(t.contains("Mercy +3"), t)
+	assert_true(t.contains("Journal updated"), t)
+	Events.post("combat_ended", {})
+	assert_true(_toast_texts(hud).contains("Combat over"), _toast_texts(hud))
+	# In a conversation the dialogue screen shows alignment itself.
+	w.set_modal("dialogue", true)
+	Game.state.add_alignment(2, "_t_m2", "test")
+	assert_eq(hud._held.size(), 0, "nothing queued behind the conversation")
+	w.set_modal("dialogue", false)
+	await _free([fm, w])
+
+
+func test_damage_numbers_setting_hides_all_numbers() -> void:
+	var w: World = await _world()
+	var dn: Variant = Settings.get_v("damage_numbers")
+	Settings.set_v("damage_numbers", false, false)
+	var n0 := w.fx.items.size()
+	w.fx.text(Vector3.ZERO, "CRIT 12", Color.WHITE, true)
+	w.fx.text(Vector3.ZERO, "+50 XP", Color.WHITE)
+	assert_eq(w.fx.items.size(), n0, "no numbers")
+	w.fx.text(Vector3.ZERO, "miss", Color.WHITE)
+	assert_eq(w.fx.items.size(), n0 + 1, "words still show")
+	Settings.set_v("damage_numbers", dn, false)
+	await _free([w])

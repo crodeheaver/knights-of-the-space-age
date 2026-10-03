@@ -38,9 +38,17 @@ var _auto_solo := false
 var _pending_interact: Dictionary = {}
 var dialogue: DialogueEngine = null
 var dialogue_npc: Actor = null
+## Combat presentation beats for listeners such as ShipLife ("crit", "kill",
+## "miss"). A signal rather than Events.post, so the event history is not
+## flooded by every swing.
+signal presented(kind: String, data: Dictionary)
+const DTYPE_COLORS := {"energy": Color("#ffb070"), "kinetic": Color("#ff6a5a"), "ion": Color("#7fd0ff"),
+	"thermal": Color("#ffd27a"), "toxin": Color("#9fd36a"), "resonance": Color("#b9a7ff")}
+
 var stage: DialogueStage = null
 var ship_life: ShipLife = null  # set by Main; absent in tests and bots
 var atmosphere: Atmosphere = null
+var overhead: OverheadBars = null
 ## Materials of the wall trims (shipwide pulses for announcements and alerts).
 var trim_materials: Array[StandardMaterial3D] = []
 var _trim_pulse := 0.0
@@ -88,6 +96,11 @@ func _ready() -> void:
 	_restore_combat_state()
 	_area_check(true)
 	atmosphere.setup(self, level_info)
+	overhead = OverheadBars.new()
+	overhead.name = "OverheadBars"
+	add_child(overhead)
+	overhead.setup(self)
+	_show_alignment()
 	refresh_markers()
 	GameAudio.ambient(area_ambience())
 	GameAudio.music(area_music())
@@ -618,10 +631,13 @@ func sim_step(dt: float) -> void:
 		if float(pc["at"]) <= st.sim_time:
 			_pending_corpses.remove_at(i)
 			var uid := String(pc["uid"])
-			_make_corpse(uid, pc["rec"])
+			var co := _make_corpse(uid, pc["rec"])
 			if actors.has(uid):
 				var da: Actor = actors[uid]
 				actors.erase(uid)
+				# The body stays where it fell: the corpse takes over the model.
+				if co != null and da.visual != null:
+					co.adopt_visual(da.visual)
 				da.queue_free()
 
 
@@ -1667,36 +1683,56 @@ func _apply_events(a: Actor, res: Dictionary) -> void:
 				if a != null:
 					a.visual.play("ranged" if e["ranged"] else "melee", 0.35)
 					GameAudio.play_at(String(e.get("sound", "blade")), a.position, self, -2.0)
+				var dtype := String(e.get("dtype", ""))
+				var dcol: Color = DTYPE_COLORS.get(dtype, Color("#ff6a5a"))
 				if bool(e["ranged"]) and a != null and tgt != null:
-					var col := Color("#ff6a3a") if String(e.get("dtype", "")) == "energy" else Color("#7fd0ff")
+					var col := Color("#ff6a3a") if dtype == "energy" else Color("#7fd0ff")
+					var muzzle := a.visual.hand_r.global_position if a.visual.hand_r != null and a.visual.is_inside_tree() else a.eye_pos() - Vector3(0, 0.2, 0)
+					fx.muzzle(muzzle, col)
 					fx.bolt(a.eye_pos() - Vector3(0, 0.2, 0), tgt.eye_pos() - Vector3(0, 0.3, 0) + (Vector3(randf_range(-0.6, 0.6), 0.3, 0) if not r["hit"] else Vector3.ZERO), col)
 				elif tgt != null and a != null:
-					fx.slash(tgt.position, Color("#ffd27a") if String(e.get("dtype", "")) == "energy" else Color("#e8eefc"))
+					fx.slash(tgt.position, Color("#ffd27a") if dtype == "energy" else Color("#e8eefc"))
 				if tgt != null:
+					var chest := tgt.eye_pos() - Vector3(0, 0.45, 0)
 					if bool(r.get("deflected", false)):
 						fx.text(tgt.position, "DEFLECT", Color("#ffd27a"))
 						GameAudio.play_at("deflect", tgt.position, self)
-						tgt.visual.play("melee", 0.2)
+						tgt.visual.play("block", 0.3)
+						fx.sparks(chest + Vector3(0, 0.25, 0), Color("#ffd27a"), 6, 3.4)
 					elif bool(r["hit"]):
 						var dmg: Dictionary = e.get("damage", {})
-						fx.text(tgt.position, ("CRIT " if r["crit"] else "") + str(int(dmg.get("dealt", 0))), Color("#ffdf6a") if r["crit"] else Color("#ff6a5a"), bool(r["crit"]))
+						fx.text(tgt.position, ("CRIT " if r["crit"] else "") + str(int(dmg.get("dealt", 0))), Color("#ffdf6a") if r["crit"] else dcol, bool(r["crit"]))
 						if int(dmg.get("absorbed", 0)) > 0:
 							fx.text(tgt.position + Vector3(0, 0.3, 0), "-%d shield" % int(dmg["absorbed"]), Color("#7fd0ff"))
+						_show_broke(tgt, dmg)
 						tgt.visual.play("hit", 0.25)
 						tgt.visual.flash(Color(1, 0.4, 0.3))
 						GameAudio.play_at("crit" if r["crit"] else "hit", tgt.position, self, -4.0)
+						fx.sparks(chest, dcol, 8 if r["crit"] else 4, 3.2 if r["crit"] else 2.4)
 						if r["crit"]:
 							cam.add_shake(0.3)
+							cam.punch_fov(3.0)
+							presented.emit("crit", {"uid": a.uid if a != null else "", "target": tgt.uid, "party": a != null and a.role == "party"})
 					else:
 						fx.text(tgt.position, "miss", Color("#9aa3ad"))
+						GameAudio.play("miss", -12.0, randf_range(0.92, 1.08))
+						# The target slips the blow (or the bolt goes wide).
+						if tgt.visual.one_shot == "" and not tgt.sheet.is_downed():
+							tgt.visual.dodge_dir = -1.0 if randf() < 0.5 else 1.0
+							tgt.visual.play("dodge", 0.35)
 				var text_line := String(e.get("text", ""))
 				Events.log_combat(text_line, String(e.get("detail", "")), "attack")
 			"damage":
 				var dm: Dictionary = e["result"]
 				if tgt != null and int(dm.get("dealt", 0)) > 0:
-					fx.text(tgt.position, str(int(dm["dealt"])), Color("#ff6a5a"))
+					fx.text(tgt.position, str(int(dm["dealt"])), DTYPE_COLORS.get(String(e.get("dtype", "")), Color("#ff6a5a")))
 					tgt.visual.play("hit", 0.25)
 					tgt.visual.flash(Color(1, 0.4, 0.3))
+					_show_broke(tgt, dm)
+			"save":
+				var sv: Dictionary = e.get("result", {})
+				if tgt != null and bool(sv.get("success", false)):
+					fx.text(tgt.position + Vector3(0, 0.4, 0), "RESISTED", Color("#9fe6e0"))
 			"heal":
 				if tgt != null:
 					fx.text(tgt.position, "+%d" % int(e["amount"]), Color("#5fd38a"))
@@ -1733,8 +1769,10 @@ func _apply_events(a: Actor, res: Dictionary) -> void:
 								dest = np
 							else:
 								break
+						var was := tgt.position
 						tgt.set_pos(dest)
 						tgt.stop()
+						tgt.visual.slide_from(tgt.global_transform.basis.inverse() * (was - dest))
 			"throw":
 				_spawn_grenade(a, String(e["item"]), String(e.get("target", "")))
 			"place_mine":
@@ -1753,6 +1791,12 @@ func _apply_events(a: Actor, res: Dictionary) -> void:
 			on_downed(actors[uid], a.uid if a != null else "")
 
 
+## Statuses knocked loose by a hit (a stun broken by pain, and so on).
+func _show_broke(tgt: Actor, dm: Dictionary) -> void:
+	for sid in dm.get("broke", []):
+		fx.text(tgt.position + Vector3(0, 0.8, 0), "freed: " + String(DB.status(String(sid)).get("name", sid)), Color("#9fe6e0"))
+
+
 func on_downed(t: Actor, killer: String) -> void:
 	var s := t.sheet
 	if t.role == "party":
@@ -1760,6 +1804,9 @@ func on_downed(t: Actor, killer: String) -> void:
 			return
 		s.hp = 0
 		StatusRules.apply(s, "downed", 9999.0)
+		# The fall plays out even if this pauses the game.
+		t.visual.set_downed(true)
+		present_visual(t.visual)
 		t.queue.clear()
 		t.current = {}
 		t.stop()
@@ -1787,6 +1834,11 @@ func on_downed(t: Actor, killer: String) -> void:
 	t.current = {}
 	t.visual.set_downed(true)
 	t.visual.set_selection("")
+	present_visual(t.visual)
+	if s.kind == "machine":
+		fx.sparks(t.position + Vector3(0, 1.0, 0), Color("#ffd27a"), 10, 4.0)
+		fx.burst(t.position, Color(0.35, 0.35, 0.4), 1.1)
+	presented.emit("kill", {"uid": t.uid, "by": killer})
 	var lead_target := controlled() != null and controlled().target_uid == t.uid
 	for o in actors.values():
 		(o as Actor).queue.purge_target(t.uid)
@@ -1820,17 +1872,20 @@ func on_downed(t: Actor, killer: String) -> void:
 	refresh_markers()
 
 
-func _make_corpse(uid: String, rec: Dictionary) -> void:
+func _make_corpse(uid: String, rec: Dictionary) -> WorldObject:
 	var cid := "corpse_" + uid
 	if objects.has(cid):
-		return
+		return null
 	var tdef: Dictionary = DB.enemy(String(rec.get("template", "")))
 	var p: Array = rec.get("pos", [0, 0, 0])
 	var machine := String(tdef.get("kind", "organic")) == "machine"
 	var loot: Dictionary = (tdef.get("loot", {}) as Dictionary).duplicate()
+	# Bodies fall backwards from the feet, so the stand-in model is turned
+	# round and shifted to lie where the fallen character lay.
 	var d := {"id": cid, "type": "wreck" if machine else "corpse", "model": "wreck" if machine else "corpse", "name": ("Wreck of " if machine else "Body of ") + String(tdef.get("name", uid)),
-		"pos": [float(p[0]), float(p[1])], "rot": float(p[2]) if p.size() > 2 else 0.0, "loot": loot, "cloth": String(tdef.get("color", "#3d4552")), "reach": 2.0}
-	_add_object(d)
+		"pos": [float(p[0]), float(p[1])], "rot": (float(p[2]) if p.size() > 2 else 0.0) + (0.0 if machine else 180.0), "loot": loot,
+		"cloth": String(tdef.get("color", "#3d4552")), "reach": 2.0, "mesh_offset": 0.0 if machine else 0.85}
+	return _add_object(d)
 
 
 func _check_encounter(eid: String) -> void:
@@ -2308,6 +2363,13 @@ func _process(delta: float) -> void:
 				_present.erase(v)
 
 
+## The protagonist's look follows Mercy and Dominion.
+func _show_alignment() -> void:
+	var p: Actor = actors.get("player", null)
+	if p != null and p.visual != null:
+		p.visual.set_alignment(Game.state.alignment)
+
+
 ## Washes the ship's wall trims in a colour for a moment (announcements);
 ## the Atmosphere applies it.
 func pulse_trims(col: Color, dur: float) -> void:
@@ -2374,6 +2436,8 @@ func _on_event(name: String, data: Dictionary) -> void:
 			call_deferred("_queued_dialogue", nxt)
 	elif name == "tutorial":
 		ui_request.emit("tutorial", data)
+	elif name == "alignment_changed":
+		_show_alignment()
 
 
 func _world_effect(e: Dictionary) -> void:

@@ -7,7 +7,7 @@ extends Node
 const AUDIO_DIR := "res://assets/audio/"
 const BUSES := ["Music", "SFX", "Ambience", "UI", "Voice"]
 const UI_SOUNDS := ["ui_click", "ui_open", "ui_error", "ui_confirm", "quest", "level_up", "save",
-	"infl_up", "infl_down", "align_mercy", "align_dominion"]
+	"infl_up", "infl_down", "align_mercy", "align_dominion", "victory"]
 ## Natural syllable spacing per voice bank, in seconds (see tools/gen_audio.py).
 const VOICE_PACE := {"hlo": 0.17, "hhi": 0.15, "syn": 0.12, "wrd": 0.24}
 const VOICE_CHANNELS := ["dialogue", "world", "ship"]

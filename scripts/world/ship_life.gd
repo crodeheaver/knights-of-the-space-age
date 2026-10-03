@@ -53,6 +53,7 @@ func setup(w: World) -> void:
 		_bubbles.append({"label": l, "actor": null, "left": 0.0})
 	Events.event.connect(_on_event)
 	GameAudio.voice_syllable.connect(_on_syllable)
+	w.presented.connect(_on_presented)
 
 
 func _exit_tree() -> void:
@@ -60,6 +61,29 @@ func _exit_tree() -> void:
 		Events.event.disconnect(_on_event)
 	if GameAudio.voice_syllable.is_connected(_on_syllable):
 		GameAudio.voice_syllable.disconnect(_on_syllable)
+
+
+## Combat beats from the World's presentation layer.
+func _on_presented(kind: String, data: Dictionary) -> void:
+	if kind == "crit" and bool(data.get("party", false)):
+		fire("crit", data)
+
+
+var _low_t := 0.0
+
+
+## Companions badly hurt in a fight say so (polled once a second).
+func _check_low_health(delta: float) -> void:
+	_low_t -= delta
+	if _low_t > 0.0:
+		return
+	_low_t = 1.0
+	for uid in Game.state.party:
+		var a: Actor = world.actors.get(uid, null)
+		if a == null or a.sheet.is_downed() or a.sheet.dead:
+			continue
+		if float(a.sheet.hp) / float(maxi(1, a.sheet.max_hp())) < 0.3:
+			fire("low_health", {"uid": String(uid)})
 
 
 func _on_syllable(channel: String, amp: float) -> void:
@@ -251,6 +275,8 @@ func _process(delta: float) -> void:
 		else:
 			i += 1
 	var calm := not world.combat.active
+	if not calm:
+		_check_low_health(delta)
 	if calm:
 		_hook_t -= delta
 		if _hook_t <= 0.0:

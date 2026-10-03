@@ -40,7 +40,7 @@ func _ready() -> void:
 	top_bar.color = Color(0, 0, 0, 0.92)
 	top_bar.set_anchors_preset(Control.PRESET_TOP_WIDE)
 	top_bar.custom_minimum_size = Vector2(0, 90)
-	top_bar.size = Vector2(1920, 90)
+	top_bar.offset_bottom = 90
 	add_child(top_bar)
 	# The bottom panel hugs its content and grows upwards from the screen edge.
 	bottom = PanelContainer.new()

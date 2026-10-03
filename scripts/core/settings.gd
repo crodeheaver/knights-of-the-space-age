@@ -34,6 +34,7 @@ var values := {
 	"autopause_queue_empty": false, "autopause_target_dead": false, "tutorials": true, "hold_on_stealth": true,
 	"fullscreen": false, "damage_numbers": true, "dev_mode": false, "edge_pan": false, "auto_attack": true,
 	"voice_volume": 0.8, "text_speed": 45.0, "banter": "normal", "camera_mode": "follow", "camera_swing": true,
+	"overhead_health": "combat",
 }
 var bindings: Dictionary = {}
 
