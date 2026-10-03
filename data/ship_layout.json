@@ -120,7 +120,12 @@
    "accent": "#3fb6b0",
    "light": "#cfe6ff",
    "discover_xp": 20,
-   "checkpoint": true
+   "checkpoint": true,
+   "on_enter": [
+    {
+     "bark": "an_warden_checkpoint"
+    }
+   ]
   },
   "armory": {
    "name": "Security Armory",
@@ -211,7 +216,12 @@
    "light": "#e6fff2",
    "discover_xp": 20,
    "checkpoint": true,
-   "music": "music_tension"
+   "music": "music_tension",
+   "on_enter": [
+    {
+     "bark": "an_warden_medical"
+    }
+   ]
   },
   "ward": {
    "name": "Sealed Passenger Ward",
@@ -265,7 +275,12 @@
    "light": "#ffc890",
    "discover_xp": 20,
    "checkpoint": true,
-   "music": "music_tension"
+   "music": "music_tension",
+   "on_enter": [
+    {
+     "bark": "an_warden_engineering"
+    }
+   ]
   },
   "workshop": {
    "name": "Engineering Workshop",
@@ -348,7 +363,12 @@
      -1
     ]
    ],
-   "light_energy": 0.85
+   "light_energy": 0.85,
+   "on_enter": [
+    {
+     "bark": "an_warden_archive"
+    }
+   ]
   },
   "coldstore": {
    "name": "Cold Storage",
@@ -384,7 +404,12 @@
    "light": "#ffe0b8",
    "discover_xp": 20,
    "checkpoint": true,
-   "music": "music_tension"
+   "music": "music_tension",
+   "on_enter": [
+    {
+     "bark": "an_warden_command"
+    }
+   ]
   },
   "bay": {
    "name": "Evacuation Bay 2",
@@ -404,7 +429,12 @@
    "discover_xp": 20,
    "checkpoint": true,
    "music": "music_tension",
-   "light_energy": 1.0
+   "light_energy": 1.0,
+   "on_enter": [
+    {
+     "bark": "an_warden_bay"
+    }
+   ]
   }
  },
  "doors": [
@@ -3631,7 +3661,8 @@
     "accent": "a1"
    },
    "armor_look": "padded_vest",
-   "dialogue": "steward"
+   "dialogue": "steward",
+   "idle": "fidget"
   },
   "dalia": {
    "name": "Dalia Venn",
@@ -3650,7 +3681,8 @@
     "accent": "a3"
    },
    "armor_look": "travel_jacket",
-   "dialogue": "venn_family"
+   "dialogue": "venn_family",
+   "idle": "talk"
   },
   "ilo": {
    "name": "Ilo Venn",
@@ -3669,7 +3701,8 @@
     "accent": "a3"
    },
    "armor_look": "travel_jacket",
-   "dialogue": "venn_family"
+   "dialogue": "venn_family",
+   "idle": "fidget"
   },
   "ketterick": {
    "name": "Brann Ketterick",
@@ -3688,7 +3721,8 @@
     "accent": "a4"
    },
    "armor_look": "travel_jacket",
-   "dialogue": "ketterick"
+   "dialogue": "ketterick",
+   "idle": "cards"
   },
   "iona_npc": {
    "name": "Iona Rell",
@@ -3745,7 +3779,8 @@
     "accent": "a4"
    },
    "armor_look": "operator_coat",
-   "dialogue": "varga_triage"
+   "dialogue": "varga_triage",
+   "idle": "work"
   },
   "corin": {
    "name": "Corin Ashe",
@@ -3825,6 +3860,7 @@
    },
    "armor_look": "travel_jacket",
    "dialogue": "ward_patient",
+   "idle": "fidget",
    "if": [
     {
      "flag": "ward_open"
@@ -3849,6 +3885,7 @@
    },
    "armor_look": "travel_jacket",
    "dialogue": "ward_patient",
+   "idle": "fidget",
    "if": [
     {
      "flag": "ward_open"
@@ -3873,6 +3910,7 @@
    },
    "armor_look": "travel_jacket",
    "dialogue": "ward_patient",
+   "idle": "fidget",
    "if": [
     {
      "flag": "ward_open"
@@ -3897,6 +3935,7 @@
    },
    "armor_look": "travel_jacket",
    "dialogue": "ward_patient",
+   "idle": "fidget",
    "if": [
     {
      "flag": "ward_open"
@@ -3921,6 +3960,7 @@
    },
    "armor_look": "travel_jacket",
    "dialogue": "ward_patient",
+   "idle": "fidget",
    "if": [
     {
      "flag": "ward_open"
@@ -3973,7 +4013,8 @@
     "accent": "a2"
    },
    "armor_look": "security_weave",
-   "dialogue": "varr"
+   "dialogue": "varr",
+   "idle": "guard"
   }
  },
  "triggers": [

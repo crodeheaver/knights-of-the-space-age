@@ -61,6 +61,10 @@ var _pt := 0.0
 var _pres_yaw := 0.0
 var _head_yaw := 0.0
 var _glow_boost := 0.0
+## Ambient idle for people standing about: "" (glance around), "talk",
+## "cards", "work", "guard", "fidget". Phase keeps a crowd out of step.
+var idle_style := ""
+var idle_phase := 0.0
 
 const GESTURE_LEN := {"nod": 0.8, "shake": 0.9, "shrug": 0.9, "gesture": 1.2, "point": 1.0, "look_away": 1.8}
 
@@ -573,7 +577,7 @@ func present(dt: float, idle: bool = true) -> bool:
 	if _glow_boost > 0.0:
 		_glow_boost = maxf(0.0, _glow_boost - dt * 6.0)
 		_apply_glow()
-	return pres_on or (downed and down_amt < 0.999)
+	return pres_on or pres_talk > 0.0 or pres_gesture != "" or (downed and down_amt < 0.999)
 
 
 func look_at_point(p: Vector3) -> void:
@@ -633,6 +637,7 @@ func _anim_humanoid() -> void:
 	var bob := absf(sin(cyc)) * 0.04 * walk
 	var breathe := sin(t * 2.0) * 0.01
 	hips.position.y = (1.1 if model == "sentinel" else 0.95) + bob + breathe - crouch * 0.18
+	hips.position.x = 0.0
 	if leg_l:
 		leg_l.rotation_degrees.x = swing - crouch * 25.0
 		leg_r.rotation_degrees.x = -swing - crouch * 25.0
@@ -670,6 +675,41 @@ func _anim_humanoid() -> void:
 	else:
 		body.rotation_degrees.x = 0.0
 		body.position.y = 0.0
+	_idle_humanoid(walk)
+
+
+## Standing-still life: a glance around for everyone, plus a per-character
+## habit (talking with their hands, playing cards, working a console...).
+func _idle_humanoid(walk: float) -> void:
+	if head == null or model == "sentinel" or pres_on:
+		return
+	if walk > 0.05 or one_shot != "" or down_amt > 0.0 or crouch > 0.1:
+		head.rotation_degrees = Vector3.ZERO
+		return
+	var tt := t + idle_phase
+	var glance := sin(tt * 0.31) * sin(tt * 0.17 + 1.3)
+	head.rotation_degrees = Vector3(sin(tt * 0.23) * 3.0, glance * (24.0 if idle_style != "" else 12.0), 0.0)
+	if arm_l == null or arm_r == null:
+		return
+	match idle_style:
+		"talk":
+			var beat := maxf(0.0, sin(tt * 1.4))
+			arm_r.rotation_degrees += Vector3(-30.0 * beat * beat, 0.0, 10.0 * beat)
+			head.rotation_degrees.x += 4.0 * sin(tt * 5.0) * beat
+		"cards":
+			arm_l.rotation_degrees = Vector3(-40.0, 0.0, -12.0)
+			arm_r.rotation_degrees = Vector3(-42.0 + 6.0 * maxf(0.0, sin(tt * 2.2)), 0.0, 12.0)
+			head.rotation_degrees.x = 14.0
+		"work":
+			arm_l.rotation_degrees = Vector3(-55.0 + 4.0 * sin(tt * 6.0), 0.0, -8.0)
+			arm_r.rotation_degrees = Vector3(-55.0 + 4.0 * sin(tt * 6.0 + 1.7), 0.0, 8.0)
+			head.rotation_degrees.x = 18.0
+		"guard":
+			arm_l.rotation_degrees = Vector3(-38.0, 0.0, 38.0)
+			arm_r.rotation_degrees = Vector3(-38.0, 0.0, -38.0)
+		"fidget":
+			hips.position.x = sin(tt * 0.6) * 0.025
+			torso.rotation_degrees.z = sin(tt * 0.6) * 2.0
 
 
 func _anim_drone() -> void:

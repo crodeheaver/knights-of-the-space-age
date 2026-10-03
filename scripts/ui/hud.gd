@@ -323,6 +323,11 @@ func _rebuild_cards() -> void:
 		lu.visible = false
 		lu.add_theme_color_override("font_color", UIKit.ACCENT2)
 		v.add_child(lu)
+		# A companion who has asked to talk (KOTOR's "can we talk?").
+		var tk := UIKit.button("WANTS TO TALK", func() -> void: world.talk_companion(uid), "%s has something to say. Talk now." % s.display_name)
+		tk.add_theme_color_override("font_color", UIKit.GOOD)
+		tk.visible = uid != "player" and not ShipLife.pending_hook(uid).is_empty()
+		v.add_child(tk)
 		var uid_c := uid
 		card.gui_input.connect(func(e: InputEvent) -> void:
 			if e is InputEventMouseButton and (e as InputEventMouseButton).pressed and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
@@ -677,13 +682,19 @@ func _show_toast(text: String, kind: String) -> void:
 			col = UIKit.ACCENT2
 		"disapprove":
 			col = Color("#ff8a7a")
+		"bark":
+			col = Color("#f2e6c8")
+		"warden":
+			col = Color("#ff8a7a")
+		"intercom":
+			col = UIKit.ACCENT2
 		"mercy":
 			col = UIKit.MERCY
 		"dominion":
 			col = UIKit.DOMINION
 		"xp":
 			col = Color("#b9a7ff")
-	var caption := kind == "story" and bool(Settings.get_v("subtitles"))
+	var caption := (kind in ["story", "bark", "warden", "intercom"]) and bool(Settings.get_v("subtitles"))
 	var l := UIKit.label(text, 21 if caption else 17, col, true)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var p := UIKit.panel(l, Color(0.04, 0.05, 0.06, 0.88 if caption else 0.8))
@@ -716,6 +727,8 @@ func _on_log(entry: Dictionary) -> void:
 			col = "#9fe6e0"
 		"stealth":
 			col = "#b9a7ff"
+		"bark":
+			col = "#d8c9a8"
 	var line := "[color=%s]%s[/color]" % [col, text]
 	if detail != "":
 		line = "[hint=%s]%s ⓘ[/hint]" % [detail.replace("=", ":"), line]

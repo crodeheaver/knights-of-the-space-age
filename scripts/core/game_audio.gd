@@ -10,7 +10,7 @@ const UI_SOUNDS := ["ui_click", "ui_open", "ui_error", "ui_confirm", "quest", "l
 	"infl_up", "infl_down", "align_mercy", "align_dominion"]
 ## Natural syllable spacing per voice bank, in seconds (see tools/gen_audio.py).
 const VOICE_PACE := {"hlo": 0.17, "hhi": 0.15, "syn": 0.12, "wrd": 0.24}
-const VOICE_CHANNELS := ["dialogue", "world"]
+const VOICE_CHANNELS := ["dialogue", "world", "ship"]
 
 ## Emitted for every babble syllable as it plays (speaker glow, mouth flap).
 signal voice_syllable(channel: String, amp: float)

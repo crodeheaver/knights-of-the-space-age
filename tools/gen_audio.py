@@ -914,6 +914,16 @@ def align_dominion(rng):
     return reverb(add(scale(chord, 0.5), scale(sub, 0.7)), room=0.5, damp=0.5, wet=0.2)
 
 
+@sound("pa_chime", "SFX", "Ship PA chime before an announcement: three soft FM bells G5-E5-C5 with a hall reverb.")
+def pa_chime(rng):
+    n = ns(1.15)
+    out = [0.0] * n
+    for start, name in ((0.0, "G5"), (0.2, "E5"), (0.4, "C5")):
+        st = ns(start)
+        place(out, fm_bell(hz(name), n - st, ratio=2.0, index=0.6, tau=0.35), st, 0.7)
+    return reverb(lp1(out, 5000.0), room=0.75, damp=0.4, wet=0.35)
+
+
 # ---- alien-language voices -----------------------------------------------------
 # Conversations are "voiced" like the old d20 space RPGs: lines are babbled in a
 # made-up language from banks of short synthesised syllables. Each syllable is

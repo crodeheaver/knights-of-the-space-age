@@ -151,6 +151,10 @@ func _debug_open(what: String) -> void:
 						world.dialogue.choose(int(world.dialogue.choices()[0]["index"]))
 			elif what.begins_with("cinematic:"):
 				Cinematics.play(self, what.substr(10))
+			elif what.begins_with("bark:") and world.ship_life != null:
+				world.ship_life.say_line(what.substr(5), true)
+			elif what == "banter" and world.ship_life != null:
+				world.ship_life.try_banter()
 			else:
 				open_game_menu(what)
 
@@ -184,6 +188,12 @@ func load_world() -> void:
 	dialogue_ui.main = self
 	screen.add_child(dialogue_ui)
 	dialogue_ui.visible = false
+	# Ambient voices: barks, banter, announcements, companions asking to talk.
+	var sl := ShipLife.new()
+	sl.name = "ShipLife"
+	world.add_child(sl)
+	sl.setup(world)
+	world.ship_life = sl
 	if Game.state.dev_mode or bool(Settings.get_v("dev_mode")):
 		pass
 
@@ -499,6 +509,12 @@ func _interact_nearest() -> void:
 		if aa.role == "npc" and not aa.sheet.dead and aa.position.distance_to(lead.position) < bd:
 			bd = aa.position.distance_to(lead.position)
 			best = aa
+	# A companion who has asked to talk, standing right here.
+	for uid in Game.state.party:
+		var ca: Actor = world.actors.get(uid, null)
+		if ca != null and ca != lead and not ShipLife.pending_hook(String(uid)).is_empty() and ca.position.distance_to(lead.position) < minf(bd, 2.5):
+			world.talk_companion(String(uid))
+			return
 	if best is WorldObject:
 		world.cmd_interact(lead, best, "")
 	elif best is Actor:

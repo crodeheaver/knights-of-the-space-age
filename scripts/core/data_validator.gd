@@ -33,6 +33,7 @@ func validate_all(d: Node) -> Array[String]:
 	_dialogues()
 	_voices()
 	_cinematics()
+	_ship_life()
 	_layout()
 	_encounters()
 	_builds()
@@ -262,6 +263,8 @@ func _eff_check(e: Variant, where: String) -> void:
 			_feat_ok(String(x["grant_feat"]), where)
 		if x.has("grant_power"):
 			_power_ok(String(x["grant_power"]), where)
+		if x.has("bark") and db.ship_line(String(x["bark"])).is_empty():
+			err("%s: unknown bark '%s'" % [where, x["bark"]])
 		if x.has("influence") and not db.companions.has(String(x["influence"])):
 			err("%s: unknown companion '%s'" % [where, x["influence"]])
 		if (x.has("xp") or x.has("alignment") or x.has("influence")) and not x.has("key"):
@@ -393,11 +396,71 @@ func _cinematics() -> void:
 				err("%s: speaker '%s' has no voice" % [sw, sp])
 
 
+const SHIP_LIFE_ON := ["combat_started", "combat_ended", "encounter_started", "enemy_killed", "ally_downed", "ally_recovered",
+	"area_entered", "flag", "approve", "disapprove", "rested", "timer", "low_health", "crit"]
+const SHIP_LIFE_SPEAKERS := ["warden", "intercom", "reclaimer", "drone"]
+
+
+func _ship_life() -> void:
+	var sl: Dictionary = db.ship_life
+	if sl.is_empty():
+		err("ship_life: missing")
+		return
+	var seen := {}
+	var areas: Dictionary = DB.dict(db.layout, "areas")
+	var lines: Array = []
+	for sec in ["barks", "announcements"]:
+		for l in sl.get(sec, []):
+			lines.append(["%s %s" % [sec, l.get("id", "?")], l])
+	for b in sl.get("banter", []):
+		var bw := "banter %s" % b.get("id", "?")
+		if seen.has(String(b.get("id", ""))):
+			err(bw + ": duplicate id")
+		seen[String(b.get("id", ""))] = true
+		var area := String(b.get("area", "any"))
+		if area != "any" and not areas.has(area):
+			err("%s: unknown area %s" % [bw, area])
+		_cond_check(b.get("if", []), bw)
+		if (b.get("lines", []) as Array).is_empty():
+			err(bw + ": no lines")
+		for l in b.get("lines", []):
+			lines.append([bw, l])
+	for pair in lines:
+		var where := String(pair[0])
+		var l: Dictionary = pair[1]
+		if l.has("id"):
+			if seen.has(String(l["id"])):
+				err(where + ": duplicate id")
+			seen[String(l["id"])] = true
+			if l.has("on") and not SHIP_LIFE_ON.has(String(l["on"])):
+				err("%s: unknown event '%s'" % [where, l["on"]])
+			_cond_check(l.get("if", []), where)
+		var sp := String(l.get("speaker", ""))
+		if not (db.companions.has(sp) or SHIP_LIFE_SPEAKERS.has(sp) or DB.dict(db.layout, "npcs").has(sp)):
+			err("%s: unknown speaker '%s'" % [where, sp])
+		if String(l.get("text", "")).strip_edges() == "":
+			err(where + ": empty text")
+	for h in sl.get("hooks", []):
+		var hw := "hook %s" % h.get("id", "?")
+		var comp := String(h.get("companion", ""))
+		if not db.companions.has(comp):
+			err("%s: unknown companion %s" % [hw, comp])
+			continue
+		_cond_check(h.get("if", []), hw)
+		var talk := String(db.companions[comp].get("dialogue", comp + "_talk"))
+		var dtext := JSON.stringify(db.dialogues.get(talk, {}))
+		for k in ["flag", "done_flag"]:
+			if String(h.get(k, "")) == "" or not dtext.contains("\"%s\"" % String(h[k])):
+				err("%s: %s '%s' is not used by %s" % [hw, k, h.get(k, ""), talk])
+
+
 func _layout() -> void:
 	var lay: Dictionary = db.layout
 	if lay.is_empty():
 		return
 	var areas: Dictionary = lay.get("areas", {})
+	for aid in areas.keys():
+		_eff_check(DB.dict(lay, "areas")[aid].get("on_enter", []), "area %s on_enter" % aid)
 	var ids := {}
 	for ob in lay.get("objects", []):
 		var oid := String(ob.get("id", ""))

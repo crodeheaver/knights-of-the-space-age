@@ -58,6 +58,7 @@ func setup(s: CharacterSheet, r: String, w: World) -> void:
 	add_child(visual)
 	var model := String(s.appearance.get("model", "humanoid"))
 	visual.build(model, s.appearance, s)
+	visual.idle_phase = float(absi(hash(uid)) % 628) / 100.0
 	stationary = bool(s.overrides.get("stationary", false))
 	label = Label3D.new()
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED

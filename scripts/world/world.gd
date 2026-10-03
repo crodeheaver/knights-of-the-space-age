@@ -39,6 +39,12 @@ var _pending_interact: Dictionary = {}
 var dialogue: DialogueEngine = null
 var dialogue_npc: Actor = null
 var stage: DialogueStage = null
+var ship_life: ShipLife = null  # set by Main; absent in tests and bots
+## Materials of the wall trims (shipwide pulses for announcements and alerts).
+var trim_materials: Array[StandardMaterial3D] = []
+var _trim_pulse := 0.0
+var _trim_pulse_len := 1.0
+var _trim_pulse_col := Color.WHITE
 var _present: Dictionary = {}  # ActorVisual -> true, ticked in real time
 var bash_jobs: Array = []
 var _pending_corpses: Array = []
@@ -49,6 +55,9 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	grid.setup(DB.layout)
 	LevelBuilder.build(self, DB.layout, grid)
+	trim_materials = [MeshKit.glow_material()]
+	for m in trim_materials:
+		m.albedo_color = Color.WHITE
 	fx = FX.new()
 	add_child(fx)
 	_restore_explored()
@@ -197,6 +206,7 @@ func spawn_npc(nid: String, force: bool = false) -> Actor:
 		s.equipment["body"] = ItemInst.make(String(n["armor_look"]))
 	var a := _make_actor(s, "npc")
 	a.npc_id = nid
+	a.visual.idle_style = String(n.get("idle", ""))
 	var p: Array = ns.get("pos", n.get("pos", [0, 0]))
 	a.set_pos(Vector3(float(p[0]), 0, float(p[1])))
 	a.set_facing_deg(float(ns.get("rot", n.get("rot", 0))))
@@ -2263,11 +2273,31 @@ func _on_voice_syllable(channel: String, amp: float) -> void:
 func _process(delta: float) -> void:
 	if stage != null:
 		stage.tick(delta)
+	if _trim_pulse > 0.0:
+		_trim_pulse = maxf(0.0, _trim_pulse - delta)
+		var k := sin(PI * (1.0 - _trim_pulse / _trim_pulse_len))
+		var amp := 0.45 if bool(Settings.get_v("reduce_flash")) else 1.0
+		for m in trim_materials:
+			m.albedo_color = Color.WHITE.lerp(_trim_pulse_col, k * amp) if _trim_pulse > 0.0 else Color.WHITE
 	if not _present.is_empty():
+		var live := sim_running()
 		for v in _present.keys():
-			var av: ActorVisual = v
-			if not is_instance_valid(av) or not av.present(delta, false):
+			if not is_instance_valid(v):
 				_present.erase(v)
+				continue
+			var av: ActorVisual = v
+			# Paused: only a fall still settles; a remark's gestures wait.
+			if not live and not (av.downed and av.down_amt < 0.999):
+				continue
+			if not av.present(delta, false):
+				_present.erase(v)
+
+
+## Washes the ship's wall trims in a colour for a moment (announcements).
+func pulse_trims(col: Color, dur: float) -> void:
+	_trim_pulse_col = col
+	_trim_pulse_len = maxf(0.1, dur)
+	_trim_pulse = _trim_pulse_len
 
 
 ## Lets a visual finish settling (e.g. a fall) even while paused.

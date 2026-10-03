@@ -9,7 +9,7 @@ const SFX := [
 	"alert", "alarm", "door", "loot", "bash", "blaster", "rifle", "ion", "drone", "heavy_blaster",
 	"blade", "lumen", "punch", "baton", "heavy", "spider", "hit", "crit", "miss", "deflect",
 	"explosion", "cast", "heal", "downed", "step",
-	"infl_up", "infl_down", "align_mercy", "align_dominion",
+	"infl_up", "infl_down", "align_mercy", "align_dominion", "pa_chime",
 ]
 const AMBIENT := ["amb_ship"]
 const MUSIC := ["music_menu", "music_explore", "music_tension", "music_combat", "music_ending"]

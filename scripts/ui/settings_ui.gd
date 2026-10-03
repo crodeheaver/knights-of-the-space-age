@@ -61,6 +61,25 @@ func _check(key: String, label: String, tip: String = "") -> void:
 		_body.add_child(UIKit.label("      " + tip, 14, UIKit.DIM, true))
 
 
+## A row of toggle buttons for a setting with a few named values.
+func _choice(key: String, label: String, options: Array, tip: String = "") -> void:
+	var row := UIKit.hbox(8)
+	var l := UIKit.label(label, 17)
+	l.custom_minimum_size = Vector2(300, 0)
+	row.add_child(l)
+	for o in options:
+		var val := String(o[0])
+		var b := UIKit.button(String(o[1]), func() -> void:
+			Settings.set_v(key, val)
+			_render())
+		b.toggle_mode = true
+		b.button_pressed = String(Settings.get_v(key)) == val
+		row.add_child(b)
+	_body.add_child(row)
+	if tip != "":
+		_body.add_child(UIKit.label("      " + tip, 14, UIKit.DIM, true))
+
+
 func _slider(key: String, label: String, lo: float, hi: float, step: float, fmt: String = "%.0f%%", scale := 100.0) -> void:
 	var row := UIKit.hbox(10)
 	var l := UIKit.label(label, 17)
@@ -104,6 +123,9 @@ func _gameplay() -> void:
 	_check("autopause_target_dead", "Pause when your target is defeated")
 	_body.add_child(UIKit.header("Combat"))
 	_check("auto_attack", "Auto-attack", "When combat starts and you have queued nothing, your character queues a basic attack on the selected (or nearest) enemy, and keeps attacking the nearest enemy when the target falls. Queuing anything, or moving, replaces it.")
+	_body.add_child(UIKit.header("Party"))
+	_choice("banter", "Party chatter", [["off", "Off"], ["rare", "Rare"], ["normal", "Normal"], ["often", "Often"]],
+		"How often companions talk among themselves while exploring and call out in combat. Ship announcements always play.")
 	_body.add_child(UIKit.header("Assistance"))
 	_check("tutorials", "Show tutorial tips", "Tips you have already seen stay readable in Journal → Tutorials.")
 	_check("hold_on_stealth", "Companions hold position when you enter stealth")
@@ -163,7 +185,7 @@ func _input(event: InputEvent) -> void:
 func _display() -> void:
 	_body.add_child(UIKit.header("Text and interface"))
 	_slider("ui_scale", "Interface & text scale", 0.75, 1.6, 0.05)
-	_check("subtitles", "Captions for ambient speech", "Lines spoken outside conversations (radio calls, companions) are shown larger and stay on screen longer, scaled to their length.")
+	_check("subtitles", "Captions for ambient speech", "Ship announcements and radio calls are shown larger and stay on screen longer, scaled to their length. Companions' remarks appear above their heads and in the log.")
 	_body.add_child(UIKit.header("Conversations"))
 	_text_speed()
 	_check("fullscreen", "Fullscreen")

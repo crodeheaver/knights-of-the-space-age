@@ -32,6 +32,7 @@ var builds: Dictionary = {}
 var dialogues: Dictionary = {}
 var voices: Dictionary = {}
 var cinematics: Dictionary = {}
+var ship_life: Dictionary = {}
 var load_errors: Array[String] = []
 
 
@@ -66,6 +67,7 @@ func load_all() -> void:
 	builds = _load("builds.json")
 	voices = _load("voices.json")
 	cinematics = _load("cinematics.json")
+	ship_life = _load("ship_life.json")
 	dialogues.clear()
 	var ddir := DATA_DIR + "dialogue/"
 	var files := DirAccess.get_files_at(ddir)
@@ -150,6 +152,15 @@ func voice_for(sid: String) -> Dictionary:
 		v["pitch"] = 0.9 + float(h % 21) / 100.0
 	v["count"] = int(dict(voices, "banks").get(String(v.get("bank", "")), 0))
 	return v
+
+
+## An ambient line by id (barks and announcements in data/ship_life.json).
+func ship_line(id: String) -> Dictionary:
+	for sec in ["barks", "announcements"]:
+		for l in arr(ship_life, sec):
+			if String(l.get("id", "")) == id:
+				return l
+	return {}
 
 
 func item_name(id: String) -> String:

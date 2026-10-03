@@ -10,7 +10,7 @@ const KNOWN := ["set_flag", "value", "inc_flag", "by", "alignment", "key", "reas
 	"start_encounter", "resolve_encounter", "resolution", "end_dialogue", "heal_party", "damage_party", "dtype", "world", "set", "event", "data",
 	"codex", "tutorial", "notify", "grant_feat", "grant_power", "who", "spend_energy", "survivors", "open", "minigame",
 	"cinematic", "then", "status", "duration", "teleport", "npc", "npc_state", "remove_npc", "autosave", "combat_hostile", "faction", "_note", "sound",
-	"start_dialogue", "enemy", "area_damage", "radius", "dice", "reveal_area", "evac"]
+	"start_dialogue", "enemy", "area_damage", "radius", "dice", "reveal_area", "evac", "bark"]
 
 
 static func apply_all(effects: Variant, st: GameState, ctx: Dictionary = {}) -> Array[String]:
@@ -151,6 +151,9 @@ static func apply_one(e: Dictionary, st: GameState, ctx: Dictionary) -> Array[St
 	if e.has("evac"):
 		evac(st, String(e["evac"]))
 		log.append("Load-out: %s" % String(e["evac"]))
+	if e.has("bark"):
+		# An ambient line (data/ship_life.json): presentation only.
+		Events.post("world_effect", {"type": "bark", "id": String(e["bark"])})
 	if e.has("end_dialogue"):
 		Events.post("world_effect", {"type": "end_dialogue"})
 	return log

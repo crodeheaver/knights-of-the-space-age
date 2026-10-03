@@ -1,0 +1,980 @@
+{
+ "config": {
+  "range": 18.0,
+  "bark_gap": 6.0,
+  "speaker_gap": 10.0,
+  "cooldown": 90.0,
+  "banter_gap": [
+   70,
+   140
+  ],
+  "announce_gap": [
+   110,
+   200
+  ]
+ },
+ "barks": [
+  {
+   "id": "bk_iona_cs_1",
+   "on": "combat_started",
+   "speaker": "iona",
+   "text": "Contact! Get to cover.",
+   "chance": 0.5
+  },
+  {
+   "id": "bk_iona_cs_2",
+   "on": "combat_started",
+   "speaker": "iona",
+   "text": "Here they come. Stay off the open deck.",
+   "chance": 0.5
+  },
+  {
+   "id": "bk_tav_cs_1",
+   "on": "combat_started",
+   "speaker": "tav7",
+   "text": "Hostiles. I am going to be brave now. Please notice.",
+   "chance": 0.4
+  },
+  {
+   "id": "bk_tav_cs_2",
+   "on": "combat_started",
+   "speaker": "tav7",
+   "text": "I will keep you upright. That is my whole plan.",
+   "chance": 0.4
+  },
+  {
+   "id": "bk_iona_chk",
+   "on": "encounter_started",
+   "speaker": "iona",
+   "text": "That's Kell's checkpoint. Was. Make it count.",
+   "match": {
+    "id": "enc_checkpoint"
+   },
+   "once": true
+  },
+  {
+   "id": "bk_iona_med",
+   "on": "encounter_started",
+   "speaker": "iona",
+   "text": "Cutters on the patients! Pull them off!",
+   "match": {
+    "id": "enc_medical"
+   },
+   "once": true
+  },
+  {
+   "id": "bk_tav_eng",
+   "on": "encounter_started",
+   "speaker": "tav7",
+   "text": "The spiders are using the coolant fog as cover. Please do not breathe it.",
+   "match": {
+    "id": "enc_engineering"
+   },
+   "once": true
+  },
+  {
+   "id": "bk_iona_arc",
+   "on": "encounter_started",
+   "speaker": "iona",
+   "text": "Haldis amber. Reclaimers. They came for the hold.",
+   "match": {
+    "id": "enc_archive"
+   },
+   "once": true
+  },
+  {
+   "id": "bk_tav_arc",
+   "on": "encounter_started",
+   "speaker": "tav7",
+   "text": "They are not firing near the cores. Note that.",
+   "match": {
+    "id": "enc_archive"
+   },
+   "once": true,
+   "delay": 2.5
+  },
+  {
+   "id": "bk_iona_bay",
+   "on": "encounter_started",
+   "speaker": "iona",
+   "text": "Bay's hot! Keep the Petrel between us and their guns.",
+   "match": {
+    "id": "enc_bay"
+   },
+   "once": true
+  },
+  {
+   "id": "bk_rec_cs_1",
+   "on": "combat_started",
+   "speaker": "reclaimer",
+   "text": "Concord! Down on the deck!",
+   "chance": 0.35
+  },
+  {
+   "id": "bk_rec_cs_2",
+   "on": "combat_started",
+   "speaker": "reclaimer",
+   "text": "For the lantern halls!",
+   "chance": 0.35
+  },
+  {
+   "id": "bk_drn_cs_1",
+   "on": "combat_started",
+   "speaker": "drone",
+   "text": "OBSTRUCTION DETECTED. CLEARING.",
+   "chance": 0.35
+  },
+  {
+   "id": "bk_drn_cs_2",
+   "on": "combat_started",
+   "speaker": "drone",
+   "text": "PLEASE REMAIN STILL.",
+   "chance": 0.35
+  },
+  {
+   "id": "bk_iona_kill_d",
+   "on": "enemy_killed",
+   "speaker": "iona",
+   "text": "Drone down.",
+   "match": {
+    "template": [
+     "picket_drone",
+     "suppression_drone"
+    ]
+   },
+   "chance": 0.35
+  },
+  {
+   "id": "bk_iona_kill_s",
+   "on": "enemy_killed",
+   "speaker": "iona",
+   "text": "Scratch one.",
+   "chance": 0.2
+  },
+  {
+   "id": "bk_tav_kill_s",
+   "on": "enemy_killed",
+   "speaker": "tav7",
+   "text": "Disassembled. Not by the manual's method.",
+   "match": {
+    "template": [
+     "spider_drone",
+     "warden_turret",
+     "warden_sentinel"
+    ]
+   },
+   "chance": 0.4
+  },
+  {
+   "id": "bk_tav_kill_r",
+   "on": "enemy_killed",
+   "speaker": "tav7",
+   "text": "I am remembering their face for the Lantern Office.",
+   "match": {
+    "template": [
+     "reclaimer_breacher",
+     "reclaimer_marksman",
+     "reclaimer_signalist"
+    ]
+   },
+   "chance": 0.3
+  },
+  {
+   "id": "bk_iona_down_p",
+   "on": "ally_downed",
+   "speaker": "iona",
+   "text": "Operator's down! Covering!",
+   "match": {
+    "uid": "player"
+   }
+  },
+  {
+   "id": "bk_tav_down_p",
+   "on": "ally_downed",
+   "speaker": "tav7",
+   "text": "Your vital signs are unacceptable. I am coming.",
+   "match": {
+    "uid": "player"
+   }
+  },
+  {
+   "id": "bk_tav_down_i",
+   "on": "ally_downed",
+   "speaker": "tav7",
+   "text": "Officer Rell is down. Medpac, please. Now, please.",
+   "match": {
+    "uid": "iona"
+   }
+  },
+  {
+   "id": "bk_iona_down_t",
+   "on": "ally_downed",
+   "speaker": "iona",
+   "text": "Tav's hit! Somebody get that chassis up!",
+   "match": {
+    "uid": "tav7"
+   }
+  },
+  {
+   "id": "bk_iona_up",
+   "on": "ally_recovered",
+   "speaker": "iona",
+   "text": "I'm up. That one's going in my report.",
+   "match": {
+    "uid": "iona"
+   }
+  },
+  {
+   "id": "bk_tav_up",
+   "on": "ally_recovered",
+   "speaker": "tav7",
+   "text": "Rebooted. I have lost eleven seconds. I would like them back.",
+   "match": {
+    "uid": "tav7"
+   }
+  },
+  {
+   "id": "bk_iona_ce_1",
+   "on": "combat_ended",
+   "speaker": "iona",
+   "text": "Clear. Check your corners.",
+   "chance": 0.5
+  },
+  {
+   "id": "bk_iona_ce_2",
+   "on": "combat_ended",
+   "speaker": "iona",
+   "text": "That's the last of them. Breathe.",
+   "chance": 0.5
+  },
+  {
+   "id": "bk_tav_ce_1",
+   "on": "combat_ended",
+   "speaker": "tav7",
+   "text": "Hostilities concluded. Shall I inventory the wounded? It is us. We are the wounded.",
+   "chance": 0.4
+  },
+  {
+   "id": "bk_iona_low",
+   "on": "low_health",
+   "speaker": "iona",
+   "text": "I'm bleeding here!",
+   "match": {
+    "uid": "iona"
+   },
+   "cooldown": 40
+  },
+  {
+   "id": "bk_tav_low",
+   "on": "low_health",
+   "speaker": "tav7",
+   "text": "Chassis integrity at one third. This is a polite request for repair.",
+   "match": {
+    "uid": "tav7"
+   },
+   "cooldown": 40
+  },
+  {
+   "id": "bk_iona_crit",
+   "on": "crit",
+   "speaker": "iona",
+   "text": "Good hit.",
+   "chance": 0.3
+  },
+  {
+   "id": "bk_tav_crit",
+   "on": "crit",
+   "speaker": "tav7",
+   "text": "Excellent. Statistically, at least.",
+   "chance": 0.3
+  },
+  {
+   "id": "bk_iona_rest",
+   "on": "rested",
+   "speaker": "iona",
+   "text": "Two minutes. Then we move."
+  },
+  {
+   "id": "bk_tav_rest",
+   "on": "rested",
+   "speaker": "tav7",
+   "text": "I will watch the doors. I do not need to sit. I like to, though.",
+   "delay": 1.5
+  },
+  {
+   "id": "bk_iona_chk_in",
+   "on": "area_entered",
+   "speaker": "iona",
+   "text": "Officer Kell had this post. She'd have hated seeing it like this.",
+   "match": {
+    "area": "checkpoint",
+    "first": true
+   },
+   "once": true,
+   "delay": 1.0
+  },
+  {
+   "id": "bk_iona_med_in",
+   "on": "area_entered",
+   "speaker": "iona",
+   "text": "Varga's deck. If anyone's still breathing in there, she's keeping them that way.",
+   "match": {
+    "area": "medical",
+    "first": true
+   },
+   "once": true,
+   "delay": 1.0
+  },
+  {
+   "id": "bk_iona_ward_in",
+   "on": "area_entered",
+   "speaker": "iona",
+   "text": "...Ward 2.",
+   "match": {
+    "area": "ward",
+    "first": true
+   },
+   "once": true,
+   "delay": 0.8
+  },
+  {
+   "id": "bk_tav_eng_in",
+   "on": "area_entered",
+   "speaker": "tav7",
+   "text": "The drive ring. I was maintained here every quarter. It smells the same. I did not expect that to matter.",
+   "match": {
+    "area": "engineering",
+    "first": true
+   },
+   "once": true,
+   "delay": 1.5
+  },
+  {
+   "id": "bk_tav_arc_in",
+   "on": "area_entered",
+   "speaker": "tav7",
+   "text": "Twenty cores. I can hear them, faintly. That is not a figure of speech.",
+   "match": {
+    "area": "archive",
+    "first": true
+   },
+   "once": true,
+   "delay": 1.5
+  },
+  {
+   "id": "bk_iona_cmd_in",
+   "on": "area_entered",
+   "speaker": "iona",
+   "text": "Varr's in there. Let me talk first. Or don't. Your call.",
+   "match": {
+    "area": "command",
+    "first": true
+   },
+   "once": true,
+   "delay": 1.0
+  },
+  {
+   "id": "bk_tav_bay_in",
+   "on": "area_entered",
+   "speaker": "tav7",
+   "text": "The Petrel. Fifteen seats. I have counted them four times; the number does not change.",
+   "match": {
+    "area": "bay",
+    "first": true
+   },
+   "once": true,
+   "delay": 2.0
+  },
+  {
+   "id": "bk_iona_ok_1",
+   "on": "approve",
+   "speaker": "iona",
+   "text": "That was the right call. I'll remember it."
+  },
+  {
+   "id": "bk_iona_ok_2",
+   "on": "approve",
+   "speaker": "iona",
+   "text": "Huh. You surprised me. In a good way."
+  },
+  {
+   "id": "bk_iona_no_1",
+   "on": "disapprove",
+   "speaker": "iona",
+   "text": "We're going to talk about that later."
+  },
+  {
+   "id": "bk_iona_no_2",
+   "on": "disapprove",
+   "speaker": "iona",
+   "text": "I'd have done that differently. I'd have done it better."
+  },
+  {
+   "id": "bk_tav_ok_1",
+   "on": "approve",
+   "speaker": "tav7",
+   "text": "I approve. I am telling you because I have read that people like to know."
+  },
+  {
+   "id": "bk_tav_ok_2",
+   "on": "approve",
+   "speaker": "tav7",
+   "text": "That was kind. I am adding it to my notes on you."
+  },
+  {
+   "id": "bk_tav_no_1",
+   "on": "disapprove",
+   "speaker": "tav7",
+   "text": "I disagree. I will continue to help. I want that recorded."
+  },
+  {
+   "id": "bk_tav_no_2",
+   "on": "disapprove",
+   "speaker": "tav7",
+   "text": "That decision has been logged. With a frown. I do not have a face for it, but there is a frown."
+  }
+ ],
+ "banter": [
+  {
+   "id": "bn_iona_alone",
+   "area": "any",
+   "if": [
+    {
+     "in_party": "iona"
+    },
+    {
+     "not": {
+      "recruited": "tav7"
+     }
+    },
+    {
+     "cleared": "enc_corridor"
+    }
+   ],
+   "once": true,
+   "lines": [
+    {
+     "speaker": "iona",
+     "text": "For the record: I didn't sign up to escort a Lattice operator through a hostile ship."
+    },
+    {
+     "speaker": "iona",
+     "text": "For the record, I'm glad it's you anyway. Don't make me regret saying that.",
+     "delay": 1.2
+    }
+   ]
+  },
+  {
+   "id": "bn_kell",
+   "area": "any",
+   "if": [
+    {
+     "in_party": "iona"
+    },
+    {
+     "in_party": "tav7"
+    },
+    {
+     "flag": "checkpoint_clear"
+    }
+   ],
+   "once": true,
+   "priority": 2,
+   "lines": [
+    {
+     "speaker": "iona",
+     "text": "Tav. You knew Tamsin Kell?"
+    },
+    {
+     "speaker": "tav7",
+     "text": "She requested maintenance on her door chime every week. There was never a fault. I think she liked the company.",
+     "delay": 0.8
+    },
+    {
+     "speaker": "iona",
+     "text": "...Yeah. That sounds like Tamsin.",
+     "delay": 1.0
+    }
+   ]
+  },
+  {
+   "id": "bn_boot",
+   "area": "any",
+   "if": [
+    {
+     "in_party": "iona"
+    },
+    {
+     "in_party": "tav7"
+    }
+   ],
+   "once": true,
+   "lines": [
+    {
+     "speaker": "tav7",
+     "text": "Officer Rell. Your left boot is coolant-burned through the second layer."
+    },
+    {
+     "speaker": "iona",
+     "text": "I know. I was there.",
+     "delay": 0.6
+    },
+    {
+     "speaker": "tav7",
+     "text": "I can patch it. I would like to. It would give my hands something to do that is not fear.",
+     "delay": 0.8
+    },
+    {
+     "speaker": "iona",
+     "text": "...Fine. After. Thank you, Tav.",
+     "delay": 1.0
+    }
+   ]
+  },
+  {
+   "id": "bn_coffee",
+   "area": "engineering",
+   "if": [
+    {
+     "in_party": "iona"
+    },
+    {
+     "in_party": "tav7"
+    }
+   ],
+   "once": true,
+   "priority": 2,
+   "lines": [
+    {
+     "speaker": "iona",
+     "text": "Marsh kept a coffee maker on the drive ring. Against regulations."
+    },
+    {
+     "speaker": "tav7",
+     "text": "It ran at ninety-six degrees. Also against regulations. I never reported it.",
+     "delay": 0.6
+    },
+    {
+     "speaker": "iona",
+     "text": "Look at you. A rule-breaker.",
+     "delay": 0.6
+    },
+    {
+     "speaker": "tav7",
+     "text": "I am practising that too.",
+     "delay": 0.6
+    }
+   ]
+  },
+  {
+   "id": "bn_cores",
+   "area": "archive",
+   "if": [
+    {
+     "in_party": "iona"
+    },
+    {
+     "in_party": "tav7"
+    },
+    {
+     "flag": "index_open"
+    }
+   ],
+   "once": true,
+   "priority": 3,
+   "lines": [
+    {
+     "speaker": "iona",
+     "text": "Twenty cores. Varr told me it was medical data."
+    },
+    {
+     "speaker": "tav7",
+     "text": "It is, in a sense. It is what happened to people.",
+     "delay": 0.8
+    },
+    {
+     "speaker": "iona",
+     "text": "Don't. Not yet. Let me be angry at her for one more hour.",
+     "delay": 1.0
+    }
+   ]
+  },
+  {
+   "id": "bn_count",
+   "area": "any",
+   "if": [
+    {
+     "in_party": "iona"
+    },
+    {
+     "in_party": "tav7"
+    },
+    {
+     "flag": "tav7_disclosed"
+    }
+   ],
+   "once": true,
+   "priority": 2,
+   "lines": [
+    {
+     "speaker": "tav7",
+     "text": "Officer Rell, how many people are aboard?"
+    },
+    {
+     "speaker": "iona",
+     "text": "I don't know anymore. Fewer than this morning.",
+     "delay": 0.8
+    },
+    {
+     "speaker": "tav7",
+     "text": "I keep counting the ones in my storage. I do not know if they count.",
+     "delay": 1.0
+    },
+    {
+     "speaker": "iona",
+     "text": "They count, Tav. Keep counting them.",
+     "delay": 1.2
+    }
+   ]
+  },
+  {
+   "id": "bn_operator",
+   "area": "any",
+   "if": [
+    {
+     "in_party": "iona"
+    },
+    {
+     "in_party": "tav7"
+    },
+    {
+     "any": [
+      {
+       "flag": "used_credential"
+      },
+      {
+       "flag": "custodian_revealed"
+      }
+     ]
+    }
+   ],
+   "once": true,
+   "lines": [
+    {
+     "speaker": "iona",
+     "text": "Operator. When this is over, are you going to tell me what the Lattice actually did?"
+    },
+    {
+     "speaker": "tav7",
+     "text": "I would also like to know. I have a folder.",
+     "delay": 0.8
+    },
+    {
+     "speaker": "iona",
+     "text": "Of course you do.",
+     "delay": 0.6
+    }
+   ]
+  }
+ ],
+ "announcements": [
+  {
+   "id": "an_warden_obstruct",
+   "speaker": "warden",
+   "on": "flag",
+   "match": {
+    "flag": "emergency_started"
+   },
+   "once": true,
+   "delay": 2.0,
+   "text": "ATTENTION. ALL NON-COMMAND PERSONNEL ARE RECLASSIFIED AS ARCHIVE OBSTRUCTIONS. OBSTRUCTIONS WILL BE CLEARED. PLEASE REMAIN STILL."
+  },
+  {
+   "id": "an_warden_checkpoint",
+   "speaker": "warden",
+   "if": [
+    {
+     "flag": "emergency_started"
+    },
+    {
+     "not": {
+      "flag": "warden_neutralized"
+     }
+    },
+    {
+     "not": {
+      "flag": "warden_fate"
+     }
+    }
+   ],
+   "text": "FORWARD CHECKPOINT SEALED. AUTHORIZED PERSONNEL ONLY. CUSTODIAN EXCEPTION ON FILE."
+  },
+  {
+   "id": "an_warden_medical",
+   "speaker": "warden",
+   "if": [
+    {
+     "flag": "emergency_started"
+    },
+    {
+     "not": {
+      "flag": "warden_neutralized"
+     }
+    },
+    {
+     "not": {
+      "flag": "warden_fate"
+     }
+    }
+   ],
+   "text": "MEDICAL DECK: TRIAGE CAPACITY EXCEEDED. ARCHIVE PRIORITY UNCHANGED."
+  },
+  {
+   "id": "an_warden_engineering",
+   "speaker": "warden",
+   "if": [
+    {
+     "flag": "emergency_started"
+    },
+    {
+     "not": {
+      "flag": "warden_neutralized"
+     }
+    },
+    {
+     "not": {
+      "flag": "warden_fate"
+     }
+    }
+   ],
+   "text": "COOLANT LOSS IN THE DRIVE RING. THE ARCHIVE REMAINS AT TEMPERATURE. THANK YOU FOR YOUR PATIENCE."
+  },
+  {
+   "id": "an_warden_archive",
+   "speaker": "warden",
+   "if": [
+    {
+     "flag": "emergency_started"
+    },
+    {
+     "not": {
+      "flag": "warden_neutralized"
+     }
+    },
+    {
+     "not": {
+      "flag": "warden_fate"
+     }
+    }
+   ],
+   "text": "YOU ARE IN THE ARCHIVE HOLD. PLEASE DO NOT TOUCH THE ARCHIVE. PLEASE."
+  },
+  {
+   "id": "an_warden_command",
+   "speaker": "warden",
+   "if": [
+    {
+     "flag": "emergency_started"
+    },
+    {
+     "not": {
+      "flag": "warden_neutralized"
+     }
+    },
+    {
+     "not": {
+      "flag": "warden_fate"
+     }
+    }
+   ],
+   "text": "COMMAND CHAMBER. CUSTODIAN, THE COMMANDER IS EXPECTING YOU. SO AM I."
+  },
+  {
+   "id": "an_warden_bay",
+   "speaker": "warden",
+   "if": [
+    {
+     "flag": "emergency_started"
+    },
+    {
+     "not": {
+      "flag": "warden_neutralized"
+     }
+    },
+    {
+     "not": {
+      "flag": "warden_fate"
+     }
+    }
+   ],
+   "text": "EVACUATION BAY 2. FIFTEEN SEATS. RECOUNTING."
+  },
+  {
+   "id": "an_warden_t1",
+   "speaker": "warden",
+   "on": "timer",
+   "if": [
+    {
+     "flag": "emergency_started"
+    },
+    {
+     "not": {
+      "flag": "warden_neutralized"
+     }
+    },
+    {
+     "not": {
+      "flag": "warden_fate"
+     }
+    }
+   ],
+   "once": true,
+   "text": "REMINDER: RUNNING IN CORRIDORS IS AN OBSTRUCTION."
+  },
+  {
+   "id": "an_warden_t2",
+   "speaker": "warden",
+   "on": "timer",
+   "if": [
+    {
+     "flag": "emergency_started"
+    },
+    {
+     "not": {
+      "flag": "warden_neutralized"
+     }
+    },
+    {
+     "not": {
+      "flag": "warden_fate"
+     }
+    }
+   ],
+   "once": true,
+   "text": "DEFENSE LATTICE AT NINETY-ONE PERCENT. ARCHIVE INTEGRITY AT ONE HUNDRED PERCENT. THIS IS ACCEPTABLE."
+  },
+  {
+   "id": "an_warden_t3",
+   "speaker": "warden",
+   "on": "timer",
+   "if": [
+    {
+     "flag": "emergency_started"
+    },
+    {
+     "not": {
+      "flag": "warden_neutralized"
+     }
+    },
+    {
+     "not": {
+      "flag": "warden_fate"
+     }
+    }
+   ],
+   "once": true,
+   "text": "PASSENGERS WISHING TO FILE A COMPLAINT MAY DO SO AFTER THE ARCHIVE HAS BEEN DELIVERED."
+  },
+  {
+   "id": "an_warden_t4",
+   "speaker": "warden",
+   "on": "timer",
+   "if": [
+    {
+     "flag": "emergency_started"
+    },
+    {
+     "not": {
+      "flag": "warden_neutralized"
+     }
+    },
+    {
+     "not": {
+      "flag": "warden_fate"
+     }
+    },
+    {
+     "flag": "used_credential"
+    }
+   ],
+   "once": true,
+   "text": "CUSTODIAN. YOUR HEART RATE IS ELEVATED. I HAVE NOTED IT. I HAVE NOTED EVERYTHING."
+  },
+  {
+   "id": "an_dray_1",
+   "speaker": "intercom",
+   "on": "timer",
+   "if": [
+    {
+     "flag": "emergency_started"
+    },
+    {
+     "cleared": "enc_corridor"
+    }
+   ],
+   "once": true,
+   "text": "This is Purser Dray. I have everyone from Deck B in the commons. I've counted twice. If you're out there: we're still here."
+  },
+  {
+   "id": "an_dray_2",
+   "speaker": "intercom",
+   "on": "timer",
+   "if": [
+    {
+     "cleared": "enc_medical"
+    }
+   ],
+   "once": true,
+   "text": "Dray again. Someone says the medical deck has gone quiet. If that was you, thank you. Please keep doing it."
+  },
+  {
+   "id": "an_dray_3",
+   "speaker": "intercom",
+   "on": "flag",
+   "match": {
+    "flag": "pumps_restored"
+   },
+   "once": true,
+   "delay": 3.0,
+   "text": "Dray here. The vents just stopped screaming. I don't know who did that. I'm putting them on the manifest twice."
+  }
+ ],
+ "hooks": [
+  {
+   "id": "hk_iona_orrin",
+   "companion": "iona",
+   "flag": "hook_iona_orrin",
+   "done_flag": "iona_orrin_done",
+   "if": [
+    {
+     "in_party": "iona"
+    },
+    {
+     "cleared": "enc_corridor"
+    },
+    {
+     "flag": "checkpoint_clear"
+    }
+   ],
+   "bark": "When you get a second... I need to say something about Jessa Orrin."
+  },
+  {
+   "id": "hk_tav_triage",
+   "companion": "tav7",
+   "flag": "hook_tav_triage",
+   "done_flag": "tav_triage_done",
+   "if": [
+    {
+     "in_party": "tav7"
+    },
+    {
+     "flag": "supplies_decided"
+    },
+    {
+     "cleared": "enc_medical"
+    }
+   ],
+   "bark": "Operator. I have a question about the doctor's arithmetic, when you have a moment."
+  }
+ ]
+}

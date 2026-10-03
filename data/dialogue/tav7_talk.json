@@ -36,6 +36,21 @@
      "next": "after"
     },
     {
+     "text": "You had a question about Dr. Varga's arithmetic?",
+     "next": "triage",
+     "tag": "Tav-7 wants to talk",
+     "if": [
+      {
+       "flag": "hook_tav_triage"
+      },
+      {
+       "not": {
+        "flag": "tav_triage_done"
+       }
+      }
+     ]
+    },
+    {
      "text": "Is there something you haven't told me?",
      "next": "secret",
      "tag": "Trust",
@@ -98,6 +113,68 @@
    "speaker": "tav7",
    "text": "Operational. That is a joke. I am practising.",
    "next": "hub"
+  },
+  "triage": {
+   "speaker": "tav7",
+   "text": "Dr. Varga's reserve. Six doses of trauma gel, eight patients. You chose, and she chose, and I watched. I was built to fix things. I could not fix the arithmetic.",
+   "choices": [
+    {
+     "text": "No one could. Sometimes there's no right answer, only answers.",
+     "next": "triage2",
+     "effects": [
+      {
+       "influence": "tav7",
+       "delta": 3,
+       "key": "triage",
+       "reason": "Shared the weight of the triage"
+      }
+     ],
+     "tone": "compassionate"
+    },
+    {
+     "text": "It isn't your arithmetic to carry, Tav.",
+     "next": "triage2",
+     "effects": [
+      {
+       "influence": "tav7",
+       "delta": 2,
+       "key": "triage",
+       "reason": "Lifted the weight of the triage"
+      }
+     ]
+    },
+    {
+     "text": "We made the call. Move on.",
+     "next": "triage2",
+     "effects": [
+      {
+       "influence": "tav7",
+       "delta": -1,
+       "key": "triage",
+       "reason": "Brushed off the triage"
+      }
+     ],
+     "tone": "hard"
+    }
+   ],
+   "shot": "close"
+  },
+  "triage2": {
+   "speaker": "tav7",
+   "text": "Thank you. I will keep the question. I am told that is what people do with questions like this.",
+   "next": "hub",
+   "effects": [
+    {
+     "set_flag": "tav_triage_done",
+     "value": true
+    },
+    {
+     "xp": 25,
+     "key": "tav_triage",
+     "reason": "Listened to Tav-7"
+    }
+   ],
+   "anim": "nod"
   },
   "after": {
    "speaker": "tav7",

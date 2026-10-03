@@ -33,7 +33,7 @@ var values := {
 	"reduce_flash": false, "difficulty": "standard", "autopause_combat_start": true, "autopause_member_down": true,
 	"autopause_queue_empty": false, "autopause_target_dead": false, "tutorials": true, "hold_on_stealth": true,
 	"fullscreen": false, "damage_numbers": true, "dev_mode": false, "edge_pan": false, "auto_attack": true,
-	"voice_volume": 0.8, "text_speed": 45.0,
+	"voice_volume": 0.8, "text_speed": 45.0, "banter": "normal",
 }
 var bindings: Dictionary = {}
 

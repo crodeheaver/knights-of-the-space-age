@@ -61,6 +61,7 @@ owned by the project and released as CC0-equivalent (no attribution required).
 | `infl_down` | UI | 0.55 s | Companion disapproves: two muted falling triangle notes (D5, A4), low-passed. | original, tools/gen_audio.py, CC0-equivalent / project-owned |
 | `align_mercy` | UI | 0.95 s | Mercy shift: bright major FM bell chord (G5 B5 D6) blooming upward, airy reverb. | original, tools/gen_audio.py, CC0-equivalent / project-owned |
 | `align_dominion` | UI | 0.90 s | Dominion shift: low minor saw sting (C3 Eb3 G3) under a closing filter with a sub thud. | original, tools/gen_audio.py, CC0-equivalent / project-owned |
+| `pa_chime` | SFX | 1.15 s | Ship PA chime before an announcement: three soft FM bells G5-E5-C5 with a hall reverb. | original, tools/gen_audio.py, CC0-equivalent / project-owned |
 | `vox_hlo_01` | Voice | 0.19 s | Babble syllable 1, low human voice: glottal source through three gliding formant filters with a consonant onset. | original, tools/gen_audio.py, CC0-equivalent / project-owned |
 | `vox_hlo_02` | Voice | 0.16 s | Babble syllable 2, low human voice: glottal source through three gliding formant filters with a consonant onset. | original, tools/gen_audio.py, CC0-equivalent / project-owned |
 | `vox_hlo_03` | Voice | 0.15 s | Babble syllable 3, low human voice: glottal source through three gliding formant filters with a consonant onset. | original, tools/gen_audio.py, CC0-equivalent / project-owned |
@@ -120,4 +121,4 @@ owned by the project and released as CC0-equivalent (no attribution required).
 | `music_combat` | Music loop | 54.9 s loop | 140 bpm A minor, 32 bars: driving 16th saw bass with filter envelope, kick/snare/hat/tom/crash kit from noise and sine bursts, side-chain-ducked saw power-chord pad, square 16th arpeggio and a vibrato square lead. | original, tools/gen_audio.py, CC0-equivalent / project-owned |
 | `music_ending` | Music loop | 50.5 s loop | 76 bpm D major, 16 bars: warm detuned pad, round bass with passing fifths, rising FM-bell arpeggio, major-key reprise of the menu theme on a sine/triangle lead, shaker, soft kick and brush snare, swells. | original, tools/gen_audio.py, CC0-equivalent / project-owned |
 
-Total size: 14.8 MB in 94 files.
+Total size: 14.9 MB in 95 files.
