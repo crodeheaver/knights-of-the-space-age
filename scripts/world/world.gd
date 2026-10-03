@@ -38,6 +38,23 @@ var _auto_solo := false
 var _pending_interact: Dictionary = {}
 var dialogue: DialogueEngine = null
 var dialogue_npc: Actor = null
+## Combat presentation beats for listeners such as ShipLife ("crit", "kill",
+## "miss"). A signal rather than Events.post, so the event history is not
+## flooded by every swing.
+signal presented(kind: String, data: Dictionary)
+const DTYPE_COLORS := {"energy": Color("#ffb070"), "kinetic": Color("#ff6a5a"), "ion": Color("#7fd0ff"),
+	"thermal": Color("#ffd27a"), "toxin": Color("#9fd36a"), "resonance": Color("#b9a7ff")}
+
+var stage: DialogueStage = null
+var ship_life: ShipLife = null  # set by Main; absent in tests and bots
+var atmosphere: Atmosphere = null
+var overhead: OverheadBars = null
+## Materials of the wall trims (shipwide pulses for announcements and alerts).
+var trim_materials: Array[StandardMaterial3D] = []
+var _trim_pulse := 0.0
+var _trim_pulse_len := 1.0
+var _trim_pulse_col := Color.WHITE
+var _present: Dictionary = {}  # ActorVisual -> true, ticked in real time
 var bash_jobs: Array = []
 var _pending_corpses: Array = []
 
@@ -46,7 +63,11 @@ func _ready() -> void:
 	Game.world = self
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	grid.setup(DB.layout)
-	LevelBuilder.build(self, DB.layout, grid)
+	var level_info := LevelBuilder.build(self, DB.layout, grid)
+	atmosphere = Atmosphere.new()
+	atmosphere.name = "Atmosphere"
+	add_child(atmosphere)
+	trim_materials = atmosphere.trim_materials()
 	fx = FX.new()
 	add_child(fx)
 	_restore_explored()
@@ -63,14 +84,25 @@ func _ready() -> void:
 	if Game.state.positions.has("_cam"):
 		var cp: Array = Game.state.positions["_cam"]
 		cam.yaw = float(cp[0])
-		cam.pitch = float(cp[1])
-		cam.distance = float(cp[2])
-		cam._apply()
+		# Pitch and zoom only carry over when saved in the current mode.
+		if cp.size() < 4 or String(cp[3]) == cam.mode:
+			cam.pitch = float(cp[1])
+			cam.distance = float(cp[2])
+		cam.set_mode(cam.mode)
+	elif cam.mode == "follow":
+		cam.face_behind()
 	Events.event.connect(_on_event)
+	GameAudio.voice_syllable.connect(_on_voice_syllable)
 	_restore_combat_state()
 	_area_check(true)
+	atmosphere.setup(self, level_info)
+	overhead = OverheadBars.new()
+	overhead.name = "OverheadBars"
+	add_child(overhead)
+	overhead.setup(self)
+	_show_alignment()
 	refresh_markers()
-	GameAudio.ambient("amb_ship")
+	GameAudio.ambient(area_ambience())
 	GameAudio.music(area_music())
 
 
@@ -79,6 +111,8 @@ func _exit_tree() -> void:
 		Game.world = null
 	if Events.event.is_connected(_on_event):
 		Events.event.disconnect(_on_event)
+	if GameAudio.voice_syllable.is_connected(_on_voice_syllable):
+		GameAudio.voice_syllable.disconnect(_on_voice_syllable)
 
 
 # ================================================================ spawning
@@ -192,6 +226,7 @@ func spawn_npc(nid: String, force: bool = false) -> Actor:
 		s.equipment["body"] = ItemInst.make(String(n["armor_look"]))
 	var a := _make_actor(s, "npc")
 	a.npc_id = nid
+	a.visual.idle_style = String(n.get("idle", ""))
 	var p: Array = ns.get("pos", n.get("pos", [0, 0]))
 	a.set_pos(Vector3(float(p[0]), 0, float(p[1])))
 	a.set_facing_deg(float(ns.get("rot", n.get("rot", 0))))
@@ -442,11 +477,17 @@ func area_music() -> String:
 	return String(DB.dict(DB.dict(DB.layout, "areas"), current_area).get("music", "music_explore"))
 
 
+func area_ambience() -> String:
+	return String(DB.dict(DB.dict(DB.layout, "areas"), current_area).get("ambience", "amb_ship"))
+
+
 # ================================================================ pause & modal
 func set_paused(on: bool, reason: String = "") -> void:
 	if game_over:
 		on = true
 	paused = on
+	if atmosphere != null:
+		atmosphere.set_paused(on)
 	pause_reason = reason if on else ""
 	Events.post("pause_changed", {"paused": on, "reason": reason})
 	hud_changed.emit()
@@ -462,6 +503,8 @@ func set_modal(key: String, on: bool) -> void:
 	else:
 		modal.erase(key)
 	Game.block_ui(key, on)
+	if key == "dialogue" or key == "cinematic":
+		refresh_markers()
 	hud_changed.emit()
 
 
@@ -588,10 +631,13 @@ func sim_step(dt: float) -> void:
 		if float(pc["at"]) <= st.sim_time:
 			_pending_corpses.remove_at(i)
 			var uid := String(pc["uid"])
-			_make_corpse(uid, pc["rec"])
+			var co := _make_corpse(uid, pc["rec"])
 			if actors.has(uid):
 				var da: Actor = actors[uid]
 				actors.erase(uid)
+				# The body stays where it fell: the corpse takes over the model.
+				if co != null and da.visual != null:
+					co.adopt_visual(da.visual)
 				da.queue_free()
 
 
@@ -1040,9 +1086,14 @@ func _area_check(initial: bool) -> void:
 	if first:
 		st.areas_visited.append(aid)
 	Events.post("area_entered", {"area": aid, "first": first})
-	ui_request.emit("area_banner", {"name": String(ad.get("name", aid)), "sub": String(ad.get("subtitle", ""))})
+	# The area's title card on a first visit, or on coming back after a while.
+	var now_t := Time.get_ticks_msec() / 1000.0
+	if first or now_t - float(_banner_shown.get(aid, -1000.0)) > 45.0:
+		_banner_shown[aid] = now_t
+		ui_request.emit("area_banner", {"name": String(ad.get("name", aid)), "sub": String(ad.get("subtitle", ""))})
 	if not combat.active:
 		GameAudio.music(area_music())
+	GameAudio.ambient(area_ambience())
 	if first and not initial:
 		if int(ad.get("discover_xp", 0)) > 0:
 			st.grant_xp(int(ad["discover_xp"]), "area:" + aid, "Explored " + String(ad.get("name", aid)))
@@ -1052,6 +1103,7 @@ func _area_check(initial: bool) -> void:
 
 
 var _pending_autosave := ""
+var _banner_shown: Dictionary = {}
 
 
 func _checkpoint(label: String) -> void:
@@ -1631,36 +1683,56 @@ func _apply_events(a: Actor, res: Dictionary) -> void:
 				if a != null:
 					a.visual.play("ranged" if e["ranged"] else "melee", 0.35)
 					GameAudio.play_at(String(e.get("sound", "blade")), a.position, self, -2.0)
+				var dtype := String(e.get("dtype", ""))
+				var dcol: Color = DTYPE_COLORS.get(dtype, Color("#ff6a5a"))
 				if bool(e["ranged"]) and a != null and tgt != null:
-					var col := Color("#ff6a3a") if String(e.get("dtype", "")) == "energy" else Color("#7fd0ff")
+					var col := Color("#ff6a3a") if dtype == "energy" else Color("#7fd0ff")
+					var muzzle := a.visual.hand_r.global_position if a.visual.hand_r != null and a.visual.is_inside_tree() else a.eye_pos() - Vector3(0, 0.2, 0)
+					fx.muzzle(muzzle, col)
 					fx.bolt(a.eye_pos() - Vector3(0, 0.2, 0), tgt.eye_pos() - Vector3(0, 0.3, 0) + (Vector3(randf_range(-0.6, 0.6), 0.3, 0) if not r["hit"] else Vector3.ZERO), col)
 				elif tgt != null and a != null:
-					fx.slash(tgt.position, Color("#ffd27a") if String(e.get("dtype", "")) == "energy" else Color("#e8eefc"))
+					fx.slash(tgt.position, Color("#ffd27a") if dtype == "energy" else Color("#e8eefc"))
 				if tgt != null:
+					var chest := tgt.eye_pos() - Vector3(0, 0.45, 0)
 					if bool(r.get("deflected", false)):
 						fx.text(tgt.position, "DEFLECT", Color("#ffd27a"))
 						GameAudio.play_at("deflect", tgt.position, self)
-						tgt.visual.play("melee", 0.2)
+						tgt.visual.play("block", 0.3)
+						fx.sparks(chest + Vector3(0, 0.25, 0), Color("#ffd27a"), 6, 3.4)
 					elif bool(r["hit"]):
 						var dmg: Dictionary = e.get("damage", {})
-						fx.text(tgt.position, ("CRIT " if r["crit"] else "") + str(int(dmg.get("dealt", 0))), Color("#ffdf6a") if r["crit"] else Color("#ff6a5a"), bool(r["crit"]))
+						fx.text(tgt.position, ("CRIT " if r["crit"] else "") + str(int(dmg.get("dealt", 0))), Color("#ffdf6a") if r["crit"] else dcol, bool(r["crit"]))
 						if int(dmg.get("absorbed", 0)) > 0:
 							fx.text(tgt.position + Vector3(0, 0.3, 0), "-%d shield" % int(dmg["absorbed"]), Color("#7fd0ff"))
+						_show_broke(tgt, dmg)
 						tgt.visual.play("hit", 0.25)
 						tgt.visual.flash(Color(1, 0.4, 0.3))
 						GameAudio.play_at("crit" if r["crit"] else "hit", tgt.position, self, -4.0)
+						fx.sparks(chest, dcol, 8 if r["crit"] else 4, 3.2 if r["crit"] else 2.4)
 						if r["crit"]:
 							cam.add_shake(0.3)
+							cam.punch_fov(3.0)
+							presented.emit("crit", {"uid": a.uid if a != null else "", "target": tgt.uid, "party": a != null and a.role == "party"})
 					else:
 						fx.text(tgt.position, "miss", Color("#9aa3ad"))
+						GameAudio.play("miss", -12.0, randf_range(0.92, 1.08))
+						# The target slips the blow (or the bolt goes wide).
+						if tgt.visual.one_shot == "" and not tgt.sheet.is_downed():
+							tgt.visual.dodge_dir = -1.0 if randf() < 0.5 else 1.0
+							tgt.visual.play("dodge", 0.35)
 				var text_line := String(e.get("text", ""))
 				Events.log_combat(text_line, String(e.get("detail", "")), "attack")
 			"damage":
 				var dm: Dictionary = e["result"]
 				if tgt != null and int(dm.get("dealt", 0)) > 0:
-					fx.text(tgt.position, str(int(dm["dealt"])), Color("#ff6a5a"))
+					fx.text(tgt.position, str(int(dm["dealt"])), DTYPE_COLORS.get(String(e.get("dtype", "")), Color("#ff6a5a")))
 					tgt.visual.play("hit", 0.25)
 					tgt.visual.flash(Color(1, 0.4, 0.3))
+					_show_broke(tgt, dm)
+			"save":
+				var sv: Dictionary = e.get("result", {})
+				if tgt != null and bool(sv.get("success", false)):
+					fx.text(tgt.position + Vector3(0, 0.4, 0), "RESISTED", Color("#9fe6e0"))
 			"heal":
 				if tgt != null:
 					fx.text(tgt.position, "+%d" % int(e["amount"]), Color("#5fd38a"))
@@ -1697,8 +1769,10 @@ func _apply_events(a: Actor, res: Dictionary) -> void:
 								dest = np
 							else:
 								break
+						var was := tgt.position
 						tgt.set_pos(dest)
 						tgt.stop()
+						tgt.visual.slide_from(tgt.global_transform.basis.inverse() * (was - dest))
 			"throw":
 				_spawn_grenade(a, String(e["item"]), String(e.get("target", "")))
 			"place_mine":
@@ -1717,6 +1791,12 @@ func _apply_events(a: Actor, res: Dictionary) -> void:
 			on_downed(actors[uid], a.uid if a != null else "")
 
 
+## Statuses knocked loose by a hit (a stun broken by pain, and so on).
+func _show_broke(tgt: Actor, dm: Dictionary) -> void:
+	for sid in dm.get("broke", []):
+		fx.text(tgt.position + Vector3(0, 0.8, 0), "freed: " + String(DB.status(String(sid)).get("name", sid)), Color("#9fe6e0"))
+
+
 func on_downed(t: Actor, killer: String) -> void:
 	var s := t.sheet
 	if t.role == "party":
@@ -1724,6 +1804,9 @@ func on_downed(t: Actor, killer: String) -> void:
 			return
 		s.hp = 0
 		StatusRules.apply(s, "downed", 9999.0)
+		# The fall plays out even if this pauses the game.
+		t.visual.set_downed(true)
+		present_visual(t.visual)
 		t.queue.clear()
 		t.current = {}
 		t.stop()
@@ -1751,6 +1834,11 @@ func on_downed(t: Actor, killer: String) -> void:
 	t.current = {}
 	t.visual.set_downed(true)
 	t.visual.set_selection("")
+	present_visual(t.visual)
+	if s.kind == "machine":
+		fx.sparks(t.position + Vector3(0, 1.0, 0), Color("#ffd27a"), 10, 4.0)
+		fx.burst(t.position, Color(0.35, 0.35, 0.4), 1.1)
+	presented.emit("kill", {"uid": t.uid, "by": killer})
 	var lead_target := controlled() != null and controlled().target_uid == t.uid
 	for o in actors.values():
 		(o as Actor).queue.purge_target(t.uid)
@@ -1784,17 +1872,20 @@ func on_downed(t: Actor, killer: String) -> void:
 	refresh_markers()
 
 
-func _make_corpse(uid: String, rec: Dictionary) -> void:
+func _make_corpse(uid: String, rec: Dictionary) -> WorldObject:
 	var cid := "corpse_" + uid
 	if objects.has(cid):
-		return
+		return null
 	var tdef: Dictionary = DB.enemy(String(rec.get("template", "")))
 	var p: Array = rec.get("pos", [0, 0, 0])
 	var machine := String(tdef.get("kind", "organic")) == "machine"
 	var loot: Dictionary = (tdef.get("loot", {}) as Dictionary).duplicate()
+	# Bodies fall backwards from the feet, so the stand-in model is turned
+	# round and shifted to lie where the fallen character lay.
 	var d := {"id": cid, "type": "wreck" if machine else "corpse", "model": "wreck" if machine else "corpse", "name": ("Wreck of " if machine else "Body of ") + String(tdef.get("name", uid)),
-		"pos": [float(p[0]), float(p[1])], "rot": float(p[2]) if p.size() > 2 else 0.0, "loot": loot, "cloth": String(tdef.get("color", "#3d4552")), "reach": 2.0}
-	_add_object(d)
+		"pos": [float(p[0]), float(p[1])], "rot": (float(p[2]) if p.size() > 2 else 0.0) + (0.0 if machine else 180.0), "loot": loot,
+		"cloth": String(tdef.get("color", "#3d4552")), "reach": 2.0, "mesh_offset": 0.0 if machine else 0.85}
+	return _add_object(d)
 
 
 func _check_encounter(eid: String) -> void:
@@ -2212,6 +2303,9 @@ func start_dialogue(did: String, npc: Actor = null, npc_id: String = "", ctx: Di
 		c["actor"] = Game.state.controlled
 	dialogue = DialogueEngine.new(Game.state)
 	dialogue_npc = npc
+	if stage != null:
+		stage.clear()
+	stage = DialogueStage.new(self, npc, c)
 	dialogue.ended.connect(func(_id: String) -> void: call_deferred("_after_dialogue_engine_end"))
 	set_modal("dialogue", true)
 	if not dialogue.start(did, c):
@@ -2222,25 +2316,76 @@ func start_dialogue(did: String, npc: Actor = null, npc_id: String = "", ctx: Di
 	return true
 
 
+## Frames a line with the default shot (kept for callers without staging data).
 func dialogue_frame(speaker: String) -> void:
-	var lead := controlled()
-	if lead == null:
-		return
-	var sp: Actor = null
-	if speaker == "player":
-		sp = actors.get("player", lead)
-	elif actors.has(speaker):
-		sp = actors[speaker]
-	elif dialogue_npc != null:
-		sp = dialogue_npc
-	if sp == null:
-		return
-	var listener := dialogue_npc if speaker == "player" and dialogue_npc != null else lead
-	if listener == sp:
-		listener = lead if sp != lead else (dialogue_npc if dialogue_npc != null else lead)
-	if listener == sp:
-		return
-	cam.frame(sp.position, listener.position)
+	dialogue_present(speaker, 0.0, "", "")
+
+
+## Stages a conversation line: gaze, talking animation for `dur` seconds, an
+## optional gesture and the camera shot (see DialogueStage). Visual-only.
+func dialogue_present(speaker: String, dur: float, anim: String = "", shot: String = "") -> void:
+	if stage == null and dialogue != null:
+		stage = DialogueStage.new(self, dialogue_npc, dialogue.ctx)
+	if stage != null:
+		stage.present(speaker, dur, anim, shot)
+
+
+## A companion nods or shakes their head at an influence change.
+func dialogue_react(uid: String, delta: int) -> void:
+	if stage != null:
+		stage.react(uid, delta)
+
+
+func _on_voice_syllable(channel: String, amp: float) -> void:
+	if channel == "dialogue" and stage != null and stage.speaking != null and is_instance_valid(stage.speaking):
+		stage.speaking.visual.pulse_glow(amp)
+
+
+## Real-time presentation: conversation staging and visuals that settle
+## while the simulation is frozen (a fall finishing during a pause). Never
+## touches simulation state.
+func _process(delta: float) -> void:
+	if stage != null:
+		stage.tick(delta)
+	if _trim_pulse > 0.0:
+		_trim_pulse = maxf(0.0, _trim_pulse - delta)
+	if not _present.is_empty():
+		var live := sim_running()
+		for v in _present.keys():
+			if not is_instance_valid(v):
+				_present.erase(v)
+				continue
+			var av: ActorVisual = v
+			# Paused: only a fall still settles; a remark's gestures wait.
+			if not live and not (av.downed and av.down_amt < 0.999):
+				continue
+			if not av.present(delta, false):
+				_present.erase(v)
+
+
+## The protagonist's look follows Mercy and Dominion.
+func _show_alignment() -> void:
+	var p: Actor = actors.get("player", null)
+	if p != null and p.visual != null:
+		p.visual.set_alignment(Game.state.alignment)
+
+
+## Washes the ship's wall trims in a colour for a moment (announcements);
+## the Atmosphere applies it.
+func pulse_trims(col: Color, dur: float) -> void:
+	_trim_pulse_col = col
+	_trim_pulse_len = maxf(0.1, dur)
+	_trim_pulse = _trim_pulse_len
+
+
+func trim_pulse_amount() -> float:
+	return sin(PI * (1.0 - _trim_pulse / _trim_pulse_len)) if _trim_pulse > 0.0 else 0.0
+
+
+## Lets a visual finish settling (e.g. a fall) even while paused.
+func present_visual(v: ActorVisual) -> void:
+	if v != null:
+		_present[v] = true
 
 
 func _after_dialogue_engine_end() -> void:
@@ -2252,6 +2397,9 @@ func _after_dialogue_engine_end() -> void:
 func end_dialogue() -> void:
 	if dialogue != null and dialogue.active:
 		dialogue.finish()
+	if stage != null:
+		stage.clear()
+		stage = null
 	cam.end_cinematic()
 	set_modal("dialogue", false)
 	dialogue = null
@@ -2288,6 +2436,8 @@ func _on_event(name: String, data: Dictionary) -> void:
 			call_deferred("_queued_dialogue", nxt)
 	elif name == "tutorial":
 		ui_request.emit("tutorial", data)
+	elif name == "alignment_changed":
+		_show_alignment()
 
 
 func _world_effect(e: Dictionary) -> void:
@@ -2527,10 +2677,14 @@ func _npc_effect(nid: String, setd: Dictionary) -> void:
 # ================================================================ markers & picking
 func refresh_markers() -> void:
 	var lead := controlled()
+	# Conversations and cinematics are staged without selection rings.
+	var staged := modal.has("dialogue") or modal.has("cinematic")
 	for o in actors.values():
 		var a: Actor = o
 		var k := ""
-		if a.role == "party":
+		if staged:
+			pass
+		elif a.role == "party":
 			k = "controlled" if a == lead else "ally"
 		elif lead != null and a.uid == lead.target_uid:
 			k = "hostile" if hostile(lead, a) else "neutral"
@@ -2646,7 +2800,7 @@ func sync_to_state() -> void:
 		var a: Actor = p
 		st.positions[a.uid] = [snappedf(a.position.x, 0.01), snappedf(a.position.z, 0.01), snappedf(a.rotation_degrees.y, 0.1)]
 		st.queues[a.uid] = a.queue.to_array()
-	st.positions["_cam"] = [cam.yaw, cam.pitch, cam.distance]
+	st.positions["_cam"] = [cam.yaw, cam.pitch, cam.distance, cam.mode]
 	for o in actors.values():
 		var a: Actor = o
 		if a.role == "enemy" or (a.role == "npc" and Game.state.enemies.has(a.uid)):

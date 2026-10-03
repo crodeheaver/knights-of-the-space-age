@@ -65,3 +65,40 @@ func test_every_skill_used_in_level() -> void:
 		used["stealth"] = true
 	for s in DB.skills.keys():
 		assert_true(used.has(s), "skill %s has an in-level use" % s)
+
+
+## Everything is original: no names or terms borrowed from the space-fantasy
+## franchise this game's genre descends from. Scans every player-facing text.
+const BORROWED := ["jedi", "sith", "lightsaber", "wookiee", "droid", "droids", "the force", "revan", "malak", "bastila",
+	"ebon hawk", "tatooine", "coruscant", "mandalorian", "hutt", "taris", "dantooine", "holocron", "padawan", "kolto",
+	"sabacc", "pazaak"]
+
+
+func _texts(v: Variant, out: PackedStringArray) -> void:
+	match typeof(v):
+		TYPE_STRING:
+			out.append(String(v))
+		TYPE_DICTIONARY:
+			for k in (v as Dictionary).keys():
+				_texts(v[k], out)
+		TYPE_ARRAY:
+			for x in v:
+				_texts(x, out)
+
+
+func test_content_is_original() -> void:
+	var out := PackedStringArray()
+	for src in [DB.dialogues, DB.codex, DB.cinematics, DB.tutorials, DB.layout, DB.items, DB.feats, DB.powers, DB.quests, DB.companions]:
+		_texts(src, out)
+	if DB.get("ship_life") != null:
+		_texts(DB.get("ship_life"), out)
+	var re := RegEx.new()
+	re.compile("(?i)\\b(" + "|".join(BORROWED) + ")\\b")
+	var hits: Array[String] = []
+	for t in out:
+		var m := re.search(t)
+		if m != null:
+			hits.append("'%s' in: %s" % [m.get_string(), t.left(90)])
+	for h in hits:
+		fail(h)
+	assert_gte(out.size(), 1000, "scanned the content")

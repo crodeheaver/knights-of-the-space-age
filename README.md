@@ -18,16 +18,31 @@ one launch craft, fifteen seats, and decisions to make about who gets them.
 - **Exploration and skills:** every skill has uses on the ship. The forward checkpoint can be solved by combat,
   technical skill, stealth or conversation.
 - **Story:** two optional quests, decisions whose consequences show up later, data-driven dialogue
-  (28 conversations, about 430 nodes).
+  (28 conversations, about 430 nodes), opening on an in-engine prologue flythrough of the ship.
+- **Presentation in the style of the classic d20 space RPGs:**
+  - **Conversations:** characters speak in made-up languages, babbled from synthesised syllables with a voice
+    per character. Lines reveal at your text speed. Speakers turn and gesture, and the camera cuts between
+    over-the-shoulder, close-up and two-shot coverage. Approval and Mercy/Dominion shifts show as you make
+    them.
+  - **Ambient talk:** companions banter, bark in combat and ask to talk when something is on their mind.
+    WARDEN and the purser make shipwide announcements.
+  - **The ship:** red alert lighting, haze, flickering damage, a turning reactor and breathing archive
+    cores, ceilings, and layered ambience.
+  - **Camera:** a close follow camera by default, with the tactical orbit one setting away.
+  - **Combat:** stances and flourishes, dodges and blocks, sparks, a Lumen Edge that ignites in a fight,
+    health bars over heads, and feedback for experience, level-ups, journal and codex updates.
 - **Economy:** inventory and 10 equipment slots, a vendor, crafting with upgrades, and three minigames: Shards
   (cards), Slipstream (hover racing) and the Petrel's turret.
 - **Later-game systems,** reachable through developer presets: prestige specializations (3 families × Mercy and
   Dominion variants) and Iona's Resonance training.
 
 Everything is original: story, characters, factions, dialogue, rules text, procedural geometry, and procedurally
-synthesized audio. See [docs/ASSETS.md](docs/ASSETS.md).
+synthesized audio, including the babbled voices. A test scans all player-facing text for borrowed franchise
+terms. See [docs/ASSETS.md](docs/ASSETS.md).
 
 ![Security checkpoint](docs/screenshots/area_04_checkpoint.jpg)
+
+![A conversation with Commander Varr](docs/screenshots/dlg_ots.jpg)
 
 ## Requirements
 
@@ -53,6 +68,8 @@ godot -e --path .         # opens the editor
 | `--dev` | developer mode: F12 developer menu, presets on the title screen |
 | `--pos=x,z[,rot]`, `--cam=yaw,pitch,dist` | place the party and camera (with `--quickstart` or `--preset`) |
 | `--open=character\|inventory\|journal\|vendor\|workbench\|levelup\|settings\|prestige\|dev…` | open a screen on start |
+| `--open=dialogue:<id> [--npc=<id>] [--obj=<id>] [--advance=N]`, `--open=cinematic:<id>`, `--open=bark:<id>`, `--open=banter` | start a conversation (optionally stepping N lines), a cinematic, an ambient line or a banter exchange |
+| `--camera=follow\|tactical` | camera mode for this run |
 | `--ui=creator [--ui_step=N --ui_class=adept]`, `--ui=practice_shards\|practice_slipstream\|practice_turret` | open a screen from the title |
 | `--shot=file.png --quit_after=N` | save a screenshot after N frames and quit |
 
@@ -63,8 +80,8 @@ Example: `godot --path . -- --preset=jump_bay --dev`
 | Action | Key / mouse |
 |---|---|
 | Move / click-move | W A S D or arrows / left-click the floor |
-| Camera orbit, zoom, rotate | right-drag, wheel, Q / T |
-| Interact or talk (nearest) | E, or left-click the object or person |
+| Camera orbit, zoom, rotate | right-drag, wheel, Q / T (Settings → Controls → Camera: close follow or tactical) |
+| Interact or talk (nearest) | E, or left-click the object or person (E beside a companion who wants to talk starts that conversation) |
 | **Tactical pause** | Space (combat auto-pauses at the start with a basic attack already queued; queue anything to replace it) |
 | Attack the target / cycle targets | F / R (left-click a hostile to target; double-click to attack) |
 | Action bar (feats, powers, items) | 1 … 0 (actions go into the 4-slot queue; Backspace clears it) |
@@ -75,8 +92,9 @@ Example: `godot --path . -- --preset=jump_bay --dev`
 | Menu, back | Esc |
 | Developer menu (dev mode) | F12 |
 
-In dialogue: 1–9 choose an option, Space continues. Options show the skill and DC, your chance of success,
-and any requirement you don't meet.
+In dialogue: 1–9 choose an option. Space or a click first shows the whole line, then continues. Options
+show the skill and DC, your chance of success, any requirement you don't meet, and a coloured strip for their
+tone.
 
 ## Tests
 

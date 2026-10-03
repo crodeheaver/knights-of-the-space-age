@@ -65,31 +65,31 @@ area("cabin", "Transfer Cabin 4-C", [[2, 2, 10, 10]], "#2b2f38", "#3d4350", "#e8
 area("commons", "Crew Commons", [[11, 0, 28, 14]], "#2d2a30", "#423b45", "#e8823a", "#ffcf9a",
      sub="Recreation and muster deck", music="music_explore", safe=True, discover_xp=10)
 area("lounge", "Observation Lounge", [[14, -8, 24, -1]], "#232836", "#363d50", "#8a6ad8", "#c8c0ff",
-     sub="Optional", discover_xp=25)
+     sub="Optional", discover_xp=25, ambient="#4a4a78", ambient_energy=0.5)
 area("corridor", "Transit Corridor C-3", [[29, 4, 47, 10], [36, 10, 40, 14]], "#26282c", "#3b3f46", "#ff5a4a", "#ffb08a",
-     sub="Damaged", discover_xp=10, checkpoint=True, light_energy=0.9)
+     sub="Damaged", discover_xp=10, checkpoint=True, light_energy=0.9, alert=True, flicker=True, fog="#4a3a34", fog_density=0.018, ambient="#5a4a48")
 area("checkpoint", "Security Checkpoint", [[48, 0, 62, 15]], "#232a33", "#34404e", "#3fb6b0", "#cfe6ff",
-     sub="Forward access control", discover_xp=20, checkpoint=True)
-area("armory", "Security Armory", [[51, -6, 58, -1]], "#20262e", "#323c48", "#3fb6b0", "#cfe6ff", sub="Optional", discover_xp=25)
+     sub="Forward access control", discover_xp=20, checkpoint=True, on_enter=[{"bark": "an_warden_checkpoint"}], alert=True, fog="#2e3a48", fog_density=0.008)
+area("armory", "Security Armory", [[51, -6, 58, -1]], "#20262e", "#323c48", "#3fb6b0", "#cfe6ff", sub="Optional", discover_xp=25, alert=True)
 area("crawlway", "Maintenance Crawlway", [[58, 16, 60, 26], [60, 24, 73, 26]], "#1c1e22", "#2b2e33", "#7fb04a", "#9fbf80",
-     sub="Side passage", discover_xp=25, light_energy=0.55, shadows=[[58, 16, 60, 26], [60, 24, 73, 26]])
+     sub="Side passage", discover_xp=25, light_energy=0.55, shadows=[[58, 16, 60, 26], [60, 24, 73, 26]], ambience="amb_deep", fog="#2a3424", fog_density=0.02, ambient_energy=0.42)
 area("storage", "Medical Storage", [[74, 18, 81, 26]], "#25292d", "#384046", "#5fd38a", "#d8ffe8", sub="Supply room", discover_xp=15)
 area("medical", "Medical Deck", [[63, 0, 82, 17]], "#283035", "#3c4a50", "#5fd38a", "#e6fff2",
-     sub="Triage and fabrication", discover_xp=20, checkpoint=True, music="music_tension")
-area("ward", "Sealed Passenger Ward", [[66, -8, 76, -1]], "#2a2c2a", "#40463d", "#e0b03a", "#fff0c0", sub="Quarantined", discover_xp=20)
+     sub="Triage and fabrication", discover_xp=20, checkpoint=True, music="music_tension", on_enter=[{"bark": "an_warden_medical"}])
+area("ward", "Sealed Passenger Ward", [[66, -8, 76, -1]], "#2a2c2a", "#40463d", "#e0b03a", "#fff0c0", sub="Quarantined", discover_xp=20, flicker=True, fog="#5a6a5a", fog_density=0.03)
 area("engineering", "Engineering Loop", [[83, -6, 111, 0], [83, 16, 111, 22], [83, 0, 89, 16], [105, 0, 111, 16]], "#2a2622", "#443b31", "#e8823a", "#ffc890",
-     sub="Drive core access ring", discover_xp=20, checkpoint=True, music="music_tension")
-area("workshop", "Engineering Workshop", [[92, 23, 100, 29]], "#2a2724", "#463d33", "#7fd0ff", "#ffe2c0", sub="Workbench", discover_xp=15)
+     sub="Drive core access ring", discover_xp=20, checkpoint=True, music="music_tension", on_enter=[{"bark": "an_warden_engineering"}], alert=True, flicker=True, ambience="amb_deep", fog="#3a4048", fog_density=0.022)
+area("workshop", "Engineering Workshop", [[92, 23, 100, 29]], "#2a2724", "#463d33", "#7fd0ff", "#ffe2c0", sub="Workbench", discover_xp=15, ambience="amb_deep")
 area("duct", "Maintenance Duct", [[101, 26, 112, 28], [112, 21, 114, 28]], "#1c1e22", "#2b2e33", "#7fb04a", "#9fbf80",
-     sub="Shortcut", discover_xp=25, light_energy=0.5, shadows=[[101, 26, 112, 28], [112, 21, 114, 28]])
+     sub="Shortcut", discover_xp=25, light_energy=0.5, shadows=[[101, 26, 112, 28], [112, 21, 114, 28]], ambience="amb_deep", fog="#2a3424", fog_density=0.02, ambient_energy=0.42)
 area("archive", "Archive Cargo Hold", [[112, -4, 134, 20]], "#1f2429", "#2e3740", "#3fb6b0", "#a8f0e8",
      sub="Consciousness archive storage", discover_xp=20, checkpoint=True, music="music_tension",
-     shadows=[[112, -4, 134, -1]], light_energy=0.85)
-area("coldstore", "Cold Storage", [[118, 21, 126, 27]], "#22282e", "#37424d", "#7fd0ff", "#d0f0ff", sub="Optional", discover_xp=15)
+     shadows=[[112, -4, 134, -1]], light_energy=0.85, on_enter=[{"bark": "an_warden_archive"}], alert=True, ambience="amb_deep", fog="#1f4040", fog_density=0.015, ambient="#3a5a60")
+area("coldstore", "Cold Storage", [[118, 21, 126, 27]], "#22282e", "#37424d", "#7fd0ff", "#d0f0ff", sub="Optional", discover_xp=15, ambience="amb_deep", fog="#7a90a0", fog_density=0.025)
 area("command", "Command Chamber", [[135, 0, 149, 16]], "#262a33", "#3a4152", "#e8823a", "#ffe0b8",
-     sub="Launch control", discover_xp=20, checkpoint=True, music="music_tension")
+     sub="Launch control", discover_xp=20, checkpoint=True, music="music_tension", on_enter=[{"bark": "an_warden_command"}], ambient="#6a5a4a")
 area("bay", "Evacuation Bay 2", [[150, -8, 176, 24]], "#25282d", "#3a3f48", "#ff5a4a", "#ffd0b0",
-     sub="Launch craft Petrel", discover_xp=20, checkpoint=True, music="music_tension", light_energy=1.0)
+     sub="Launch craft Petrel", discover_xp=20, checkpoint=True, music="music_tension", light_energy=1.0, on_enter=[{"bark": "an_warden_bay"}], alert=True, flicker=True, fog="#4a3a30", fog_density=0.012)
 
 # ---------------------------------------------------------------- doors
 door("d_cabin", [[10, 5], [10, 6]], "cabin", "commons", name="Cabin Door")

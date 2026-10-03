@@ -15,10 +15,13 @@ Game (autoload) ──► GameState: the single authoritative, serializable stat
 World (Node3D)  ──► the simulation driver and presentation: ShipGrid, LevelBuilder, Actors, WorldObjects,
                   │  CombatManager, AIBrain, CameraRig, FX. It asks the rules to resolve each action
                   │  exactly once, applies the result to GameState, then hands the result to visuals and logs.
+                  │  Presentation-only children: Atmosphere, OverheadBars, DialogueStage (during a
+                  │  conversation) and, in the real game only, ShipLife (see section 14).
 UI (CanvasLayer) ─► HUD and panels: they read state and issue commands through World/Game APIs only.
 Events (autoload): central bus. post(name, data) for game events, toast() for notifications, log_combat().
 Saves (autoload): versioned JSON files with safe writes. Settings (autoload): options, bindings.
-GameAudio (autoload): Music, SFX, Ambience and UI buses, looping streams.
+GameAudio (autoload): Music, SFX, Ambience, UI and Voice buses (plus a band-passed VoiceRadio bus), crossfaded
+                  music and ambience, positional prop loops, footsteps, and babbled voice lines.
 ```
 
 Rules never touch nodes, so they are unit-tested directly with forced dice (`Dice.force([..])`). Animations,
@@ -26,7 +29,8 @@ sounds and floating numbers only display results that have already been resolved
 
 ## 2. Simulation, pause and modality
 
-- The world advances in fixed steps of 1/30 s (`World.sim_step(dt)`), and only while `sim_running()`: not paused,
+- The world advances in fixed steps (`World.FIXED_DT`, 1/60 s in play; tests, bots and the bench step at 1/30 s)
+  through `World.sim_step(dt)`, and only while `sim_running()`: not paused,
   no modal (`menu`, `dialogue`, `minigame`, `cinematic`), and not game over. Every timer is driven only by
   `sim_step`: statuses, cooldowns, round clocks, recovery, projectiles, bash jobs, hazards, stealth, regeneration and
   pending corpses. Pausing therefore freezes all of them. (`tests/test_world.gd::test_pause_freezes_everything`
@@ -293,4 +297,43 @@ power, quest and encounter ids, layout objects) at startup and in `tests/test_da
 | `tools/godot/gen_dev_stages.tscn` | regenerate `data/dev_stages.json` from a diplomat bot run |
 | `tools/godot/bench.tscn` | CPU benchmark of the simulation (JSON report) |
 | `tools/gen_audio.py` | regenerate all audio (deterministic) |
-| `tools/author_layout.py`, `tools/author_dialogue.py` | regenerate layout and dialogue JSON |
+| `tools/author_layout.py`, `tools/author_dialogue.py` | regenerate layout and dialogue JSON (the dialogue tool also writes `voices.json`, `cinematics.json` and `ship_life.json` from `tools/dialogues/*.py` `OUTPUTS`) |
+
+## 14. Presentation layer (voices, staging, ambient life, atmosphere, combat feel)
+
+Everything in this section is presentation. It never writes `Actor` position, facing, path, queue or clocks,
+character sheets, or `Game.state.dice`; cosmetic randomness uses the global `randf()`. The default-seed bot logs
+(choices and full combat log) are byte-identical with and without it, and
+`tests/test_ship_life.gd::test_ship_life_does_not_touch_the_simulation` runs the same fight both ways.
+
+- **Two clocks.** Sim-clock presentation (`ActorVisual.animate`, `FX.step`) freezes on pause. Real-time
+  presentation (`World._process`, `CameraRig`, `GameAudio`, `Atmosphere`, `ShipLife`, `OverheadBars`) may run
+  during pauses and conversations but only touches visual nodes, materials, the camera, audio and UI.
+  `World.present_visual(v)` lets a visual finish settling while paused (a fall started by an auto-pause).
+- **Voices** (`GameAudio.voice_line`, `data/voices.json`): lines are babbled from four synthesised syllable banks
+  (`vox_hlo/hhi/syn/wrd_NN`, `tools/gen_audio.py`). `voice_schedule()` is pure: syllables per word from vowel groups,
+  word-stable syllable choice, pauses at punctuation, declination and a question rise, paced towards the text
+  reveal speed. Channels: `dialogue`, `world` (barks) and `ship` (announcements).
+- **Conversations.** `DialogueUI` reveals lines at the Text speed setting, voices them, shows reactions
+  (approval, Mercy/Dominion, XP, codex) from `Events` while it is open, and colours choice tones.
+  `DialogueStage` turns participants (`ActorVisual.present`: body and head yaw on the visual only, talk beats,
+  gestures) and picks shots (`CameraRig.frame_shot`: `two`, `ots`, `close`; optional per-line `shot`/`anim`
+  fields, validated). Shots stay on one side of the line and pull in front of walls (`safe_eye`).
+- **Cinematics** are data (`data/cinematics.json`): shots with from/to/look, title cards, fades, voiced captions,
+  `hide_party`, `hide_enemies`, `craft`, `then`. `CameraRig.scripted` keeps the rig from overriding them.
+- **ShipLife** (`data/ship_life.json`): barks on events (`on` + `match` + conditions, chance, cooldowns,
+  once-only via `chatter:<id>` ledger keys), banter by area, WARDEN and intercom announcements (the `bark`
+  effect, area `on_enter`, flags, timers), approval reactions after conversations, and companion hooks that set a
+  flag opening a topic in the companion's talk hub. Main creates it; tests and bots do not.
+- **Atmosphere** (area fields `ambient`, `ambient_energy`, `fog`, `fog_density`, `alert`, `flicker`,
+  `ambience`): blends light and haze, pulses alert red after `emergency_started`, flickers damaged lights, applies
+  announcement trim pulses, animates the reactor, cores and viewport stars, freezes sparks on pause, and places
+  positional loops. Only the current area and its neighbours are styled; no lights are added.
+- **Camera modes** (`CameraRig.PROFILES`): `follow` (default; swings behind the leader on forward or path
+  movement, never on strafe; lifts over walls that block the arm and fades the leader if still too close) and
+  `tactical`. Tall props are on collision layer 2 for the follow camera. Ceilings face down only.
+- **Combat feel.** `World._apply_events` adds sparks, muzzle flashes, dodge/block reactions, the miss sound,
+  RESISTED and freed-status text, a crit FOV punch and push slides; `ActorVisual` adds a combat stance,
+  flourishes between blows, the Lumen Edge igniting and retracting, and alignment on the protagonist's look.
+  Bodies keep their fallen model (`WorldObject.adopt_visual`). `World.presented` (a signal, not an event) feeds
+  ShipLife's crit barks. `OverheadBars` draws camera-facing health bars.

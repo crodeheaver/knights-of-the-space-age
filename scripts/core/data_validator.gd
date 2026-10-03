@@ -4,6 +4,10 @@ extends RefCounted
 ## data set. Run at startup (errors are printed) and by the test suite (errors
 ## fail the build).
 
+## Dialogue staging: camera framing and speaker gestures per line.
+const SHOTS := ["", "ots", "close", "two", "keep"]
+const ANIMS := ["", "nod", "shake", "shrug", "gesture", "point", "look_away"]
+
 var errors: Array[String] = []
 var db: Node
 
@@ -27,6 +31,9 @@ func validate_all(d: Node) -> Array[String]:
 	_vendors()
 	_quests()
 	_dialogues()
+	_voices()
+	_cinematics()
+	_ship_life()
 	_layout()
 	_encounters()
 	_builds()
@@ -256,6 +263,8 @@ func _eff_check(e: Variant, where: String) -> void:
 			_feat_ok(String(x["grant_feat"]), where)
 		if x.has("grant_power"):
 			_power_ok(String(x["grant_power"]), where)
+		if x.has("bark") and db.ship_line(String(x["bark"])).is_empty():
+			err("%s: unknown bark '%s'" % [where, x["bark"]])
 		if x.has("influence") and not db.companions.has(String(x["influence"])):
 			err("%s: unknown companion '%s'" % [where, x["influence"]])
 		if (x.has("xp") or x.has("alignment") or x.has("influence")) and not x.has("key"):
@@ -308,6 +317,10 @@ func _dialogues() -> void:
 				err("%s: node without text" % where)
 			if n.has("text") and String(n["text"]).strip_edges() == "":
 				err("%s: empty text" % where)
+			if not SHOTS.has(String(n.get("shot", ""))):
+				err("%s: unknown shot '%s'" % [where, n["shot"]])
+			if not ANIMS.has(String(n.get("anim", ""))):
+				err("%s: unknown anim '%s'" % [where, n["anim"]])
 			var sp := String(n.get("speaker", "narrator"))
 			if not (["player", "narrator", "warden", "intercom", "system"].has(sp) or db.companions.has(sp) or DB.dict(db.layout, "npcs").has(sp) or DB.dict(dl, "names").has(sp)):
 				err("%s: unknown speaker %s" % [where, sp])
@@ -338,11 +351,116 @@ func _dialogues() -> void:
 				err("dialogue %s: destination '%s' does not exist" % [did, t])
 
 
+func _voices() -> void:
+	var banks: Dictionary = db.voices.get("banks", {})
+	if banks.is_empty():
+		err("voices: no banks")
+	for b in banks.keys():
+		if int(banks[b]) <= 0:
+			err("voices: bank %s has no syllables" % b)
+	var sp: Dictionary = db.voices.get("speakers", {})
+	for sid in sp.keys():
+		var v: Dictionary = sp[sid]
+		var bank := String(v.get("bank", "hlo"))
+		if bank != "" and not banks.has(bank):
+			err("voices: speaker %s uses unknown bank '%s'" % [sid, bank])
+		if float(v.get("pitch", 1.0)) < 0.5 or float(v.get("pitch", 1.0)) > 2.0:
+			err("voices: speaker %s pitch out of range" % sid)
+		if float(v.get("rate", 1.0)) < 0.3 or float(v.get("rate", 1.0)) > 3.0:
+			err("voices: speaker %s rate out of range" % sid)
+		if not ["", "radio"].has(String(v.get("bus", ""))):
+			err("voices: speaker %s unknown bus '%s'" % [sid, v["bus"]])
+
+
+func _cinematics() -> void:
+	for cid in db.cinematics.keys():
+		var c: Dictionary = db.cinematics[cid]
+		var where := "cinematic %s" % cid
+		var shots: Array = c.get("shots", [])
+		if shots.is_empty():
+			err(where + ": no shots")
+		if String(c.get("then", "")) != "" and not db.dialogues.has(String(c["then"])):
+			err("%s: unknown follow-up dialogue '%s'" % [where, c["then"]])
+		for i in shots.size():
+			var sh: Dictionary = shots[i]
+			var sw := "%s shot %d" % [where, i]
+			if float(sh.get("dur", 0.0)) <= 0.0:
+				err(sw + ": needs a positive dur")
+			if not bool(sh.get("black", false)):
+				for k in ["from", "to", "look"]:
+					var v: Variant = sh.get(k, null)
+					if typeof(v) != TYPE_ARRAY or (v as Array).size() != 3:
+						err("%s: %s must be [x, y, z]" % [sw, k])
+			var sp := String(sh.get("speaker", ""))
+			if sp != "" and not (db.voices.get("speakers", {}) as Dictionary).has(sp):
+				err("%s: speaker '%s' has no voice" % [sw, sp])
+
+
+const SHIP_LIFE_ON := ["combat_started", "combat_ended", "encounter_started", "enemy_killed", "ally_downed", "ally_recovered",
+	"area_entered", "flag", "approve", "disapprove", "rested", "timer", "low_health", "crit"]
+const SHIP_LIFE_SPEAKERS := ["warden", "intercom", "reclaimer", "drone"]
+
+
+func _ship_life() -> void:
+	var sl: Dictionary = db.ship_life
+	if sl.is_empty():
+		err("ship_life: missing")
+		return
+	var seen := {}
+	var areas: Dictionary = DB.dict(db.layout, "areas")
+	var lines: Array = []
+	for sec in ["barks", "announcements"]:
+		for l in sl.get(sec, []):
+			lines.append(["%s %s" % [sec, l.get("id", "?")], l])
+	for b in sl.get("banter", []):
+		var bw := "banter %s" % b.get("id", "?")
+		if seen.has(String(b.get("id", ""))):
+			err(bw + ": duplicate id")
+		seen[String(b.get("id", ""))] = true
+		var area := String(b.get("area", "any"))
+		if area != "any" and not areas.has(area):
+			err("%s: unknown area %s" % [bw, area])
+		_cond_check(b.get("if", []), bw)
+		if (b.get("lines", []) as Array).is_empty():
+			err(bw + ": no lines")
+		for l in b.get("lines", []):
+			lines.append([bw, l])
+	for pair in lines:
+		var where := String(pair[0])
+		var l: Dictionary = pair[1]
+		if l.has("id"):
+			if seen.has(String(l["id"])):
+				err(where + ": duplicate id")
+			seen[String(l["id"])] = true
+			if l.has("on") and not SHIP_LIFE_ON.has(String(l["on"])):
+				err("%s: unknown event '%s'" % [where, l["on"]])
+			_cond_check(l.get("if", []), where)
+		var sp := String(l.get("speaker", ""))
+		if not (db.companions.has(sp) or SHIP_LIFE_SPEAKERS.has(sp) or DB.dict(db.layout, "npcs").has(sp)):
+			err("%s: unknown speaker '%s'" % [where, sp])
+		if String(l.get("text", "")).strip_edges() == "":
+			err(where + ": empty text")
+	for h in sl.get("hooks", []):
+		var hw := "hook %s" % h.get("id", "?")
+		var comp := String(h.get("companion", ""))
+		if not db.companions.has(comp):
+			err("%s: unknown companion %s" % [hw, comp])
+			continue
+		_cond_check(h.get("if", []), hw)
+		var talk := String(db.companions[comp].get("dialogue", comp + "_talk"))
+		var dtext := JSON.stringify(db.dialogues.get(talk, {}))
+		for k in ["flag", "done_flag"]:
+			if String(h.get(k, "")) == "" or not dtext.contains("\"%s\"" % String(h[k])):
+				err("%s: %s '%s' is not used by %s" % [hw, k, h.get(k, ""), talk])
+
+
 func _layout() -> void:
 	var lay: Dictionary = db.layout
 	if lay.is_empty():
 		return
 	var areas: Dictionary = lay.get("areas", {})
+	for aid in areas.keys():
+		_eff_check(DB.dict(lay, "areas")[aid].get("on_enter", []), "area %s on_enter" % aid)
 	var ids := {}
 	for ob in lay.get("objects", []):
 		var oid := String(ob.get("id", ""))

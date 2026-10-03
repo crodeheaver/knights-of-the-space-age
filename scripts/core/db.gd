@@ -30,6 +30,9 @@ var dev_presets: Dictionary = {}
 var dev_stages: Dictionary = {}
 var builds: Dictionary = {}
 var dialogues: Dictionary = {}
+var voices: Dictionary = {}
+var cinematics: Dictionary = {}
+var ship_life: Dictionary = {}
 var load_errors: Array[String] = []
 
 
@@ -62,6 +65,9 @@ func load_all() -> void:
 	dev_presets = _load("dev_presets.json")
 	dev_stages = _load("dev_stages.json")
 	builds = _load("builds.json")
+	voices = _load("voices.json")
+	cinematics = _load("cinematics.json")
+	ship_life = _load("ship_life.json")
 	dialogues.clear()
 	var ddir := DATA_DIR + "dialogue/"
 	var files := DirAccess.get_files_at(ddir)
@@ -127,6 +133,34 @@ func enemy(id: String) -> Dictionary:
 
 func dialogue(id: String) -> Dictionary:
 	return dialogues.get(id, {})
+
+
+## Voice for a speaker id: {bank, count, pitch, rate, bus}. Unlisted
+## speakers get a stable voice derived from their id; machines sound synthetic.
+func voice_for(sid: String) -> Dictionary:
+	var v: Dictionary = dict(voices, "default").duplicate()
+	var sp: Dictionary = dict(voices, "speakers")
+	if sp.has(sid):
+		v.merge(sp[sid], true)
+	else:
+		var h := absi(hash(sid))
+		var model := String(dict(dict(dict(layout, "npcs"), sid), "appearance").get("model", ""))
+		if model in ["synthetic", "drone", "drone_support", "spider", "turret", "sentinel"]:
+			v["bank"] = "syn"
+		else:
+			v["bank"] = "hhi" if h % 2 == 0 else "hlo"
+		v["pitch"] = 0.9 + float(h % 21) / 100.0
+	v["count"] = int(dict(voices, "banks").get(String(v.get("bank", "")), 0))
+	return v
+
+
+## An ambient line by id (barks and announcements in data/ship_life.json).
+func ship_line(id: String) -> Dictionary:
+	for sec in ["barks", "announcements"]:
+		for l in arr(ship_life, sec):
+			if String(l.get("id", "")) == id:
+				return l
+	return {}
 
 
 func item_name(id: String) -> String:
